@@ -120,6 +120,15 @@ body{margin:0;background:#eef4fb}
         <input class="input" value="{{ capName }}" onChange="{{ setCapName }}">
       </div>
 
+      <sc-if value="{{ guessing }}">
+        <div style="display:flex;align-items:center;gap:10px;background:var(--color-accent-2-100);color:var(--color-accent-2-900);border-radius:22px;padding:11px 15px;margin-bottom:16px;font-size:12.5px">
+          <div style="width:16px;height:16px;flex:none;border-radius:999px;border:2px solid var(--color-accent-2-400);border-top-color:transparent;animation:sp .9s linear infinite"></div>
+          Reconociendo la prenda en tu teléfono…
+        </div>
+      </sc-if>
+      <sc-if value="{{ guessOn }}">
+        <div style="background:var(--color-accent-2-100);color:var(--color-accent-2-900);border-radius:22px;padding:11px 15px;margin-bottom:16px;font-size:12.5px;text-wrap:pretty">{{ guess }}</div>
+      </sc-if>
       <div style="font-size:12px;color:var(--color-neutral-700);margin-bottom:7px">¿Qué prenda es? · elige una</div>
       <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px">
         <sc-for list="{{ capCats }}" as="c" hint-placeholder-count="4">
@@ -505,6 +514,51 @@ class Component extends DCLogic {
 
   temp() { return this.props.temperature ?? 18; }
   tint(t) { return this.state.dark ? "color-mix(in srgb, " + t + " 20%, #1d2b39)" : t; }
+  loadModel() {
+    if (this._mnP) return this._mnP;
+    const load = (src) => new Promise((ok, no) => {
+      const s = document.createElement("script");
+      s.src = src; s.onload = ok; s.onerror = no; document.head.appendChild(s);
+    });
+    this._mnP = load("https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js")
+      .then(() => load("https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js"))
+      .then(() => window.mobilenet.load({ version: 2, alpha: 1.0 }))
+      .then(m => { this._mn = m; return m; });
+    return this._mnP;
+  }
+
+  guessCat(src) {
+    return this.loadModel().then(m => m.classify(src, 5)).then(preds => {
+      const map = [
+        [/cardigan|sweatshirt|wool|poncho|fur coat|trench|suit|jersey|abaya|kimono|lab coat|bulletproof/, "sweater"],
+        [/jersey|t-shirt|tee shirt|sweatshirt|brassiere|bikini|maillot|jean|overskirt|hoopskirt|miniskirt|sarong|gown|velvet/, "top"],
+        [/jean|denim|trouser|pajama|sweatpant|swimming trunks|diaper|knee pad|legging/, "pants"],
+        [/running shoe|sneaker|loafer|clog|sandal|cowboy boot|shoe|boot|slipper|moccasin/, "shoes"]
+      ];
+      for (const p of preds) {
+        const n = p.className.toLowerCase();
+        if (/shoe|boot|sandal|sneaker|clog|loafer|moccasin|slipper/.test(n)) return { cat: "shoes", conf: p.probability, raw: p.className };
+        if (/jean|denim|trouser|pajama|sweatpant|legging/.test(n)) return { cat: "pants", conf: p.probability, raw: p.className };
+        if (/cardigan|sweatshirt|wool|poncho|coat|trench|suit|kimono/.test(n)) return { cat: "sweater", conf: p.probability, raw: p.className };
+        if (/jersey|t-shirt|tee shirt|brassiere|bikini|gown|velvet/.test(n)) return { cat: "top", conf: p.probability, raw: p.className };
+      }
+      return null;
+    }).catch(() => null);
+  }
+
+  identify(src) {
+    this.setState({ guessing: true, guess: "" });
+    return this.guessCat(src).then(g => {
+      if (!g) { this.setState({ guessing: false, guess: "No reconocí la prenda — elígela tú." }); return; }
+      this.setState({
+        guessing: false,
+        guess: "Parece " + (g.cat === "sweater" ? "un suéter o saco" : g.cat === "top" ? "una playera o camisa" : g.cat === "pants" ? "un pantalón" : "unos zapatos") + " · confírmalo",
+        capCat: this.state.capCat || g.cat,
+        capName: this.state.capNamed ? this.state.capName : this.autoName(this.state.capCat || g.cat)
+      });
+    });
+  }
+
   dominant(src) {
     try {
       const w = src.videoWidth || src.naturalWidth || src.width;
@@ -719,6 +773,7 @@ class Component extends DCLogic {
       img.onload = () => {
         const hex = this.dominant(img);
         this.setState({ capPhoto: src, capColor: hex, cam: "scan", capName: this.state.capNamed ? this.state.capName : this.autoName(null, hex) });
+        this.identify(img);
         setTimeout(() => this.setState({ cam: "confirm" }), 1200);
       };
       img.onerror = () => {
@@ -735,7 +790,7 @@ class Component extends DCLogic {
     this.setState({ camLive: false });
   }
 
-  openCam = () => { this.setState({ cam: "view", capPhoto: null, capCat: null, capNamed: false }); setTimeout(() => this.startCam(), 0); };
+  openCam = () => { this.setState({ cam: "view", capPhoto: null, capCat: null, capNamed: false, guess: "" }); this.loadModel(); setTimeout(() => this.startCam(), 0); };
   closeCam = () => { this.stopCam(); this.setState({ cam: null }); };
   retake = () => { this.setState({ cam: "view", capPhoto: null }); setTimeout(() => this.startCam(), 0); };
 
@@ -757,6 +812,9 @@ class Component extends DCLogic {
     const hex = this.dominant(v);
     this.stopCam();
     this.setState({ capPhoto: photo, capColor: hex, cam: "scan", capName: this.state.capNamed ? this.state.capName : this.autoName(null, hex) });
+    const im = new Image();
+    im.onload = () => this.identify(im);
+    im.src = photo;
     setTimeout(() => this.setState({ cam: "confirm" }), 1500);
   };
 
@@ -879,6 +937,7 @@ class Component extends DCLogic {
       setCapName: (e) => this.setState({ capName: e.target.value, capNamed: true }),
       capHint: st.capCat ? "Color " + this.colorName(st.capColor) + " · listo para guardar" : "Color " + this.colorName(st.capColor) + " · falta elegir el tipo",
       capNoCat: !st.capCat,
+      guessing: !!st.guessing, guessOn: !!st.guess, guess: st.guess,
       capSaveLabel: st.capCat ? "Guardar en el armario" : "Elige el tipo de prenda",
       shuffle: this.shuffle, wear: this.wear,
       toast: st.toast, toastOn: !!st.toast,
