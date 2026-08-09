@@ -80,7 +80,8 @@ body{margin:0;background:#eef4fb}
   <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:40px">
     <div style="position:relative;width:170px;height:170px;display:flex;align-items:center;justify-content:center">
       <div style="position:absolute;inset:0;border-radius:999px;border:2px solid rgba(108,173,222,.3);border-top-color:var(--color-accent);animation:sp 1s linear infinite"></div>
-      <div style="animation:pl 1.6s ease-in-out infinite;width:118px;height:118px;border-radius:999px;overflow:hidden;display:flex;align-items:center;justify-content:center;background-image:{{ capPhotoBg }};background-size:cover;background-position:center">
+      <div style="position:relative;animation:pl 1.6s ease-in-out infinite;width:118px;height:118px;border-radius:999px;overflow:hidden;display:flex;align-items:center;justify-content:center">
+      <div style="{{ capPhotoBg }}"></div>
       <sc-if value="{{ capNoPhoto }}">
         <svg viewBox="0 0 100 100" width="96" height="96"><path d="{{ camGhost }}" fill="{{ capColor }}"></path></svg>
       </sc-if>
@@ -101,7 +102,8 @@ body{margin:0;background:#eef4fb}
     </div>
     <div style="flex:1;overflow:auto;padding:4px 20px 24px">
       <div style="display:flex;align-items:center;gap:16px;margin-bottom:18px">
-        <div style="width:104px;height:104px;flex:none;border-radius:999px;overflow:hidden;display:flex;align-items:center;justify-content:center;background-color:var(--color-surface);background-image:{{ capPhotoBg }};background-size:cover;background-position:center;animation:pop .35s ease-out">
+        <div style="position:relative;width:104px;height:104px;flex:none;border-radius:999px;overflow:hidden;display:flex;align-items:center;justify-content:center;background-color:var(--color-surface);animation:pop .35s ease-out">
+          <div style="{{ capPhotoBg }}"></div>
           <sc-if value="{{ capNoPhoto }}">
             <svg viewBox="0 0 100 100" width="66" height="66"><path d="{{ camGhost }}" fill="{{ capColor }}"></path></svg>
           </sc-if>
@@ -210,7 +212,8 @@ body{margin:0;background:#eef4fb}
           <sc-for list="{{ outfit }}" as="p" hint-placeholder-count="4">
             <div style="display:flex;flex-direction:column;align-items:center;gap:7px">
               <div style="position:relative">
-                <button onClick="{{ p.next }}" style="width:126px;height:126px;border-radius:999px;border:0;cursor:pointer;overflow:hidden;display:flex;align-items:center;justify-content:center;background-color:{{ p.tint }};background-image:{{ p.photoBg }};background-size:cover;background-position:center;box-shadow:{{ p.ring }}">
+                <button onClick="{{ p.next }}" style="position:relative;width:126px;height:126px;border-radius:999px;border:0;cursor:pointer;overflow:hidden;display:flex;align-items:center;justify-content:center;background-color:{{ p.tint }};box-shadow:{{ p.ring }}">
+                  <div style="{{ p.photoBg }}"></div>
                   <sc-if value="{{ p.noPhoto }}" hint-placeholder-val="{{ true }}">
                     <svg viewBox="0 0 100 100" width="76" height="76"><path d="{{ p.path }}" fill="{{ p.color }}"></path></svg>
                   </sc-if>
@@ -285,7 +288,8 @@ body{margin:0;background:#eef4fb}
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px 10px">
         <sc-for list="{{ shelf }}" as="g" hint-placeholder-count="9">
           <button onClick="{{ g.open }}" style="border:0;cursor:pointer;background:transparent;padding:0;display:flex;flex-direction:column;align-items:center;gap:6px">
-            <div style="position:relative;width:100%;aspect-ratio:1;border-radius:26px;overflow:hidden;display:flex;align-items:center;justify-content:center;background-color:{{ g.tint }};background-image:{{ g.photoBg }};background-size:cover;background-position:center;opacity:{{ g.op }}">
+            <div style="position:relative;width:100%;aspect-ratio:1;border-radius:26px;overflow:hidden;display:flex;align-items:center;justify-content:center;background-color:{{ g.tint }};opacity:{{ g.op }}">
+              <div style="{{ g.photoBg }}"></div>
               <sc-if value="{{ g.noPhoto }}" hint-placeholder-val="{{ true }}">
                 <svg viewBox="0 0 100 100" width="60" height="60"><path d="{{ g.path }}" fill="{{ g.color }}"></path></svg>
               </sc-if>
@@ -315,7 +319,8 @@ body{margin:0;background:#eef4fb}
       <div style="display:flex;flex-direction:column;gap:10px">
         <sc-for list="{{ outfit }}" as="p" hint-placeholder-count="4">
           <div style="display:flex;align-items:center;gap:10px;background:var(--color-surface);border-radius:999px;padding:8px 12px 8px 8px">
-            <div style="width:62px;height:62px;flex:none;border-radius:999px;overflow:hidden;display:flex;align-items:center;justify-content:center;background-color:{{ p.tint }};background-image:{{ p.photoBg }};background-size:cover;background-position:center">
+            <div style="position:relative;width:62px;height:62px;flex:none;border-radius:999px;overflow:hidden;display:flex;align-items:center;justify-content:center;background-color:{{ p.tint }}">
+              <div style="{{ p.photoBg }}"></div>
               <sc-if value="{{ p.noPhoto }}" hint-placeholder-val="{{ true }}">
                 <svg viewBox="0 0 100 100" width="40" height="40"><path d="{{ p.path }}" fill="{{ p.color }}"></path></svg>
               </sc-if>
@@ -372,7 +377,8 @@ body{margin:0;background:#eef4fb}
     <div style="background:var(--color-bg);border-radius:34px 34px 0 0;padding:14px 22px 40px;animation:up .28s cubic-bezier(.2,.8,.3,1)">
       <div style="width:44px;height:4px;border-radius:999px;background:var(--color-neutral-400);margin:0 auto 16px"></div>
       <div style="display:flex;gap:16px;align-items:center">
-        <div style="width:110px;height:110px;flex:none;border-radius:999px;overflow:hidden;display:flex;align-items:center;justify-content:center;background-color:{{ dTint }};background-image:{{ dPhotoBg }};background-size:cover;background-position:center">
+        <div style="position:relative;width:110px;height:110px;flex:none;border-radius:999px;overflow:hidden;display:flex;align-items:center;justify-content:center;background-color:{{ dTint }}">
+          <div style="{{ dPhotoBg }}"></div>
           <sc-if value="{{ dNoPhoto }}">
             <svg viewBox="0 0 100 100" width="70" height="70"><path d="{{ dPath }}" fill="{{ dColor }}"></path></svg>
           </sc-if>
@@ -599,7 +605,11 @@ class Component extends DCLogic {
     el.setAttribute("webkit-playsinline", "");
     if (this._stream && el.srcObject !== this._stream) { el.srcObject = this._stream; el.play().catch(() => {}); }
   };
-  bg(x) { return x ? 'url("' + x + '")' : "none"; }
+  bg(x) {
+    return x
+      ? { position: "absolute", inset: 0, backgroundImage: 'url("' + x + '")', backgroundSize: "cover", backgroundPosition: "center" }
+      : { display: "none" };
+  }
 
   startCam() {
     clearTimeout(this._camT);
