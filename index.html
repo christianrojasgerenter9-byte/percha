@@ -158,6 +158,28 @@ body{margin:0;background:#eef4fb}
 </div>
 </sc-if>
 
+<sc-if value="{{ needsAuth }}">
+<div style="height:100%;display:flex;flex-direction:column;justify-content:center;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);padding:60px 26px 40px">
+  <div style="font-family:var(--font-heading);font-size:20px;margin-bottom:auto">Percha</div>
+  <h2 style="font-size:33px;margin:0 0 6px">{{ authTitle }}</h2>
+  <p style="font-size:13px;color:var(--color-neutral-700);margin:0 0 22px;text-wrap:pretty">Tu armario es privado: solo tú ves tus prendas y tus fotos.</p>
+  <div class="field" style="margin-bottom:12px">
+    <label>Correo</label>
+    <input class="input" type="email" autoComplete="email" value="{{ email }}" onChange="{{ setEmail }}" placeholder="tu@correo.com">
+  </div>
+  <div class="field" style="margin-bottom:16px">
+    <label>Contraseña</label>
+    <input class="input" type="password" value="{{ pass }}" onChange="{{ setPass }}" placeholder="mínimo 6 caracteres">
+  </div>
+  <sc-if value="{{ authErrorOn }}">
+    <div style="background:var(--color-accent-100);color:var(--color-accent-800);border-radius:20px;padding:11px 15px;margin-bottom:14px;font-size:12.5px;text-wrap:pretty">{{ authError }}</div>
+  </sc-if>
+  <button onClick="{{ doAuth }}" disabled="{{ authBusy }}" class="btn btn-primary btn-block" style="padding:14px;font-size:15px">{{ authCta }}</button>
+  <button onClick="{{ swapMode }}" class="btn btn-ghost" style="margin-top:10px;font-size:13px">{{ authSwap }}</button>
+  <div style="margin-top:auto;text-align:center;font-size:10.5px;color:var(--color-neutral-600)">© 2026 Christian Rojas · Todos los derechos reservados</div>
+</div>
+</sc-if>
+
 <sc-if value="{{ needsGender }}" hint-placeholder-val="{{ true }}">
 <div style="height:100%;display:flex;flex-direction:column;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);padding:78px 24px 34px">
   <div style="display:flex;align-items:center;justify-content:space-between">
@@ -290,6 +312,7 @@ body{margin:0;background:#eef4fb}
       <div style="display:flex;align-items:flex-end">
         <div>
           <button onClick="{{ changeGender }}" class="card-kicker" style="border:0;background:transparent;padding:0;cursor:pointer;font-family:var(--font-body)">Tu armario · {{ genderLabel }} ⇄</button>
+          <button onClick="{{ logout }}" style="display:block;border:0;background:transparent;padding:0;margin-top:2px;cursor:pointer;font-family:var(--font-body);font-size:10.5px;color:var(--color-neutral-600)">{{ userEmail }} · salir</button>
           <h2 style="font-size:31px;margin:2px 0 0">{{ countLabel }}</h2>
         </div>
         <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
@@ -468,9 +491,19 @@ const SLOTS = [
   { cat: "shoes", label: "Zapatos" }
 ];
 
+const FIREBASE = {
+  apiKey: "AIzaSyAVN2TzpeshEbAIqVd1yyCdMZ_jY_a6aU4",
+  authDomain: "percha-12516.firebaseapp.com",
+  projectId: "percha-12516",
+  storageBucket: "percha-12516.firebasestorage.app",
+  messagingSenderId: "654301686788",
+  appId: "1:654301686788:web:3efbebb976bee0b6de5951",
+  measurementId: "G-KCQGRQB0W0"
+};
+const SDK = "https://www.gstatic.com/firebasejs/10.12.5/";
+
 class Component extends DCLogic {
-  constructor(props) {
-    super(props);
+  seed() {
     const g = (id, cat, name, color, tint, warm, occ, bold, worn, clean) =>
       ({ id, cat, name, color, tint, warm, occ, bold, worn, clean: clean !== false, demo: true });
     const items = [
@@ -492,8 +525,15 @@ class Component extends DCLogic {
       g("z3", "shoes", "Mocasines negros", "#2b3540", "#e6ecf2", 1, ["trabajo", "salir"], false, 8),
       g("z4", "shoes", "Tenis teal", "#8ec5bd", "#e4f2ef", 1, ["casual"], true, 3)
     ];
+    return items;
+  }
+
+  constructor(props) {
+    super(props);
     this.state = {
-      items,
+      items: this.seed(),
+      user: null, authReady: false, cloud: false,
+      email: "", pass: "", authError: "", authBusy: false, authMode: "login",
       screen: "hoy",
       dark: false,
       gender: null,
@@ -517,6 +557,127 @@ class Component extends DCLogic {
 
   temp() { return this.props.temperature ?? 18; }
   tint(t) { return this.state.dark ? "color-mix(in srgb, " + t + " 20%, #1d2b39)" : t; }
+  cfg() {
+    try {
+      const raw = localStorage.getItem("percha:fb");
+      if (raw) return JSON.parse(raw);
+    } catch (e) { }
+    return FIREBASE.apiKey.indexOf("PEGA_AQUI") < 0 ? FIREBASE : null;
+  }
+
+  track(name, params) {
+    try { if (this._an) this._fb.an.logEvent(this._an, name, params || {}); } catch (e) { }
+  }
+
+  componentDidMount() {
+    const cfg = this.cfg();
+    if (!cfg) { this.setState({ authReady: true, cloud: false }); this.loadLocal(); return; }
+    Promise.all([
+      import(SDK + "firebase-app.js"),
+      import(SDK + "firebase-auth.js"),
+      import(SDK + "firebase-firestore.js"),
+      import(SDK + "firebase-analytics.js")
+    ]).then(([app, auth, fs, an]) => {
+      this._fb = { app, auth, fs, an };
+      const a = app.initializeApp(cfg);
+      this._auth = auth.getAuth(a);
+      this._db = fs.getFirestore(a);
+      an.isSupported().then(ok => { if (ok && cfg.measurementId) this._an = an.getAnalytics(a); }).catch(() => { });
+      auth.onAuthStateChanged(this._auth, u => {
+        this.setState({ user: u ? { uid: u.uid, email: u.email } : null, authReady: true, cloud: true });
+        if (u) { try { if (this._an) an.setUserId(this._an, u.uid); } catch (e) { } this.track("login"); }
+        if (u) this.loadCloud(u.uid); else this.setState({ items: this.seed(), gender: null });
+      });
+    }).catch(() => { this.setState({ authReady: true, cloud: false, authError: "No pude conectar con la nube. Trabajarás solo en este teléfono." }); this.loadLocal(); });
+  }
+
+  auth(mode) {
+    const { email, pass } = this.state;
+    if (!email || !pass) { this.setState({ authError: "Escribe tu correo y contraseña." }); return; }
+    if (!this._auth) { this.setState({ authError: "La nube no está configurada." }); return; }
+    this.setState({ authBusy: true, authError: "" });
+    const { signInWithEmailAndPassword, createUserWithEmailAndPassword } = this._fb.auth;
+    const p = mode === "signup"
+      ? createUserWithEmailAndPassword(this._auth, email.trim(), pass)
+      : signInWithEmailAndPassword(this._auth, email.trim(), pass);
+    p.then(() => this.setState({ authBusy: false, pass: "" }))
+      .catch(e => {
+        const c = String(e.code || "");
+        const msg = c.indexOf("invalid-credential") >= 0 || c.indexOf("wrong-password") >= 0 ? "Correo o contraseña incorrectos."
+          : c.indexOf("email-already-in-use") >= 0 ? "Ese correo ya tiene cuenta. Entra en vez de registrarte."
+          : c.indexOf("weak-password") >= 0 ? "La contraseña necesita al menos 6 caracteres."
+          : c.indexOf("invalid-email") >= 0 ? "Ese correo no es válido."
+          : "No pude entrar. Revisa tus datos e intenta de nuevo.";
+        this.setState({ authBusy: false, authError: msg });
+      });
+  }
+
+  logout = () => {
+    if (this._auth) this._fb.auth.signOut(this._auth);
+    this.setState({ user: null, gender: null, items: this.seed() });
+  };
+
+  loadCloud(uid) {
+    const { collection, getDocs, doc, getDoc } = this._fb.fs;
+    Promise.all([
+      getDocs(collection(this._db, "users", uid, "garments")),
+      getDoc(doc(this._db, "users", uid))
+    ]).then(([snap, prefs]) => {
+      const mine = [];
+      snap.forEach(d => mine.push(d.data()));
+      const p = prefs.exists() ? prefs.data() : {};
+      this.setState(this.merge(mine, p));
+    }).catch(() => { });
+  }
+
+  merge(mine, prefs) {
+    let items = this.seed();
+    mine.forEach(g => {
+      const v = items.find(i => i.demo && i.cat === g.cat);
+      if (v) items = items.filter(i => i.id !== v.id);
+    });
+    items = items.concat(mine);
+    const pick = Object.assign({}, this.state.pick, prefs.pick || {});
+    SLOTS.forEach(s => { if (!items.some(i => i.id === pick[s.cat])) { const f = items.find(i => i.cat === s.cat); if (f) pick[s.cat] = f.id; } });
+    return {
+      items, pick,
+      gender: prefs.gender || null,
+      dark: prefs.dark != null ? prefs.dark : this.state.dark,
+      occasion: prefs.occasion || this.state.occasion
+    };
+  }
+
+  saveGarment(item) {
+    if (!this._db || !this.state.user) { this.saveLocal(); return; }
+    const { doc, setDoc } = this._fb.fs;
+    setDoc(doc(this._db, "users", this.state.user.uid, "garments", item.id), item).catch(() => { });
+  }
+
+  savePrefs() {
+    const st = this.state;
+    if (!this._db || !st.user) { this.saveLocal(); return; }
+    const { doc, setDoc } = this._fb.fs;
+    setDoc(doc(this._db, "users", st.user.uid), { pick: st.pick, gender: st.gender, dark: st.dark, occasion: st.occasion }, { merge: true }).catch(() => { });
+  }
+
+  saveLocal() {
+    try {
+      const st = this.state;
+      localStorage.setItem("percha:data", JSON.stringify({
+        mine: st.items.filter(i => !i.demo), pick: st.pick, gender: st.gender, dark: st.dark, occasion: st.occasion
+      }));
+    } catch (e) { }
+  }
+
+  loadLocal() {
+    try {
+      const raw = localStorage.getItem("percha:data");
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      this.setState(this.merge(d.mine || [], d));
+    } catch (e) { }
+  }
+
   loadModel() {
     if (this._mnP) return this._mnP;
     const load = (src) => new Promise((ok, no) => {
@@ -552,7 +713,8 @@ class Component extends DCLogic {
   identify(src) {
     this.setState({ guessing: true, guess: "" });
     return this.guessCat(src).then(g => {
-      if (!g) { this.setState({ guessing: false, guess: "No reconocí la prenda — elígela tú." }); return; }
+      if (!g) { this.track("reconocimiento", { acierto: false }); this.setState({ guessing: false, guess: "No reconocí la prenda — elígela tú." }); return; }
+      this.track("reconocimiento", { acierto: true, tipo: g.cat, confianza: Math.round(g.conf * 100) });
       this.setState({
         guessing: false,
         guess: "Parece " + (g.cat === "sweater" ? "un suéter o saco" : g.cat === "top" ? "una playera o camisa" : g.cat === "pants" ? "un pantalón" : "unos zapatos") + " · confírmalo",
@@ -764,6 +926,7 @@ class Component extends DCLogic {
     this.setState({
       items: this.state.items.map(i => ids.includes(i.id) ? Object.assign({}, i, { worn: i.worn + 1 }) : i)
     });
+    this.track("outfit_usado", { puntaje: this.scoreOf(this.state.pick), ocasion: this.state.occasion, pantalla: this.state.screen });
     this.flash("Guardado en tu registro de hoy · " + this.scoreOf(this.state.pick) + " de combinación");
   };
 
@@ -780,7 +943,8 @@ class Component extends DCLogic {
     const items = this.state.items.filter(i => !victim || i.id !== victim.id).concat([item]);
     const pick = Object.assign({}, this.state.pick, { [c]: id });
     SLOTS.forEach(s => { if (!items.some(i => i.id === pick[s.cat])) { const f = items.find(i => i.cat === s.cat); if (f) pick[s.cat] = f.id; } });
-    this.setState({ items, cam: null, screen: "armario", filter: c, pick });
+    this.setState({ items, cam: null, screen: "armario", filter: c, pick }, () => { this.saveGarment(item); this.savePrefs(); });
+    this.track("prenda_registrada", { tipo: c, con_foto: !!item.photo, total_propias: items.filter(i => !i.demo).length });
     const left = items.filter(i => i.demo).length;
     this.flash(victim
       ? this.state.capName + " sustituyó a " + this.nm(victim).toLowerCase() + " · quedan " + left + " de ejemplo"
@@ -961,13 +1125,27 @@ class Component extends DCLogic {
       theme: st.dark ? "dark" : "light",
       themeIcon: st.dark ? "☀" : "☾",
       themeLabel: st.dark ? "Modo claro" : "Modo oscuro",
-      toggleTheme: () => this.setState({ dark: !st.dark }),
-      needsGender: !st.cam && !st.gender,
+      toggleTheme: () => this.setState({ dark: !st.dark }, () => this.savePrefs()),
+      userEmail: st.user ? st.user.email : "", logout: this.logout,
+      needsAuth: st.authReady && st.cloud && !st.user,
+      booting: !st.authReady,
+      isSignup: st.authMode === "signup",
+      isLogin: st.authMode === "login",
+      authTitle: st.authMode === "signup" ? "Crea tu cuenta" : "Entra a tu armario",
+      authCta: st.authBusy ? "Un momento…" : st.authMode === "signup" ? "Crear cuenta" : "Entrar",
+      authSwap: st.authMode === "signup" ? "Ya tengo cuenta" : "No tengo cuenta — crear una",
+      swapMode: () => this.setState({ authMode: st.authMode === "signup" ? "login" : "signup", authError: "" }),
+      doAuth: () => this.auth(st.authMode),
+      email: st.email, pass: st.pass,
+      setEmail: e => this.setState({ email: e.target.value }),
+      setPass: e => this.setState({ pass: e.target.value }),
+      authError: st.authError, authErrorOn: !!st.authError, authBusy: st.authBusy,
+      needsGender: !st.cam && !st.gender && (!st.cloud || !!st.user),
       genders: [
         { key: "hombre", label: "Hombre", note: "suéter · playera · pantalón · zapatos", tint: this.tint("#dfeaf7"), pathA: PATHS.top, colorA: "#5b9bcb", pathB: PATHS.shoes, colorB: "#2a4a68" },
         { key: "mujer", label: "Mujer", note: "saco · blusa · pantalón · zapatos", tint: this.tint("#e4f2ef"), pathA: PATHS.sweater, colorA: "#7fb8ae", pathB: PATHS.pants, colorB: "#4a6a8c" }
-      ].map(x => Object.assign(x, { pick: () => this.setState({ gender: x.key }) })),
-      pickNeutral: () => this.setState({ gender: "todo" }),
+      ].map(x => Object.assign(x, { pick: () => this.setState({ gender: x.key }, () => this.savePrefs()) })),
+      pickNeutral: () => this.setState({ gender: "todo" }, () => this.savePrefs()),
       genderLabel: st.gender === "mujer" ? "Mujer" : st.gender === "hombre" ? "Hombre" : "Todo",
       changeGender: () => this.setState({ gender: null }),
       isCam: !!st.cam, notCam: !st.cam && !!st.gender,
@@ -982,9 +1160,9 @@ class Component extends DCLogic {
       tHoy: st.screen === "hoy" ? acc : dim,
       tArm: st.screen === "armario" ? acc : dim,
       tPro: st.screen === "probador" ? acc : dim,
-      goHoy: () => this.setState({ screen: "hoy" }),
-      goArmario: () => this.setState({ screen: "armario" }),
-      goProbador: () => this.setState({ screen: "probador" }),
+      goHoy: () => { this.track("screen_view", { firebase_screen: "hoy" }); this.setState({ screen: "hoy" }); },
+      goArmario: () => { this.track("screen_view", { firebase_screen: "armario" }); this.setState({ screen: "armario" }); },
+      goProbador: () => { this.track("screen_view", { firebase_screen: "probador" }); this.setState({ screen: "probador" }); },
       openCam: this.openCam,
       closeCam: this.closeCam,
       retake: this.retake,
@@ -1012,7 +1190,7 @@ class Component extends DCLogic {
       dCleanLabel: d && d.clean ? "Mandar a lavar" : "Ya está limpia",
       dToggleClean: () => this.setState({
         items: st.items.map(i => i.id === st.detail ? Object.assign({}, i, { clean: !i.clean }) : i)
-      }),
+      }, () => { const it = this.get(st.detail); if (it && !it.demo) this.saveGarment(it); else this.saveLocal(); }),
       dUse: () => this.setState({
         pick: Object.assign({}, st.pick, { [d.cat]: d.id }),
         locked: Object.assign({}, st.locked, { [d.cat]: true }),
