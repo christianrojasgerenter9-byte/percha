@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/organic-4212bdc2-8bd7-4047-94d5-0b49d971bced/styles.css">
+<script src="_ds/organic-4212bdc2-8bd7-4047-94d5-0b49d971bced/_ds_bundle.js"></script>
+<style>
+body{margin:0;background:#eef4fb}
+.app-light{
+--color-bg:#eef4fb;--color-surface:#dfeaf7;--color-text:#16232f;--color-accent:#3a76a9;--color-accent-2:#5da79d;
+--color-divider:rgba(22,35,47,.14);
+--color-neutral-100:#f6f9fc;--color-neutral-200:#eaf0f6;--color-neutral-300:#d7e0e9;--color-neutral-400:#b9c5d1;--color-neutral-500:#97a5b3;--color-neutral-600:#778593;--color-neutral-700:#5b6874;--color-neutral-800:#3f4a54;--color-neutral-900:#26303a;
+--color-accent-100:#eaf3fb;--color-accent-200:#d3e6f7;--color-accent-300:#b0d1ef;--color-accent-400:#7fb2df;--color-accent-500:#5493c9;--color-accent-600:#3a76a9;--color-accent-700:#2a5a85;--color-accent-800:#1d3f5e;--color-accent-900:#14293c;
+--color-accent-2-100:#e9f5f3;--color-accent-2-200:#d3e9e5;--color-accent-2-300:#b4d7d1;--color-accent-2-400:#8ebdb5;--color-accent-2-500:#6fa199;--color-accent-2-600:#55847c;--color-accent-2-700:#40655e;--color-accent-2-800:#2c4642;--color-accent-2-900:#1c2d2b;
+--shadow-sm:0 1px 2px rgba(22,35,47,.12);--shadow-md:0 3px 12px rgba(22,35,47,.14);--shadow-lg:0 14px 34px rgba(22,35,47,.2);
+}
+.app-dark{
+--color-bg:#131d27;--color-surface:#1d2b39;--color-text:#e8f1f8;--color-accent:#6cadde;--color-accent-2:#7fbdb4;
+--color-divider:rgba(232,241,248,.18);
+--color-neutral-100:#24313d;--color-neutral-200:#2c3b48;--color-neutral-300:#3a4b5a;--color-neutral-400:#566878;--color-neutral-500:#7d8d9b;--color-neutral-600:#a0aebb;--color-neutral-700:#becad5;--color-neutral-800:#dbe4ec;--color-neutral-900:#eef4f9;
+--color-accent-100:#17293a;--color-accent-200:#1e3950;--color-accent-300:#2b5273;--color-accent-400:#3f7cab;--color-accent-500:#5b9bcb;--color-accent-600:#7fb5da;--color-accent-700:#a5cde8;--color-accent-800:#c7e0f2;--color-accent-900:#e4f1fa;
+--color-accent-2-100:#17302d;--color-accent-2-200:#1e403c;--color-accent-2-300:#2b5b55;--color-accent-2-400:#3f817a;--color-accent-2-500:#5da79d;--color-accent-2-600:#7fbdb4;--color-accent-2-700:#a3d2cb;--color-accent-2-800:#c6e4df;--color-accent-2-900:#e5f4f1;
+--shadow-sm:0 1px 2px rgba(0,0,0,.5);--shadow-md:0 4px 14px rgba(0,0,0,.55);--shadow-lg:0 16px 38px rgba(0,0,0,.6);
+}
+@keyframes pl{0%{transform:scale(.9);opacity:.5}50%{transform:scale(1.05);opacity:1}100%{transform:scale(.9);opacity:.5}}
+@keyframes sp{to{transform:rotate(360deg)}}
+@keyframes up{from{transform:translateY(120%)}to{transform:translateY(0)}}
+@keyframes tin{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes pop{from{transform:scale(.86);opacity:0}to{transform:scale(1);opacity:1}}
+</style>
+</helmet>
+
+<div class="app-{{ theme }}" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:36px 20px;background:var(--color-bg)">
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ isCam }}" hint-size="402px,874px">
+
+<sc-if value="{{ isCam }}">
+<div style="height:100%;display:flex;flex-direction:column;background:#101923;color:#e8f1f8;font-family:var(--font-body)">
+
+  <sc-if value="{{ camView }}">
+  <div style="flex:1;display:flex;flex-direction:column;padding:62px 20px 40px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button onClick="{{ closeCam }}" style="width:38px;height:38px;border-radius:999px;border:0;background:rgba(232,241,248,.14);color:#e8f1f8;font-size:17px;cursor:pointer">✕</button>
+      <div style="font-family:var(--font-heading);font-size:19px">Nueva prenda</div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px">
+      <div style="position:relative;width:250px;height:310px;border-radius:28px;border:2px dashed rgba(108,173,222,.75);display:flex;align-items:center;justify-content:center">
+        <svg viewBox="0 0 100 100" width="130" height="130" style="opacity:.22"><path d="{{ camGhost }}" fill="#e8f1f8"></path></svg>
+        <div style="position:absolute;top:-1px;left:-1px;width:34px;height:34px;border-top:3px solid var(--color-accent);border-left:3px solid var(--color-accent);border-radius:28px 0 0 0"></div>
+        <div style="position:absolute;bottom:-1px;right:-1px;width:34px;height:34px;border-bottom:3px solid var(--color-accent);border-right:3px solid var(--color-accent);border-radius:0 0 28px 0"></div>
+      </div>
+      <div style="font-size:13px;opacity:.65;text-align:center;max-width:230px;text-wrap:pretty">Extiende la prenda sobre un fondo liso. Yo recorto el fondo y detecto color y tipo.</div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:34px">
+      <div style="width:46px"></div>
+      <button onClick="{{ shoot }}" style="width:76px;height:76px;border-radius:999px;background:#e8f1f8;border:5px solid rgba(232,241,248,.32);cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.4)"></button>
+      <div style="width:46px;height:46px;border-radius:14px;background:rgba(232,241,248,.14);display:flex;align-items:center;justify-content:center;font-size:11px;opacity:.7">17</div>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ camScan }}">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:40px">
+    <div style="position:relative;width:170px;height:170px;display:flex;align-items:center;justify-content:center">
+      <div style="position:absolute;inset:0;border-radius:999px;border:2px solid rgba(108,173,222,.3);border-top-color:var(--color-accent);animation:sp 1s linear infinite"></div>
+      <div style="animation:pl 1.6s ease-in-out infinite"><svg viewBox="0 0 100 100" width="96" height="96"><path d="{{ camGhost }}" fill="{{ capColor }}"></path></svg></div>
+    </div>
+    <div style="text-align:center">
+      <div style="font-family:var(--font-heading);font-size:22px;margin-bottom:6px">Reconociendo prenda…</div>
+      <div style="font-size:13px;opacity:.6">Recortando fondo · leyendo color · buscando tipo</div>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ camConfirm }}">
+  <div style="flex:1;display:flex;flex-direction:column;background:var(--color-bg);color:var(--color-text)">
+    <div style="padding:62px 20px 12px;display:flex;align-items:center;gap:10px">
+      <button onClick="{{ retake }}" class="btn btn-secondary" style="padding:6px 14px">Repetir foto</button>
+      <span class="tag tag-accent-2" style="margin-left:auto">Fondo recortado</span>
+    </div>
+    <div style="flex:1;overflow:auto;padding:4px 20px 24px">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:18px">
+        <div style="width:104px;height:104px;flex:none;border-radius:999px;display:flex;align-items:center;justify-content:center;background:var(--color-surface);animation:pop .35s ease-out">
+          <svg viewBox="0 0 100 100" width="66" height="66"><path d="{{ camGhost }}" fill="{{ capColor }}"></path></svg>
+        </div>
+        <div>
+          <div class="card-kicker">Detectado</div>
+          <div style="font-family:var(--font-heading);font-size:23px;line-height:1.15">{{ capName }}</div>
+          <div style="font-size:12px;color:var(--color-neutral-700)">Confianza 94%</div>
+        </div>
+      </div>
+
+      <div class="field" style="margin-bottom:16px">
+        <label>Nombre</label>
+        <input class="input" value="{{ capName }}" onChange="{{ setCapName }}">
+      </div>
+
+      <div style="font-size:12px;color:var(--color-neutral-700);margin-bottom:7px">Tipo de prenda</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px">
+        <sc-for list="{{ capCats }}" as="c" hint-placeholder-count="4">
+          <button onClick="{{ c.pick }}" class="tag {{ c.cls }}" style="border:0;cursor:pointer;font-family:var(--font-body);padding:8px 14px;font-size:12px">{{ c.label }}</button>
+        </sc-for>
+      </div>
+
+      <div style="font-size:12px;color:var(--color-neutral-700);margin-bottom:7px">Color dominante</div>
+      <div style="display:flex;gap:10px;margin-bottom:18px">
+        <sc-for list="{{ capColors }}" as="k" hint-placeholder-count="6">
+          <button onClick="{{ k.pick }}" style="width:38px;height:38px;border-radius:999px;cursor:pointer;background:{{ k.hex }};border:3px solid {{ k.ring }}"></button>
+        </sc-for>
+      </div>
+
+      <div style="font-size:12px;color:var(--color-neutral-700);margin-bottom:7px">¿Para qué ocasiones?</div>
+      <div style="display:flex;gap:8px;margin-bottom:26px">
+        <sc-for list="{{ capOccs }}" as="o" hint-placeholder-count="3">
+          <button onClick="{{ o.pick }}" class="tag {{ o.cls }}" style="border:0;cursor:pointer;font-family:var(--font-body);padding:8px 14px;font-size:12px">{{ o.label }}</button>
+        </sc-for>
+      </div>
+
+      <button onClick="{{ saveCapture }}" class="btn btn-primary btn-block" style="padding:14px;font-size:15px">Guardar en el armario</button>
+    </div>
+  </div>
+  </sc-if>
+
+</div>
+</sc-if>
+
+<sc-if value="{{ needsGender }}" hint-placeholder-val="{{ true }}">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);padding:78px 24px 34px">
+  <div style="display:flex;align-items:center;justify-content:space-between">
+    <div style="font-family:var(--font-heading);font-size:20px">Percha</div>
+    <button onClick="{{ toggleTheme }}" style="width:38px;height:38px;border-radius:999px;border:1px solid var(--color-divider);background:transparent;color:var(--color-text);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">{{ themeIcon }}</button>
+  </div>
+  <div style="margin-top:26px">
+    <h2 style="font-size:33px;margin:0 0 10px;text-wrap:pretty">¿Para quién<br>armamos el armario?</h2>
+    <p style="font-size:13.5px;color:var(--color-neutral-700);margin:0;text-wrap:pretty">Solo cambia cómo nombro las prendas y cómo te propongo las combinaciones. Lo puedes cambiar después.</p>
+  </div>
+  <div style="display:flex;gap:14px;margin-top:28px">
+    <sc-for list="{{ genders }}" as="gr" hint-placeholder-count="2">
+      <button onClick="{{ gr.pick }}" style="flex:1;border:1px solid var(--color-divider);cursor:pointer;background:var(--color-surface);border-radius:32px;padding:22px 14px 20px;display:flex;flex-direction:column;align-items:center;gap:14px">
+        <div style="position:relative;width:104px;height:104px;border-radius:999px;background:{{ gr.tint }};display:flex;align-items:center;justify-content:center">
+          <svg viewBox="0 0 100 100" width="52" height="52" style="position:absolute;left:12px;top:16px"><path d="{{ gr.pathA }}" fill="{{ gr.colorA }}"></path></svg>
+          <svg viewBox="0 0 100 100" width="46" height="46" style="position:absolute;right:11px;bottom:13px"><path d="{{ gr.pathB }}" fill="{{ gr.colorB }}"></path></svg>
+        </div>
+        <div style="text-align:center">
+          <div style="font-family:var(--font-heading);font-size:21px">{{ gr.label }}</div>
+          <div style="font-size:11px;color:var(--color-neutral-700);margin-top:3px">{{ gr.note }}</div>
+        </div>
+      </button>
+    </sc-for>
+  </div>
+  <div style="margin-top:auto;text-align:center;display:flex;flex-direction:column;gap:6px">
+    <button onClick="{{ pickNeutral }}" class="btn btn-ghost" style="font-size:13px">Prefiero no elegir — muéstrame todo</button>
+    <div style="font-size:10.5px;color:var(--color-neutral-600)">© 2026 Christian Rojas · Todos los derechos reservados</div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ notCam }}">
+<div style="position:relative;height:100%;display:flex;flex-direction:column;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);overflow:hidden">
+
+  <div style="flex:1;overflow:auto">
+
+    <sc-if value="{{ isHoy }}" hint-placeholder-val="{{ true }}">
+    <div style="padding:60px 20px 20px">
+      <div style="display:flex;align-items:flex-start">
+        <div>
+          <div class="card-kicker">{{ today }}</div>
+          <h2 style="font-size:31px;margin:2px 0 0">Hoy te pondría<br>esto</h2>
+        </div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+          <button onClick="{{ toggleTheme }}" style="width:36px;height:36px;border-radius:999px;border:1px solid var(--color-divider);background:transparent;color:var(--color-text);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center">{{ themeIcon }}</button>
+          <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+            <div style="width:46px;height:46px;border-radius:999px;background:var(--color-accent-200);display:flex;align-items:center;justify-content:center;font-family:var(--font-heading);font-size:15px;color:var(--color-accent-800)">{{ tempLabel }}</div>
+            <div style="font-size:11px;color:var(--color-neutral-700)">{{ weatherWord }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;margin:18px 0 16px">
+        <sc-for list="{{ occs }}" as="o" hint-placeholder-count="3">
+          <button onClick="{{ o.pick }}" class="tag {{ o.cls }}" style="border:0;cursor:pointer;font-family:var(--font-body);padding:9px 16px;font-size:12.5px">{{ o.label }}</button>
+        </sc-for>
+      </div>
+
+      <div style="background:var(--color-surface);border-radius:32px;padding:20px 18px 22px;box-shadow:var(--shadow-sm)">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px 10px">
+          <sc-for list="{{ outfit }}" as="p" hint-placeholder-count="4">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:7px">
+              <div style="position:relative">
+                <button onClick="{{ p.next }}" style="width:126px;height:126px;border-radius:999px;border:0;cursor:pointer;display:flex;align-items:center;justify-content:center;background:{{ p.tint }};box-shadow:{{ p.ring }}">
+                  <svg viewBox="0 0 100 100" width="76" height="76"><path d="{{ p.path }}" fill="{{ p.color }}"></path></svg>
+                </button>
+                <button onClick="{{ p.lock }}" style="position:absolute;top:2px;right:2px;width:30px;height:30px;border-radius:999px;border:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;background:{{ p.lockBg }};color:{{ p.lockFg }}">{{ p.lockIcon }}</button>
+              </div>
+              <div style="text-align:center;line-height:1.25">
+                <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent)">{{ p.slot }}</div>
+                <div style="font-size:12.5px;max-width:130px">{{ p.name }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <sc-if value="{{ showScore }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;align-items:center;gap:14px;margin-top:18px;padding:0 4px">
+        <div style="width:58px;height:58px;flex:none;border-radius:999px;background:var(--color-accent-2-200);display:flex;align-items:center;justify-content:center;font-family:var(--font-heading);font-size:19px;color:var(--color-accent-2-800)">{{ score }}</div>
+        <div style="font-size:12.5px;line-height:1.45;color:var(--color-neutral-800);text-wrap:pretty">{{ reason }}</div>
+      </div>
+      </sc-if>
+
+      <div style="display:flex;gap:10px;margin-top:20px">
+        <button onClick="{{ shuffle }}" class="btn btn-secondary" style="flex:1;padding:14px;font-size:14.5px">Otra idea</button>
+        <button onClick="{{ wear }}" class="btn btn-primary" style="flex:1.3;padding:14px;font-size:14.5px">Me lo pongo</button>
+      </div>
+
+      <div style="margin-top:26px">
+        <div style="display:flex;align-items:baseline;margin-bottom:10px">
+          <h4 style="margin:0;font-size:17px">Otras dos que funcionan</h4>
+          <button onClick="{{ goProbador }}" class="btn btn-ghost" style="margin-left:auto;font-size:12.5px">Probador</button>
+        </div>
+        <div style="display:flex;gap:12px">
+          <sc-for list="{{ alts }}" as="a" hint-placeholder-count="2">
+            <button onClick="{{ a.pick }}" style="flex:1;border:0;cursor:pointer;text-align:left;background:var(--color-surface);border-radius:26px;padding:14px 14px 12px">
+              <div style="display:flex;gap:-6px;margin-bottom:8px">
+                <sc-for list="{{ a.pieces }}" as="q" hint-placeholder-count="4">
+                  <div style="width:38px;height:38px;margin-right:-8px;border-radius:999px;background:{{ q.tint }};border:2px solid var(--color-surface);display:flex;align-items:center;justify-content:center">
+                    <svg viewBox="0 0 100 100" width="24" height="24"><path d="{{ q.path }}" fill="{{ q.color }}"></path></svg>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="font-size:12px;color:var(--color-neutral-800)">{{ a.label }}</div>
+              <div style="font-size:11px;color:var(--color-neutral-600)">Combina {{ a.score }}</div>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+      <div style="height:12px"></div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isArmario }}">
+    <div style="padding:60px 20px 20px">
+      <div style="display:flex;align-items:flex-end">
+        <div>
+          <button onClick="{{ changeGender }}" class="card-kicker" style="border:0;background:transparent;padding:0;cursor:pointer;font-family:var(--font-body)">Tu armario · {{ genderLabel }} ⇄</button>
+          <h2 style="font-size:31px;margin:2px 0 0">{{ countLabel }}</h2>
+        </div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+          <button onClick="{{ toggleTheme }}" style="width:36px;height:36px;border-radius:999px;border:1px solid var(--color-divider);background:transparent;color:var(--color-text);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center">{{ themeIcon }}</button>
+          <button onClick="{{ openCam }}" class="btn btn-primary" style="padding:10px 16px">+ Prenda</button>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;margin:18px 0 16px;overflow:auto;padding-bottom:2px">
+        <sc-for list="{{ filters }}" as="f" hint-placeholder-count="5">
+          <button onClick="{{ f.pick }}" class="tag {{ f.cls }}" style="border:0;cursor:pointer;flex:none;font-family:var(--font-body);padding:9px 15px;font-size:12.5px">{{ f.label }}</button>
+        </sc-for>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px 10px">
+        <sc-for list="{{ shelf }}" as="g" hint-placeholder-count="9">
+          <button onClick="{{ g.open }}" style="border:0;cursor:pointer;background:transparent;padding:0;display:flex;flex-direction:column;align-items:center;gap:6px">
+            <div style="position:relative;width:100%;aspect-ratio:1;border-radius:26px;display:flex;align-items:center;justify-content:center;background:{{ g.tint }};opacity:{{ g.op }}">
+              <svg viewBox="0 0 100 100" width="60" height="60"><path d="{{ g.path }}" fill="{{ g.color }}"></path></svg>
+              <sc-if value="{{ g.dirty }}">
+                <div style="position:absolute;bottom:6px;right:6px;background:var(--color-neutral-800);color:var(--color-neutral-100);font-size:9px;padding:3px 7px;border-radius:999px">lavar</div>
+              </sc-if>
+            </div>
+            <div style="font-size:11px;line-height:1.25;text-align:center;color:var(--color-neutral-800)">{{ g.name }}</div>
+          </button>
+        </sc-for>
+      </div>
+      <div style="height:12px"></div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isProbador }}">
+    <div style="padding:60px 20px 20px">
+      <div style="display:flex;align-items:flex-start">
+        <div>
+          <div class="card-kicker">Probador</div>
+          <h2 style="font-size:31px;margin:2px 0 14px">Móntalo tú</h2>
+        </div>
+        <button onClick="{{ toggleTheme }}" style="margin-left:auto;width:36px;height:36px;border-radius:999px;border:1px solid var(--color-divider);background:transparent;color:var(--color-text);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center">{{ themeIcon }}</button>
+      </div>
+      <div style="font-size:12.5px;color:var(--color-neutral-700);margin-bottom:16px;text-wrap:pretty">Fija con el candado lo que ya decidiste y baraja el resto.</div>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ outfit }}" as="p" hint-placeholder-count="4">
+          <div style="display:flex;align-items:center;gap:10px;background:var(--color-surface);border-radius:999px;padding:8px 12px 8px 8px">
+            <div style="width:62px;height:62px;flex:none;border-radius:999px;display:flex;align-items:center;justify-content:center;background:{{ p.tint }}">
+              <svg viewBox="0 0 100 100" width="40" height="40"><path d="{{ p.path }}" fill="{{ p.color }}"></path></svg>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent)">{{ p.slot }}</div>
+              <div style="font-size:13.5px;line-height:1.2">{{ p.name }}</div>
+            </div>
+            <button onClick="{{ p.prev }}" class="btn btn-secondary btn-icon" style="flex:none">‹</button>
+            <button onClick="{{ p.next }}" class="btn btn-secondary btn-icon" style="flex:none">›</button>
+            <button onClick="{{ p.lock }}" class="btn btn-icon" style="flex:none;background:{{ p.lockBg }};color:{{ p.lockFg }}">{{ p.lockIcon }}</button>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:14px;margin-top:20px;padding:16px 18px;background:var(--color-accent-2-100);border-radius:28px">
+        <div style="width:54px;height:54px;flex:none;border-radius:999px;background:var(--color-accent-2-200);display:flex;align-items:center;justify-content:center;font-family:var(--font-heading);font-size:18px;color:var(--color-accent-2-800)">{{ score }}</div>
+        <div style="font-size:12.5px;line-height:1.45;color:var(--color-accent-2-900);text-wrap:pretty">{{ reason }}</div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:16px">
+        <button onClick="{{ shuffle }}" class="btn btn-secondary" style="flex:1;padding:14px;font-size:14.5px">Barajear</button>
+        <button onClick="{{ wear }}" class="btn btn-primary" style="flex:1.3;padding:14px;font-size:14.5px">Guardar look</button>
+      </div>
+      <div style="height:12px"></div>
+    </div>
+    </sc-if>
+
+  </div>
+
+  <div style="flex:none;text-align:center;font-size:10px;color:var(--color-neutral-600);padding:2px 12px 6px">© 2026 Christian Rojas · Todos los derechos reservados</div>
+
+  <div style="flex:none;display:flex;align-items:center;justify-content:space-around;padding:10px 12px 30px;background:var(--color-bg);box-shadow:0 -1px 0 var(--color-divider)">
+    <button onClick="{{ goHoy }}" style="border:0;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 14px;color:{{ tHoy }}">
+      <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+      <span style="font-size:10px">Hoy</span>
+    </button>
+    <button onClick="{{ goArmario }}" style="border:0;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 14px;color:{{ tArm }}">
+      <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="2"></rect><rect x="14" y="3" width="7" height="7" rx="2"></rect><rect x="3" y="14" width="7" height="7" rx="2"></rect><rect x="14" y="14" width="7" height="7" rx="2"></rect></svg>
+      <span style="font-size:10px">Armario</span>
+    </button>
+    <button onClick="{{ openCam }}" style="border:0;cursor:pointer;width:56px;height:56px;border-radius:999px;background:var(--color-accent);color:var(--color-bg);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-md);margin-top:-14px">
+      <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L8 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-4Z"></path><circle cx="12" cy="13" r="3.2"></circle></svg>
+    </button>
+    <button onClick="{{ goProbador }}" style="border:0;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 14px;color:{{ tPro }}">
+      <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M21 3l-7 7M8 3H3v5M3 3l7 7M16 21h5v-5M21 21l-7-7M8 21H3v-5M3 21l7-7"></path></svg>
+      <span style="font-size:10px">Probador</span>
+    </button>
+  </div>
+
+  <sc-if value="{{ detailOpen }}">
+  <div style="position:absolute;inset:0;z-index:70;display:flex;flex-direction:column;justify-content:flex-end;background:rgba(46,43,37,.45)">
+    <button onClick="{{ closeDetail }}" style="flex:1;border:0;background:transparent;cursor:pointer"></button>
+    <div style="background:var(--color-bg);border-radius:34px 34px 0 0;padding:14px 22px 40px;animation:up .28s cubic-bezier(.2,.8,.3,1)">
+      <div style="width:44px;height:4px;border-radius:999px;background:var(--color-neutral-400);margin:0 auto 16px"></div>
+      <div style="display:flex;gap:16px;align-items:center">
+        <div style="width:110px;height:110px;flex:none;border-radius:999px;display:flex;align-items:center;justify-content:center;background:{{ dTint }}">
+          <svg viewBox="0 0 100 100" width="70" height="70"><path d="{{ dPath }}" fill="{{ dColor }}"></path></svg>
+        </div>
+        <div style="min-width:0">
+          <div class="card-kicker">{{ dSlot }}</div>
+          <h3 style="margin:2px 0 8px;font-size:22px">{{ dName }}</h3>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            <sc-for list="{{ dTags }}" as="t" hint-placeholder-count="3">
+              <span class="tag tag-neutral">{{ t.label }}</span>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin:18px 0 16px">
+        <div style="flex:1;background:var(--color-surface);border-radius:22px;padding:12px 14px">
+          <div style="font-family:var(--font-heading);font-size:20px">{{ dWorn }}</div>
+          <div style="font-size:11px;color:var(--color-neutral-700)">veces puesta</div>
+        </div>
+        <div style="flex:1;background:var(--color-surface);border-radius:22px;padding:12px 14px">
+          <div style="font-family:var(--font-heading);font-size:20px">{{ dCombos }}</div>
+          <div style="font-size:11px;color:var(--color-neutral-700)">combinaciones posibles</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button onClick="{{ dToggleClean }}" class="btn btn-secondary" style="flex:1;padding:13px">{{ dCleanLabel }}</button>
+        <button onClick="{{ dUse }}" class="btn btn-primary" style="flex:1.2;padding:13px">Usar en probador</button>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ toastOn }}">
+  <div style="position:absolute;left:20px;right:20px;bottom:106px;z-index:80;background:var(--color-neutral-900);color:var(--color-neutral-100);border-radius:999px;padding:13px 20px;font-size:13px;text-align:center;animation:tin .25s ease-out;box-shadow:var(--shadow-lg)">{{ toast }}</div>
+  </sc-if>
+
+</div>
+</sc-if>
+
+</x-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;temperature&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:18,&quot;min&quot;:-5,&quot;max&quot;:38,&quot;unit&quot;:&quot;°&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Contexto&quot;},&quot;occasion&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;casual&quot;,&quot;trabajo&quot;,&quot;salir&quot;],&quot;default&quot;:&quot;casual&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Contexto&quot;},&quot;showScore&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Interfaz&quot;}}">
+const PATHS = {
+  sweater: "M30 11h12c2 8 14 8 16 0h12l20 13-8 39-10-5v30H28V58l-10 5-8-39z",
+  top: "M30 11h12c2 8 14 8 16 0h12l18 14-8 15-10-6v54H28V34l-10 6-8-15z",
+  pants: "M26 10h48l5 80H59L50 46l-9 44H21z",
+  shoes: "M12 68c0-12 6-18 18-18h10l12 10 26 6c10 2 12 6 12 12v6H12z"
+};
+const NAMES_M = {
+  s1: "Suéter tejido", s2: "Cárdigan largo azul", s3: "Sudadera verde agua", s4: "Saco entallado",
+  t1: "Blusa blanca", t2: "Camisa de lino azul", t3: "Top negro", t4: "Blusa celeste", t5: "Camisa teal",
+  p1: "Jeans mom fit", p2: "Pantalón palazzo", p3: "Leggings negros", p4: "Pantalón petróleo",
+  z1: "Tenis blancos", z2: "Botas azul oscuro", z3: "Balerinas negras", z4: "Sandalias teal"
+};
+const SLOTS = [
+  { cat: "sweater", label: "Suéter o saco" },
+  { cat: "top", label: "Playera" },
+  { cat: "pants", label: "Pantalón" },
+  { cat: "shoes", label: "Zapatos" }
+];
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const g = (id, cat, name, color, tint, warm, occ, bold, worn, clean) =>
+      ({ id, cat, name, color, tint, warm, occ, bold, worn, clean: clean !== false });
+    const items = [
+      g("s1", "sweater", "Suéter de punto", "#a9c4dd", "#e8f0f8", 3, ["casual", "trabajo"], false, 12),
+      g("s2", "sweater", "Cárdigan azul marino", "#3a76a9", "#dfeaf7", 2, ["casual", "salir"], true, 7),
+      g("s3", "sweater", "Sudadera verde agua", "#7fb8ae", "#e4f2ef", 2, ["casual"], true, 21, false),
+      g("s4", "sweater", "Blazer gris azulado", "#465a6e", "#e6ecf2", 2, ["trabajo", "salir"], false, 4),
+      g("t1", "top", "Playera blanca", "#f7f9fb", "#f1f6fb", 1, ["casual", "trabajo", "salir"], false, 30),
+      g("t2", "top", "Camisa de lino azul", "#cfe0ef", "#eaf2f9", 1, ["trabajo", "salir"], false, 9),
+      g("t3", "top", "Playera negra", "#26303a", "#e6ecf2", 1, ["casual", "salir"], false, 18),
+      g("t4", "top", "Playera celeste", "#5b9bcb", "#dfeaf7", 1, ["casual"], true, 5),
+      g("t5", "top", "Camisa teal", "#4f8f88", "#e4f2ef", 2, ["trabajo", "casual"], true, 11),
+      g("p1", "pants", "Jeans de siempre", "#4a6a8c", "#e3ebf4", 2, ["casual", "salir"], true, 41),
+      g("p2", "pants", "Chino gris claro", "#bcc7d2", "#eef2f7", 1, ["trabajo", "casual"], false, 16),
+      g("p3", "pants", "Pantalón negro", "#26303a", "#e6ecf2", 2, ["trabajo", "salir"], false, 22),
+      g("p4", "pants", "Pantalón petróleo", "#33566b", "#e2edf2", 2, ["casual", "trabajo"], true, 6, false),
+      g("z1", "shoes", "Tenis blancos", "#eef3f8", "#f2f7fb", 1, ["casual"], false, 35),
+      g("z2", "shoes", "Botas azul oscuro", "#2a4a68", "#e0e9f2", 3, ["casual", "salir", "trabajo"], true, 14),
+      g("z3", "shoes", "Mocasines negros", "#2b3540", "#e6ecf2", 1, ["trabajo", "salir"], false, 8),
+      g("z4", "shoes", "Tenis teal", "#8ec5bd", "#e4f2ef", 1, ["casual"], true, 3)
+    ];
+    this.state = {
+      items,
+      screen: "hoy",
+      dark: false,
+      gender: null,
+      occasion: props.occasion || "casual",
+      pick: { sweater: "s1", top: "t2", pants: "p2", shoes: "z2" },
+      locked: {},
+      filter: "todo",
+      detail: null,
+      toast: "",
+      cam: null,
+      capName: "Suéter de punto crudo",
+      capCat: "sweater",
+      capColor: "#c67139",
+      capOcc: "casual"
+    };
+  }
+
+  temp() { return this.props.temperature ?? 18; }
+  tint(t) { return this.state.dark ? "color-mix(in srgb, " + t + " 20%, #1d2b39)" : t; }
+  nm(i) { return i && this.state.gender === "mujer" ? (NAMES_M[i.id] || i.name) : (i ? i.name : ""); }
+  byCat(cat) { return this.state.items.filter(i => i.cat === cat); }
+  get(id) { return this.state.items.find(i => i.id === id); }
+  targetWarm() { const t = this.temp(); return t < 14 ? 3 : t < 23 ? 2 : 1; }
+
+  scoreOf(pick) {
+    const ps = SLOTS.map(s => this.get(pick[s.cat])).filter(Boolean);
+    if (ps.length < 4) return 0;
+    let sc = 72;
+    ps.forEach(p => { if (p.occ.includes(this.state.occasion)) sc += 4; });
+    const tw = this.targetWarm();
+    ps.forEach(p => { sc -= Math.abs(p.warm - tw) * 3; });
+    const bold = ps.filter(p => p.bold).length;
+    sc += bold === 1 ? 9 : bold === 0 ? 2 : bold === 2 ? -2 : -9;
+    ps.forEach(p => { if (!p.clean) sc -= 12; });
+    return Math.max(38, Math.min(99, Math.round(sc)));
+  }
+
+  reasonOf(pick) {
+    const ps = SLOTS.map(s => this.get(pick[s.cat])).filter(Boolean);
+    const bold = ps.filter(p => p.bold).length;
+    const dirty = ps.filter(p => !p.clean);
+    if (dirty.length) return "Ojo: " + this.nm(dirty[0]).toLowerCase() + " está en el cesto. Cámbiala y sube el puntaje.";
+    const tw = this.targetWarm();
+    const off = ps.filter(p => Math.abs(p.warm - tw) >= 2);
+    if (off.length) return "Con " + this.temp() + "° va a sobrar (o faltar) abrigo: revisa " + this.nm(off[0]).toLowerCase() + ".";
+    if (bold >= 3) return "Tres piezas gritando a la vez. Deja una fuerte y baja las otras a neutro.";
+    if (bold === 0) return "Todo neutro: se ve limpio, pero le vendría bien una pieza con color.";
+    return "Una pieza fuerte sobre neutros tierra — es la fórmula que mejor te sale.";
+  }
+
+  bestFor(exclude) {
+    let best = null;
+    for (let n = 0; n < 260; n++) {
+      const p = {};
+      SLOTS.forEach(s => {
+        const list = this.byCat(s.cat).filter(i => i.clean);
+        p[s.cat] = list[Math.floor(Math.random() * list.length)].id;
+      });
+      const key = SLOTS.map(s => p[s.cat]).join("-");
+      if (exclude && exclude.includes(key)) continue;
+      const sc = this.scoreOf(p);
+      if (!best || sc > best.sc) best = { p, sc, key };
+    }
+    return best;
+  }
+
+  shuffle = () => {
+    const cur = this.state.pick;
+    let best = null;
+    for (let n = 0; n < 220; n++) {
+      const p = {};
+      SLOTS.forEach(s => {
+        if (this.state.locked[s.cat]) { p[s.cat] = cur[s.cat]; return; }
+        const list = this.byCat(s.cat).filter(i => i.clean);
+        p[s.cat] = list[Math.floor(Math.random() * list.length)].id;
+      });
+      const sc = this.scoreOf(p);
+      const same = SLOTS.every(s => p[s.cat] === cur[s.cat]);
+      if (same) continue;
+      if (!best || sc > best.sc) best = { p, sc };
+    }
+    if (best) this.setState({ pick: best.p });
+  };
+
+  cycle(cat, dir) {
+    const list = this.byCat(cat);
+    const i = list.findIndex(x => x.id === this.state.pick[cat]);
+    const n = (i + dir + list.length) % list.length;
+    this.setState({ pick: Object.assign({}, this.state.pick, { [cat]: list[n].id }) });
+  }
+
+  flash(msg) {
+    this.setState({ toast: msg });
+    clearTimeout(this._t);
+    this._t = setTimeout(() => this.setState({ toast: "" }), 2600);
+  }
+
+  wear = () => {
+    const ids = SLOTS.map(s => this.state.pick[s.cat]);
+    this.setState({
+      items: this.state.items.map(i => ids.includes(i.id) ? Object.assign({}, i, { worn: i.worn + 1 }) : i)
+    });
+    this.flash("Guardado en tu registro de hoy · " + this.scoreOf(this.state.pick) + " de combinación");
+  };
+
+  saveCapture = () => {
+    const c = this.state.capCat;
+    const id = "n" + (this.state.items.length + 1);
+    const item = {
+      id, cat: c, name: this.state.capName, color: this.state.capColor,
+      tint: "#f4ecdc", warm: c === "sweater" ? 3 : 1, occ: [this.state.capOcc],
+      bold: true, worn: 0, clean: true
+    };
+    this.setState({
+      items: this.state.items.concat([item]),
+      cam: null, screen: "armario", filter: c,
+      pick: Object.assign({}, this.state.pick, { [c]: id })
+    });
+    this.flash(this.state.capName + " ya está en tu armario");
+  };
+
+  componentWillUnmount() { clearTimeout(this._t); }
+
+  renderVals() {
+    const st = this.state;
+    const showScore = this.props.showScore ?? true;
+    const t = this.temp();
+    const cur = st.pick;
+    const acc = "var(--color-accent)";
+    const dim = "var(--color-neutral-500)";
+
+    const outfit = SLOTS.map(s => {
+      const it = this.get(cur[s.cat]) || {};
+      const locked = !!st.locked[s.cat];
+      return {
+        slot: s.label, name: this.nm(it), color: it.color, tint: this.tint(it.tint), path: PATHS[s.cat],
+        locked, lockIcon: locked ? "🔒" : "🔓",
+        lockBg: locked ? "var(--color-accent)" : "rgba(32,30,29,.07)",
+        lockFg: locked ? "var(--color-bg)" : "var(--color-neutral-700)",
+        ring: locked ? "inset 0 0 0 3px var(--color-accent)" : "none",
+        next: () => this.cycle(s.cat, 1),
+        prev: () => this.cycle(s.cat, -1),
+        lock: () => this.setState({ locked: Object.assign({}, st.locked, { [s.cat]: !locked }) })
+      };
+    });
+
+    const curKey = SLOTS.map(s => cur[s.cat]).join("-");
+    const seen = [curKey];
+    const alts = [0, 1].map(n => {
+      const b = this.bestFor(seen);
+      seen.push(b.key);
+      return {
+        label: n === 0 ? "Más abrigada" : "Más ligera",
+        score: b.sc,
+        pieces: SLOTS.map(s => {
+          const it = this.get(b.p[s.cat]);
+          return { color: it.color, tint: this.tint(it.tint), path: PATHS[s.cat] };
+        }),
+        pick: () => this.setState({ pick: b.p })
+      };
+    });
+
+    const chip = (on) => on ? "tag-accent" : "tag-neutral";
+    const occs = [["casual", "Casual"], ["trabajo", "Trabajo"], ["salir", "Salir"]].map(([k, l]) => ({
+      label: l, cls: chip(st.occasion === k), pick: () => this.setState({ occasion: k })
+    }));
+
+    const fdefs = [["todo", "Todo"], ["sweater", "Suéteres"], ["top", "Playeras"], ["pants", "Pantalones"], ["shoes", "Zapatos"]];
+    const filters = fdefs.map(([k, l]) => ({
+      label: l, cls: chip(st.filter === k), pick: () => this.setState({ filter: k })
+    }));
+    const shelf = st.items.filter(i => st.filter === "todo" || i.cat === st.filter).map(i => ({
+      name: this.nm(i), color: i.color, tint: this.tint(i.tint), path: PATHS[i.cat],
+      dirty: !i.clean, op: i.clean ? 1 : 0.55,
+      open: () => this.setState({ detail: i.id })
+    }));
+
+    const d = st.detail ? this.get(st.detail) : null;
+    const dSlot = d ? (SLOTS.find(s => s.cat === d.cat) || {}).label : "";
+    const dCombos = d ? SLOTS.filter(s => s.cat !== (d || {}).cat).reduce((a, s) => a * this.byCat(s.cat).length, 1) : 0;
+
+    const capCats = SLOTS.map(s => ({
+      label: s.label, cls: chip(st.capCat === s.cat), pick: () => this.setState({ capCat: s.cat })
+    }));
+    const capColors = ["#3a76a9", "#5b9bcb", "#7fb8ae", "#26303a", "#cfe0ef", "#bcc7d2"].map(hex => ({
+      hex, ring: st.capColor === hex ? "var(--color-accent)" : "transparent",
+      pick: () => this.setState({ capColor: hex })
+    }));
+    const capOccs = [["casual", "Casual"], ["trabajo", "Trabajo"], ["salir", "Salir"]].map(([k, l]) => ({
+      label: l, cls: chip(st.capOcc === k), pick: () => this.setState({ capOcc: k })
+    }));
+
+    return {
+      theme: st.dark ? "dark" : "light",
+      themeIcon: st.dark ? "☀" : "☾",
+      themeLabel: st.dark ? "Modo claro" : "Modo oscuro",
+      toggleTheme: () => this.setState({ dark: !st.dark }),
+      needsGender: !st.cam && !st.gender,
+      genders: [
+        { key: "hombre", label: "Hombre", note: "suéter · playera · pantalón · zapatos", tint: this.tint("#dfeaf7"), pathA: PATHS.top, colorA: "#5b9bcb", pathB: PATHS.shoes, colorB: "#2a4a68" },
+        { key: "mujer", label: "Mujer", note: "saco · blusa · pantalón · zapatos", tint: this.tint("#e4f2ef"), pathA: PATHS.sweater, colorA: "#7fb8ae", pathB: PATHS.pants, colorB: "#4a6a8c" }
+      ].map(x => Object.assign(x, { pick: () => this.setState({ gender: x.key }) })),
+      pickNeutral: () => this.setState({ gender: "todo" }),
+      genderLabel: st.gender === "mujer" ? "Mujer" : st.gender === "hombre" ? "Hombre" : "Todo",
+      changeGender: () => this.setState({ gender: null }),
+      isCam: !!st.cam, notCam: !st.cam && !!st.gender,
+      camView: st.cam === "view", camScan: st.cam === "scan", camConfirm: st.cam === "confirm",
+      camGhost: PATHS[st.capCat] || PATHS.sweater,
+      isHoy: st.screen === "hoy", isArmario: st.screen === "armario", isProbador: st.screen === "probador",
+      today: "Miércoles 12 de agosto",
+      tempLabel: t + "°", weatherWord: t < 14 ? "frío, viento" : t < 23 ? "fresco, nublado" : "cálido y seco",
+      outfit, alts, occs, filters, shelf, showScore,
+      score: this.scoreOf(cur), reason: this.reasonOf(cur),
+      countLabel: st.items.length + " prendas",
+      tHoy: st.screen === "hoy" ? acc : dim,
+      tArm: st.screen === "armario" ? acc : dim,
+      tPro: st.screen === "probador" ? acc : dim,
+      goHoy: () => this.setState({ screen: "hoy" }),
+      goArmario: () => this.setState({ screen: "armario" }),
+      goProbador: () => this.setState({ screen: "probador" }),
+      openCam: () => this.setState({ cam: "view" }),
+      closeCam: () => this.setState({ cam: null }),
+      retake: () => this.setState({ cam: "view" }),
+      shoot: () => {
+        this.setState({ cam: "scan" });
+        setTimeout(() => this.setState({ cam: "confirm" }), 1700);
+      },
+      saveCapture: this.saveCapture,
+      capName: st.capName, capColor: st.capColor, capCats, capColors, capOccs,
+      setCapName: (e) => this.setState({ capName: e.target.value }),
+      shuffle: this.shuffle, wear: this.wear,
+      toast: st.toast, toastOn: !!st.toast,
+      detailOpen: !!d,
+      dName: this.nm(d), dColor: d ? d.color : "#000", dTint: d ? this.tint(d.tint) : "#eee",
+      dPath: d ? PATHS[d.cat] : PATHS.top, dSlot, dWorn: d ? d.worn : 0, dCombos,
+      dTags: d ? d.occ.map(o => ({ label: o })).concat([{ label: d.warm === 3 ? "abrigada" : d.warm === 2 ? "media" : "ligera" }]) : [],
+      dCleanLabel: d && d.clean ? "Mandar a lavar" : "Ya está limpia",
+      dToggleClean: () => this.setState({
+        items: st.items.map(i => i.id === st.detail ? Object.assign({}, i, { clean: !i.clean }) : i)
+      }),
+      dUse: () => this.setState({
+        pick: Object.assign({}, st.pick, { [d.cat]: d.id }),
+        locked: Object.assign({}, st.locked, { [d.cat]: true }),
+        detail: null, screen: "probador"
+      }),
+      closeDetail: () => this.setState({ detail: null })
+    };
+  }
+}
+
+</script>
+</body>
+</html>
