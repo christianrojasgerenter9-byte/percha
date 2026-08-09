@@ -476,8 +476,19 @@ const PATHS = {
   sweater: "M30 11h12c2 8 14 8 16 0h12l20 13-8 39-10-5v30H28V58l-10 5-8-39z",
   top: "M30 11h12c2 8 14 8 16 0h12l18 14-8 15-10-6v54H28V34l-10 6-8-15z",
   pants: "M26 10h48l5 80H59L50 46l-9 44H21z",
-  shoes: "M12 68c0-12 6-18 18-18h10l12 10 26 6c10 2 12 6 12 12v6H12z"
+  shoes: "M12 68c0-12 6-18 18-18h10l12 10 26 6c10 2 12 6 12 12v6H12z",
+  socks: "M32 8h30v34c0 10 4 14 12 20l10 8c8 6 8 18-1 22-8 4-16 1-21-5L38 62c-4-5-6-9-6-16z",
+  belt: "M8 40h84v20H8zm52 0h22v20H60z"
 };
+const TYPES = [
+  { key: "sweater", label: "Suéter o saco", base: "Suéter" },
+  { key: "top", label: "Playera", base: "Playera" },
+  { key: "pants", label: "Pantalón", base: "Pantalón" },
+  { key: "shoes", label: "Tenis", base: "Tenis" },
+  { key: "shoes", label: "Zapatos", base: "Zapatos" },
+  { key: "socks", label: "Calcetines", base: "Calcetines" },
+  { key: "belt", label: "Cinturón", base: "Cinturón" }
+];
 const NAMES_M = {
   s1: "Suéter tejido", s2: "Cárdigan largo azul", s3: "Sudadera verde agua", s4: "Saco entallado",
   t1: "Blusa blanca", t2: "Camisa de lino azul", t3: "Top negro", t4: "Blusa celeste", t5: "Camisa teal",
@@ -523,7 +534,11 @@ class Component extends DCLogic {
       g("z1", "shoes", "Tenis blancos", "#eef3f8", "#f2f7fb", 1, ["casual"], false, 35),
       g("z2", "shoes", "Botas azul oscuro", "#2a4a68", "#e0e9f2", 3, ["casual", "salir", "trabajo"], true, 14),
       g("z3", "shoes", "Mocasines negros", "#2b3540", "#e6ecf2", 1, ["trabajo", "salir"], false, 8),
-      g("z4", "shoes", "Tenis teal", "#8ec5bd", "#e4f2ef", 1, ["casual"], true, 3)
+      g("z4", "shoes", "Tenis teal", "#8ec5bd", "#e4f2ef", 1, ["casual"], true, 3),
+      g("k1", "socks", "Calcetines negros", "#26303a", "#e6ecf2", 1, ["trabajo", "salir"], false, 20),
+      g("k2", "socks", "Calcetines grises", "#8d9aa8", "#eef2f7", 1, ["casual", "trabajo"], false, 12),
+      g("b1", "belt", "Cinturón café", "#6b4a33", "#efe2d6", 1, ["casual", "trabajo", "salir"], false, 30),
+      g("b2", "belt", "Cinturón negro", "#26303a", "#e6ecf2", 1, ["trabajo", "salir"], false, 18)
     ];
     return items;
   }
@@ -549,7 +564,7 @@ class Component extends DCLogic {
       camLive: false,
       camAsking: false,
       capName: "Prenda nueva",
-      capCat: null,
+      capCat: null, capBase: null,
       capColor: "#3a76a9",
       capOcc: "casual"
     };
@@ -719,7 +734,8 @@ class Component extends DCLogic {
         guessing: false,
         guess: "Parece " + (g.cat === "sweater" ? "un suéter o saco" : g.cat === "top" ? "una playera o camisa" : g.cat === "pants" ? "un pantalón" : "unos zapatos") + " · confírmalo",
         capCat: this.state.capCat || g.cat,
-        capName: this.state.capNamed ? this.state.capName : this.autoName(this.state.capCat || g.cat)
+        capBase: this.state.capBase || (g.cat === "sweater" ? "Suéter" : g.cat === "top" ? "Playera" : g.cat === "pants" ? "Pantalón" : "Tenis"),
+        capName: this.state.capNamed ? this.state.capName : this.autoName(this.state.capCat || g.cat, null, this.state.capBase || (g.cat === "sweater" ? "Suéter" : g.cat === "top" ? "Playera" : g.cat === "pants" ? "Pantalón" : "Tenis"))
       });
     });
   }
@@ -770,8 +786,14 @@ class Component extends DCLogic {
     return m[word] || word;
   }
 
-  autoName(cat, hex) {
+  autoName(cat, hex, forceBase) {
     const c = cat || this.state.capCat;
+    if (forceBase || this.state.capBase) {
+      const b = forceBase || this.state.capBase;
+      const f = b === "Blusa" || b === "Playera";
+      const col0 = this.colorName(hex || this.state.capColor);
+      return b + " " + (f ? this.fem(col0) : col0);
+    }
     const mujer = this.state.gender === "mujer";
     const base = c === "sweater" ? (mujer ? "Saco" : "Suéter")
       : c === "top" ? (mujer ? "Blusa" : "Playera")
@@ -1017,7 +1039,7 @@ class Component extends DCLogic {
     this.setState({ camLive: false });
   }
 
-  openCam = () => { this.setState({ cam: "view", capPhoto: null, capCat: null, capNamed: false, guess: "" }); this.loadModel(); setTimeout(() => this.startCam(), 0); };
+  openCam = () => { this.setState({ cam: "view", capPhoto: null, capCat: null, capBase: null, capNamed: false, guess: "" }); this.loadModel(); setTimeout(() => this.startCam(), 0); };
   closeCam = () => { this.stopCam(); this.setState({ cam: null }); };
   retake = () => { this.setState({ cam: "view", capPhoto: null }); setTimeout(() => this.startCam(), 0); };
 
@@ -1092,7 +1114,7 @@ class Component extends DCLogic {
       label: l, cls: chip(st.occasion === k), pick: () => this.setState({ occasion: k })
     }));
 
-    const fdefs = [["todo", "Todo"], ["sweater", "Suéteres"], ["top", "Playeras"], ["pants", "Pantalones"], ["shoes", "Zapatos"]];
+    const fdefs = [["todo", "Todo"], ["sweater", "Suéteres"], ["top", "Playeras"], ["pants", "Pantalones"], ["shoes", "Calzado"], ["socks", "Calcetines"], ["belt", "Cinturones"]];
     const filters = fdefs.map(([k, l]) => ({
       label: l, cls: chip(st.filter === k), pick: () => this.setState({ filter: k })
     }));
@@ -1107,9 +1129,9 @@ class Component extends DCLogic {
     const dSlot = d ? (SLOTS.find(s => s.cat === d.cat) || {}).label : "";
     const dCombos = d ? SLOTS.filter(s => s.cat !== (d || {}).cat).reduce((a, s) => a * this.byCat(s.cat).length, 1) : 0;
 
-    const capCats = SLOTS.map(s => ({
-      label: s.label, cls: chip(st.capCat === s.cat),
-      pick: () => this.setState({ capCat: s.cat, capName: st.capNamed ? st.capName : this.autoName(s.cat) })
+    const capCats = TYPES.map(t => ({
+      label: t.label, cls: chip(st.capBase === t.base),
+      pick: () => this.setState({ capCat: t.key, capBase: t.base, capName: st.capNamed ? st.capName : this.autoName(t.key, null, t.base) })
     }));
     const swatches = ["#3a76a9", "#5b9bcb", "#7fb8ae", "#26303a", "#cfe0ef", "#bcc7d2"];
     if (st.capPhoto && swatches.indexOf(st.capColor) < 0) swatches.unshift(st.capColor);
