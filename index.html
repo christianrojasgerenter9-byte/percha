@@ -729,6 +729,7 @@ class Component extends DCLogic {
   }
 
   shrink(dataUrl) {
+    if (!dataUrl || dataUrl.length < 90000) return Promise.resolve(dataUrl);
     return new Promise(ok => {
       const im = new Image();
       im.onload = () => {
@@ -1049,30 +1050,29 @@ class Component extends DCLogic {
     this.stopCam();
     const c = this.state.capCat;
     const id = "g" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-    const item = {
-      id, cat: c, name: this.state.capName, color: this.state.capColor,
-      tint: "#e6ecf2", warm: c === "sweater" ? 3 : 1, occ: [this.state.capOcc],
-      bold: true, worn: 0, clean: true, photo: this.state.capPhoto
-    };
-    if (item.photo && item.photo.length > 90000) {
-      this.shrink(item.photo).then(small => {
-        item.photo = small;
-        this.setState({ items: this.state.items.map(i => i.id === id ? item : i) }, () => this.saveGarment(item));
+    const name = this.state.capName;
+    const occ = this.state.capOcc;
+    const color = this.state.capColor;
+    this.shrink(this.state.capPhoto).then(photo => {
+      const item = {
+        id, cat: c, name, color,
+        tint: "#e6ecf2", warm: c === "sweater" ? 3 : 1, occ: [occ],
+        bold: true, worn: 0, clean: true, photo: photo || null
+      };
+      const victim = this.state.items.find(i => i.demo && i.cat === c);
+      const items = this.state.items.filter(i => !victim || i.id !== victim.id).concat([item]);
+      const pick = Object.assign({}, this.state.pick, { [c]: id });
+      SLOTS.forEach(s => {
+        const it = items.find(i => i.id === pick[s.cat]);
+        if (!it || it.cat !== s.cat) { const f = items.find(i => i.cat === s.cat); if (f) pick[s.cat] = f.id; }
       });
-    }
-    const victim = this.state.items.find(i => i.demo && i.cat === c);
-    const items = this.state.items.filter(i => !victim || i.id !== victim.id).concat([item]);
-    const pick = Object.assign({}, this.state.pick, { [c]: id });
-    SLOTS.forEach(s => {
-      const it = items.find(i => i.id === pick[s.cat]);
-      if (!it || it.cat !== s.cat) { const f = items.find(i => i.cat === s.cat); if (f) pick[s.cat] = f.id; }
+      this.setState({ items, cam: null, screen: "armario", filter: c, pick }, () => { this.saveGarment(item); this.savePrefs(); });
+      this.track("prenda_registrada", { tipo: c, con_foto: !!item.photo, total_propias: items.filter(i => !i.demo).length });
+      const left = items.filter(i => i.demo).length;
+      this.flash(victim
+        ? name + " sustituyó a " + this.nm(victim).toLowerCase() + " · quedan " + left + " de ejemplo"
+        : name + " ya está en tu armario");
     });
-    this.setState({ items, cam: null, screen: "armario", filter: c, pick }, () => { this.saveGarment(item); this.savePrefs(); });
-    this.track("prenda_registrada", { tipo: c, con_foto: !!item.photo, total_propias: items.filter(i => !i.demo).length });
-    const left = items.filter(i => i.demo).length;
-    this.flash(victim
-      ? this.state.capName + " sustituyó a " + this.nm(victim).toLowerCase() + " · quedan " + left + " de ejemplo"
-      : this.state.capName + " ya está en tu armario");
   };
 
   setVideo = (el) => {
@@ -1123,9 +1123,11 @@ class Component extends DCLogic {
       const img = new Image();
       img.onload = () => {
         const hex = this.dominant(img);
-        this.setState({ capPhoto: src, capColor: hex, cam: "scan", capName: this.state.capNamed ? this.state.capName : this.autoName(null, hex) });
         this.identify(img);
-        setTimeout(() => this.setState({ cam: "confirm" }), 1200);
+        this.shrink(src).then(small => {
+          this.setState({ capPhoto: small, capColor: hex, cam: "scan", capName: this.state.capNamed ? this.state.capName : this.autoName(null, hex) });
+          setTimeout(() => this.setState({ cam: "confirm" }), 1200);
+        });
       };
       img.onerror = () => {
         this.setState({ capPhoto: src, cam: "scan", capName: this.state.capNamed ? this.state.capName : this.autoName() });
@@ -1332,5 +1334,3 @@ class Component extends DCLogic {
 }
 
 </script>
-</body>
-</html>
