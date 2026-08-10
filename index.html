@@ -728,10 +728,32 @@ class Component extends DCLogic {
     };
   }
 
+  shrink(dataUrl) {
+    return new Promise(ok => {
+      const im = new Image();
+      im.onload = () => {
+        const W = 320, H = 392;
+        const c = document.createElement("canvas");
+        c.width = W; c.height = H;
+        const x = c.getContext("2d");
+        const r = W / H;
+        let sw = im.width, sh = sw / r;
+        if (sh > im.height) { sh = im.height; sw = sh * r; }
+        x.drawImage(im, (im.width - sw) / 2, (im.height - sh) / 2, sw, sh, 0, 0, W, H);
+        let q = 0.7, out = c.toDataURL("image/jpeg", q);
+        while (out.length > 260000 && q > 0.35) { q -= 0.12; out = c.toDataURL("image/jpeg", q); }
+        ok(out);
+      };
+      im.onerror = () => ok(dataUrl);
+      im.src = dataUrl;
+    });
+  }
+
   saveGarment(item) {
     if (!this._db || !this.state.user) { this.saveLocal(); return; }
     const { doc, setDoc } = this._fb.fs;
-    setDoc(doc(this._db, "users", this.state.user.uid, "garments", item.id), item).catch(() => { });
+    setDoc(doc(this._db, "users", this.state.user.uid, "garments", item.id), item)
+      .catch(e => this.flash("No pude guardar en la nube: " + (e && e.code ? e.code : "error") + ". Sigue en este teléfono."));
   }
 
   savePrefs() {
@@ -742,12 +764,17 @@ class Component extends DCLogic {
   }
 
   saveLocal() {
-    try {
-      const st = this.state;
-      localStorage.setItem("percha:data", JSON.stringify({
-        mine: st.items.filter(i => !i.demo), pick: st.pick, gender: st.gender, dark: st.dark, occasion: st.occasion
-      }));
-    } catch (e) { }
+    const st = this.state;
+    const mine = st.items.filter(i => !i.demo);
+    const put = (list) => localStorage.setItem("percha:data", JSON.stringify({
+      mine: list, pick: st.pick, gender: st.gender, dark: st.dark, occasion: st.occasion
+    }));
+    try { put(mine); return; } catch (e) { }
+    for (let keep = mine.length - 1; keep >= 0; keep--) {
+      const trimmed = mine.map((g, i) => i < keep ? g : Object.assign({}, g, { photo: null }));
+      try { put(trimmed); this.flash("Se guardó todo, pero sin algunas fotos: ya no cabían en este teléfono."); return; } catch (e) { }
+    }
+    try { put(mine.map(g => Object.assign({}, g, { photo: null }))); } catch (e) { }
   }
 
   loadLocal() {
@@ -1027,6 +1054,12 @@ class Component extends DCLogic {
       tint: "#e6ecf2", warm: c === "sweater" ? 3 : 1, occ: [this.state.capOcc],
       bold: true, worn: 0, clean: true, photo: this.state.capPhoto
     };
+    if (item.photo && item.photo.length > 90000) {
+      this.shrink(item.photo).then(small => {
+        item.photo = small;
+        this.setState({ items: this.state.items.map(i => i.id === id ? item : i) }, () => this.saveGarment(item));
+      });
+    }
     const victim = this.state.items.find(i => i.demo && i.cat === c);
     const items = this.state.items.filter(i => !victim || i.id !== victim.id).concat([item]);
     const pick = Object.assign({}, this.state.pick, { [c]: id });
@@ -1120,7 +1153,7 @@ class Component extends DCLogic {
       return;
     }
     const c = document.createElement("canvas");
-    c.width = 620; c.height = 760;
+    c.width = 460; c.height = 564;
     const ctx = c.getContext("2d");
     const ratio = c.width / c.height;
     let sw = v.videoWidth, sh = sw / ratio;
