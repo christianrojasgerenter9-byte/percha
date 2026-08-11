@@ -68,6 +68,9 @@ body{margin:0;background:#eef4fb}
     <div style="display:flex;align-items:center;gap:10px">
       <button onClick="{{ closeCam }}" style="width:38px;height:38px;border-radius:999px;border:0;background:rgba(232,241,248,.14);color:#e8f1f8;font-size:17px;cursor:pointer">✕</button>
       <div style="font-family:var(--font-heading);font-size:19px">Nueva prenda</div>
+      <sc-if value="{{ burstOn }}">
+        <button onClick="{{ finishBurst }}" style="margin-left:auto;border:0;cursor:pointer;border-radius:999px;padding:8px 14px;font-family:var(--font-body);font-size:12.5px;background:rgba(232,241,248,.16);color:#e8f1f8">Terminar</button>
+      </sc-if>
     </div>
     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px">
       <div style="position:relative;width:250px;height:310px;border-radius:28px;border:2px dashed rgba(108,173,222,.75);display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0b1219">
@@ -172,6 +175,7 @@ body{margin:0;background:#eef4fb}
       </div>
 
       <button onClick="{{ saveCapture }}" disabled="{{ capNoCat }}" class="btn btn-primary btn-block" style="padding:14px;font-size:15px">{{ capSaveLabel }}</button>
+      <button onClick="{{ saveAndNext }}" disabled="{{ capNoCat }}" class="btn btn-secondary btn-block" style="margin-top:8px;padding:13px;font-size:13.5px">Guardar y tomar otra</button>
     </div>
   </div>
   </sc-if>
@@ -557,13 +561,19 @@ body{margin:0;background:#eef4fb}
         <div style="display:flex;gap:10px;margin-bottom:16px">
           <div style="flex:1;background:var(--color-surface);border-radius:24px;padding:14px 16px">
             <div style="font-family:var(--font-heading);font-size:22px">{{ mineTotal }}</div>
-            <div style="font-size:11px;color:var(--color-neutral-700)">valor publicado</div>
+            <div style="font-size:11px;color:var(--color-neutral-700)">si vendes todo</div>
           </div>
           <div style="flex:1;background:var(--color-surface);border-radius:24px;padding:14px 16px">
             <div style="font-family:var(--font-heading);font-size:22px">{{ mineCount }}</div>
             <div style="font-size:11px;color:var(--color-neutral-700)">en el bazar</div>
           </div>
         </div>
+        <sc-if value="{{ soldOn }}">
+          <div style="display:flex;align-items:center;gap:12px;background:var(--color-accent-2-100);border-radius:24px;padding:13px 17px;margin-bottom:16px">
+            <div style="font-family:var(--font-heading);font-size:21px;color:var(--color-accent-2-900)">{{ soldEarned }}</div>
+            <div style="flex:1;font-size:11.5px;color:var(--color-neutral-700)">ganado en {{ soldCount }} prendas vendidas</div>
+          </div>
+        </sc-if>
         <div style="display:flex;flex-direction:column;gap:10px">
           <sc-for list="{{ mine }}" as="s" hint-placeholder-count="2">
             <div style="display:flex;align-items:center;gap:12px;background:var(--color-surface);border-radius:26px;padding:10px 14px 10px 10px">
@@ -579,9 +589,13 @@ body{margin:0;background:#eef4fb}
               <div style="flex:1;min-width:0">
                 <div style="font-size:13.5px;line-height:1.2">{{ s.name }}</div>
                 <div style="font-family:var(--font-heading);font-size:16px;margin-top:2px">{{ s.price }}</div>
-                <div style="font-size:10.5px;color:var(--color-neutral-600)">{{ s.cond }} · talla {{ s.size }}</div>
+                <div style="font-size:10.5px;color:var(--color-neutral-600)">{{ s.net }} · talla {{ s.size }}</div>
+                <div style="display:flex;gap:6px;margin-top:8px">
+                  <button onClick="{{ s.edit }}" class="btn btn-secondary" style="padding:6px 11px;font-size:11.5px">Editar</button>
+                  <button onClick="{{ s.sold }}" class="btn btn-primary" style="padding:6px 11px;font-size:11.5px">Vendida</button>
+                  <button onClick="{{ s.quit }}" class="btn btn-ghost" style="padding:6px 10px;font-size:11.5px">Quitar</button>
+                </div>
               </div>
-              <button onClick="{{ s.quit }}" class="btn btn-secondary" style="flex:none;padding:8px 12px;font-size:12px">Quitar</button>
             </div>
           </sc-for>
         </div>
@@ -736,11 +750,11 @@ body{margin:0;background:#eef4fb}
     <button onClick="{{ closeSell }}" style="flex:1;border:0;background:transparent;cursor:pointer"></button>
     <div style="background:var(--color-bg);border-radius:34px 34px 0 0;padding:14px 22px 36px;animation:up .28s cubic-bezier(.2,.8,.3,1)">
       <div style="width:44px;height:4px;border-radius:999px;background:var(--color-neutral-400);margin:0 auto 16px"></div>
-      <div class="card-kicker">Publicar en el bazar</div>
+      <div class="card-kicker">{{ sellTitle }}</div>
       <h3 style="margin:2px 0 16px;font-size:22px">{{ sellName }}</h3>
       <div style="display:flex;gap:10px;margin-bottom:14px">
         <div class="field" style="flex:1.2">
-          <label>Precio (MXN)</label>
+          <label>Lo que quieres recibir</label>
           <input class="input" type="tel" value="{{ sellPrice }}" onChange="{{ setSellPrice }}" placeholder="350">
         </div>
         <div class="field" style="flex:1">
@@ -748,6 +762,16 @@ body{margin:0;background:#eef4fb}
           <input class="input" value="{{ sellSize }}" onChange="{{ setSellSize }}" placeholder="M / 32">
         </div>
       </div>
+      <sc-if value="{{ pubOn }}">
+        <div style="display:flex;align-items:center;gap:14px;background:var(--color-accent-2-100);border-radius:24px;padding:13px 17px;margin-bottom:16px">
+          <div>
+            <div style="font-family:var(--font-heading);font-size:23px;line-height:1;color:var(--color-accent-2-900)">{{ pubPrice }}</div>
+            <div style="font-size:10.5px;color:var(--color-neutral-700);margin-top:3px">precio al público</div>
+          </div>
+          <div style="width:1px;height:32px;background:var(--color-divider)"></div>
+          <div style="flex:1;font-size:11.5px;line-height:1.4;color:var(--color-neutral-700);text-wrap:pretty">Tú recibes {{ pubNet }} · Percha suma {{ pubFee }} de servicio</div>
+        </div>
+      </sc-if>
       <div style="font-size:12px;color:var(--color-neutral-700);margin-bottom:7px">Estado de la prenda</div>
       <div style="display:flex;gap:8px;margin-bottom:16px">
         <sc-for list="{{ sellConds }}" as="c" hint-placeholder-count="3">
@@ -890,6 +914,9 @@ const PATHS = {
   belt: "M8 40h84v20H8zm52 0h22v20H60z"
 };
 const WHATSAPP = "5215646463204";
+const RECAPTCHA_KEY = "6LdG_4AtAAAAAJ1KiFp7UjIY9FlR5GuyuSiUbju3";
+const MARKUP = 0.15;
+const publicPrice = (net) => Math.round((net * (1 + MARKUP)) / 5) * 5;
 const SELLER_CODES = ["PERCHA2026"];
 const ADS = [
   {
@@ -1057,6 +1084,16 @@ class Component extends DCLogic {
     ]).then(([app, auth, fs, an]) => {
       this._fb = { app, auth, fs, an };
       const a = app.initializeApp(cfg);
+      if (RECAPTCHA_KEY) {
+        import(SDK + "firebase-app-check.js").then(ac => {
+          try {
+            ac.initializeAppCheck(a, {
+              provider: new ac.ReCaptchaV3Provider(RECAPTCHA_KEY),
+              isTokenAutoRefreshEnabled: true
+            });
+          } catch (e) { }
+        }).catch(() => { });
+      }
       this._auth = auth.getAuth(a);
       this._db = fs.getFirestore(a);
       an.isSupported().then(ok => { if (ok && cfg.measurementId) this._an = an.getAnalytics(a); }).catch(() => { });
@@ -1122,17 +1159,18 @@ class Component extends DCLogic {
     if (!it) return;
     const p = parseInt(price, 10);
     if (!p || p < 1) { this.flash("Ponle un precio para publicarla."); return; }
+    if (p > 200000) { this.flash("El precio máximo es $200,000."); return; }
     const st = this.state;
     const entry = {
       id: "L" + id, garmentId: id, cat: it.cat, name: it.name, color: it.color,
-      photo: it.photo || null, price: p, size: size || "Único", cond: cond || "Buen estado",
+      photo: it.photo || null, price: publicPrice(p), net: p, size: size || "Único", cond: cond || "Buen estado",
       desc: (desc || "").trim().slice(0, 400),
-      wa: (this.state.sellWa || "").replace(/[^0-9]/g, ""),
+      wa: (this.state.sellWa || "").replace(/[^0-9]/g, "").slice(0, 15),
       seller: (st.user && st.user.email ? st.user.email.split("@")[0] : "Yo"),
       sellerUid: st.user ? st.user.uid : "local",
       city: st.city || "Tu zona", ago: "ahora", sold: false, ts: Date.now()
     };
-    const items = st.items.map(i => i.id === id ? Object.assign({}, i, { forSale: true, price: p, size: entry.size, cond: entry.cond, desc: entry.desc }) : i);
+    const items = st.items.map(i => i.id === id ? Object.assign({}, i, { forSale: true, sold: false, price: entry.price, net: p, size: entry.size, cond: entry.cond, desc: entry.desc, wa: entry.wa }) : i);
     this.setState({ items, market: [entry].concat(st.market || []), detail: null, sellFor: null }, () => {
       const g = this.get(id);
       if (g) this.saveGarment(g);
@@ -1141,11 +1179,37 @@ class Component extends DCLogic {
     if (this._db && st.user) {
       const { doc, setDoc } = this._fb.fs;
       setDoc(doc(this._db, "market", entry.id), entry)
-        .then(() => this.flash(it.name + " publicada en $" + p))
+        .then(() => this.flash(it.name + " publicada · recibes $" + p + ", el público ve $" + entry.price))
         .catch(e => this.flash("No se publicó en el bazar (" + (e && e.code ? e.code : "error") + "). Solo la ves tú."));
       return;
     }
-    this.flash(it.name + " publicada en $" + p + " · solo en este teléfono");
+    this.flash(it.name + " publicada · recibes $" + p + " · solo en este teléfono");
+  }
+
+  markSold(id) {
+    const st = this.state;
+    const it = this.get(id);
+    this.setState({
+      items: st.items.map(i => i.id === id ? Object.assign({}, i, { forSale: false, sold: true }) : i),
+      market: (st.market || []).filter(m => m.garmentId !== id)
+    }, () => { const g = this.get(id); if (g) this.saveGarment(g); });
+    this.track("prenda_vendida", { tipo: it ? it.cat : "", precio: it ? it.price : 0 });
+    if (this._db && st.user) {
+      const { doc, updateDoc } = this._fb.fs;
+      updateDoc(doc(this._db, "market", "L" + id), { sold: true }).catch(() => { });
+    }
+    this.flash("¡Vendida! " + (it ? this.nm(it) : "La prenda") + " sale del bazar.");
+  }
+
+  openEdit(id) {
+    const it = this.get(id);
+    if (!it) return;
+    this.setState({
+      sellFor: id, editing: true,
+      sellPrice: String(it.net || it.price || ""),
+      sellSize: it.size || "", sellCond: it.cond || "Buen estado",
+      sellDesc: it.desc || "", sellWa: it.wa || ""
+    });
   }
 
   unlist(id) {
@@ -1189,6 +1253,7 @@ class Component extends DCLogic {
     const p = parseInt(st.offerPrice, 10);
     if (!m) return;
     if (!p || p < 1) { this.flash("Escribe cuánto ofreces."); return; }
+    if (p > 200000) { this.flash("Esa oferta es demasiado alta."); return; }
     const o = {
       id: "O" + m.id + "_" + (st.user ? st.user.uid : "local"),
       listingId: m.id, name: m.name, cat: m.cat, color: m.color, photo: m.photo || null,
@@ -1602,7 +1667,9 @@ class Component extends DCLogic {
         const it = items.find(i => i.id === pick[s.cat]);
         if (!it || it.cat !== s.cat) { const f = items.find(i => i.cat === s.cat); if (f) pick[s.cat] = f.id; }
       });
-      this.setState({ items, cam: null, screen: "armario", filter: c, pick }, () => { this.saveGarment(item); this.savePrefs(); });
+      const burst = this.state.burst;
+      this.setState({ items, cam: burst ? "view" : null, screen: burst ? this.state.screen : "armario", filter: c, pick, capPhoto: null, capCat: null, capBase: null, capNamed: false, guess: "" },
+        () => { this.saveGarment(item); this.savePrefs(); if (burst) this.startCam(); });
       this.track("prenda_registrada", { tipo: c, con_foto: !!item.photo, total_propias: items.filter(i => !i.demo).length });
       const left = items.filter(i => i.demo).length;
       this.flash(victim
@@ -1882,10 +1949,17 @@ class Component extends DCLogic {
         color: i.color, path: PATHS[i.cat] || PATHS.top, tint: this.tint(i.tint),
         photoBg: this.bg(i.photo), noPhoto: !i.photo, hasPhoto: !!i.photo,
         zoom: (e) => { if (e) e.stopPropagation(); this.setState({ zoomAt: i.photo }); },
-        size: i.size || "Único", quit: () => this.unlist(i.id)
+        net: "recibes $" + (i.net || i.price),
+        size: i.size || "Único",
+        edit: () => this.openEdit(i.id),
+        sold: () => this.markSold(i.id),
+        quit: () => this.unlist(i.id)
       })),
       mineEmpty: !st.items.some(i => i.forSale),
-      mineTotal: "$" + st.items.filter(i => i.forSale).reduce((a, i) => a + (i.price || 0), 0),
+      mineTotal: "$" + st.items.filter(i => i.forSale).reduce((a, i) => a + (i.net || i.price || 0), 0),
+      soldCount: st.items.filter(i => i.sold).length,
+      soldOn: st.items.some(i => i.sold),
+      soldEarned: "$" + st.items.filter(i => i.sold).reduce((a, i) => a + (i.net || 0), 0),
       mineCount: (() => { const n = st.items.filter(i => i.forSale).length; return n + (n === 1 ? " publicada" : " publicadas"); })(),
       demoMode: !!st.demoMode, marketError: st.marketError || "", marketErrorOn: !!st.marketError,
       look: (() => {
@@ -1969,6 +2043,9 @@ class Component extends DCLogic {
       retryCam: () => { this.setState({ camError: "" }); this.startCam(); },
       capPhoto: st.capPhoto, capHasPhoto: !!st.capPhoto, capNoPhoto: !st.capPhoto,
       saveCapture: this.saveCapture,
+      saveAndNext: () => { this.setState({ burst: true }, () => this.saveCapture()); },
+      finishBurst: () => { this.setState({ burst: false, cam: null, screen: "armario" }, () => this.stopCam()); },
+      burstOn: !!st.burst,
       capName: st.capName, capColor: st.capColor, capCats, capColors, capOccs,
       setCapName: (e) => this.setState({ capName: e.target.value, capNamed: true }),
       capHint: st.capCat ? "Color " + this.colorName(st.capColor) + " · listo para guardar" : "Color " + this.colorName(st.capColor) + " · falta elegir el tipo",
@@ -1988,7 +2065,7 @@ class Component extends DCLogic {
       dPrice: d && d.price ? "$" + d.price : "",
       openSell: () => {
         if (!st.sellerOk) { this.track("gate_vendedor_visto"); this.setState({ gateOpen: true, gateCode: "", gateError: "" }); return; }
-        this.setState({ sellFor: st.detail, sellPrice: "", sellSize: "", sellCond: "Buen estado", sellDesc: "" });
+        this.setState({ sellFor: st.detail, editing: false, sellPrice: "", sellSize: "", sellCond: "Buen estado", sellDesc: "", sellWa: st.sellWa || "" });
       },
       gateOpen: !!st.gateOpen,
       gateCode: st.gateCode,
@@ -2029,10 +2106,15 @@ class Component extends DCLogic {
         label: c, cls: st.sellCond === c ? "tag-accent" : "tag-neutral",
         pick: () => this.setState({ sellCond: c })
       })),
-      closeSell: () => this.setState({ sellFor: null }),
+      closeSell: () => this.setState({ sellFor: null, editing: false }),
       doList: () => this.list(st.sellFor, st.sellPrice, st.sellSize, st.sellCond, st.sellDesc),
-      sellCta: st.sellPrice ? "Publicar en $" + st.sellPrice : "Ponle un precio",
+      sellCta: st.sellPrice ? (st.editing ? "Guardar cambios" : "Publicar · recibes $" + st.sellPrice) : "Ponle un precio",
       sellDisabled: !st.sellPrice,
+      sellTitle: st.editing ? "Editar publicación" : "Publicar en el bazar",
+      pubOn: !!st.sellPrice,
+      pubPrice: st.sellPrice ? "$" + publicPrice(parseInt(st.sellPrice, 10) || 0) : "",
+      pubNet: st.sellPrice ? "$" + st.sellPrice : "",
+      pubFee: st.sellPrice ? "$" + (publicPrice(parseInt(st.sellPrice, 10) || 0) - (parseInt(st.sellPrice, 10) || 0)) : "",
       dToggleClean: () => this.setState({
         items: st.items.map(i => i.id === st.detail ? Object.assign({}, i, { clean: !i.clean }) : i)
       }, () => { const it = this.get(st.detail); if (it && !it.demo) this.saveGarment(it); else this.saveLocal(); }),
