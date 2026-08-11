@@ -428,9 +428,14 @@ body{margin:0;background:#eef4fb}
           <sc-for list="{{ market }}" as="m" hint-placeholder-count="4">
             <button onClick="{{ m.open }}" style="border:0;cursor:pointer;padding:0;text-align:left;background:var(--color-surface);border-radius:28px;overflow:hidden">
               <div style="position:relative;width:100%;aspect-ratio:1;background:{{ m.tint }};display:flex;align-items:center;justify-content:center;overflow:hidden">
-                <div style="{{ m.photoBg }}"></div>
+                <div style="{{ m.photoBg }};transition:transform .35s cubic-bezier(.2,.8,.3,1)" style-hover="transform:scale(1.12)"></div>
                 <sc-if value="{{ m.noPhoto }}" hint-placeholder-val="{{ true }}">
                   <svg viewBox="0 0 100 100" width="66" height="66"><path d="{{ m.path }}" fill="{{ m.color }}"></path></svg>
+                </sc-if>
+                <sc-if value="{{ m.hasPhoto }}">
+                  <div onClick="{{ m.zoom }}" style="position:absolute;bottom:8px;right:8px;width:32px;height:32px;border-radius:999px;background:rgba(22,35,47,.55);color:#fff;display:flex;align-items:center;justify-content:center;cursor:zoom-in;backdrop-filter:blur(4px)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.6-3.6M11 8v6M8 11h6"></path></svg>
+                  </div>
                 </sc-if>
               </div>
               <div style="padding:11px 13px 14px">
@@ -705,11 +710,16 @@ body{margin:0;background:#eef4fb}
         </div>
       </div>
       <div style="font-size:12px;color:var(--color-neutral-700);margin-bottom:7px">Estado de la prenda</div>
-      <div style="display:flex;gap:8px;margin-bottom:20px">
+      <div style="display:flex;gap:8px;margin-bottom:16px">
         <sc-for list="{{ sellConds }}" as="c" hint-placeholder-count="3">
           <button onClick="{{ c.pick }}" class="tag {{ c.cls }}" style="border:0;cursor:pointer;font-family:var(--font-body);padding:8px 14px;font-size:12px">{{ c.label }}</button>
         </sc-for>
       </div>
+      <div class="field" style="margin-bottom:6px">
+        <label>Descripción</label>
+        <textarea class="input" rows="3" value="{{ sellDesc }}" onChange="{{ setSellDesc }}" style="resize:none;line-height:1.45;border-radius:22px;padding:12px 16px" placeholder="Marca, material, medidas, algún detalle honesto (una pequeña mancha, el dobladillo…)"></textarea>
+      </div>
+      <div style="font-size:10.5px;color:var(--color-neutral-600);margin:0 0 18px 16px">Quedan {{ sellDescCount }} · lo que más ayuda: talla real, material y cualquier defecto</div>
       <button onClick="{{ doList }}" disabled="{{ sellDisabled }}" class="btn btn-primary btn-block" style="padding:14px;font-size:15px">{{ sellCta }}</button>
     </div>
   </div>
@@ -721,12 +731,15 @@ body{margin:0;background:#eef4fb}
     <div style="background:var(--color-bg);border-radius:34px 34px 0 0;padding:14px 22px 36px;animation:up .28s cubic-bezier(.2,.8,.3,1)">
       <div style="width:44px;height:4px;border-radius:999px;background:var(--color-neutral-400);margin:0 auto 16px"></div>
       <div style="display:flex;gap:16px;align-items:center">
-        <div style="position:relative;overflow:hidden;width:112px;height:112px;flex:none;border-radius:26px;background:var(--color-surface);display:flex;align-items:center;justify-content:center">
+        <button onClick="{{ lookZoom }}" style="position:relative;overflow:hidden;width:132px;height:132px;flex:none;border:0;padding:0;cursor:zoom-in;border-radius:28px;background:var(--color-surface);display:flex;align-items:center;justify-content:center">
           <div style="{{ lookPhotoBg }}"></div>
           <sc-if value="{{ lookNoPhoto }}" hint-placeholder-val="{{ true }}">
-            <svg viewBox="0 0 100 100" width="70" height="70"><path d="{{ lookPath }}" fill="{{ lookColor }}"></path></svg>
+            <svg viewBox="0 0 100 100" width="82" height="82"><path d="{{ lookPath }}" fill="{{ lookColor }}"></path></svg>
           </sc-if>
-        </div>
+          <div style="position:absolute;bottom:7px;right:7px;width:30px;height:30px;border-radius:999px;background:rgba(22,35,47,.55);color:#fff;display:flex;align-items:center;justify-content:center">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.6-3.6M11 8v6M8 11h6"></path></svg>
+          </div>
+        </button>
         <div style="min-width:0">
           <div style="font-family:var(--font-heading);font-size:27px;line-height:1">{{ lookPrice }}</div>
           <div style="font-size:14px;line-height:1.25;margin-top:5px">{{ lookName }}</div>
@@ -734,6 +747,9 @@ body{margin:0;background:#eef4fb}
           <div style="font-size:11.5px;color:var(--color-neutral-700)">{{ lookSeller }}</div>
         </div>
       </div>
+      <sc-if value="{{ lookDescOn }}">
+        <div style="background:var(--color-surface);border-radius:24px;padding:14px 17px;margin-top:16px;font-size:13px;line-height:1.5;color:var(--color-neutral-800);text-wrap:pretty">{{ lookDesc }}</div>
+      </sc-if>
       <div style="display:flex;gap:10px;margin-top:20px">
         <button onClick="{{ openOffer }}" class="btn btn-secondary" style="flex:1;padding:14px;font-size:14px">Hacer oferta</button>
         <button onClick="{{ contact }}" class="btn btn-primary" style="flex:1.2;padding:14px;font-size:14px">Pagar lo que pide</button>
@@ -766,6 +782,14 @@ body{margin:0;background:#eef4fb}
       <button onClick="{{ doOffer }}" disabled="{{ offerDisabled }}" class="btn btn-primary btn-block" style="padding:14px;font-size:15px">{{ offerCta }}</button>
       <div style="text-align:center;font-size:11px;color:var(--color-neutral-600);margin-top:10px">La persona puede aceptar o rechazar. Nada se cobra aquí.</div>
     </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ zoomOn }}">
+  <div onClick="{{ closeZoom }}" style="position:absolute;inset:0;z-index:95;background:rgba(10,16,22,.94);cursor:zoom-out;animation:tin .2s ease-out">
+    <div style="{{ zoomBg }};top:64px;bottom:64px"></div>
+    <button onClick="{{ closeZoom }}" style="position:absolute;top:56px;right:18px;width:40px;height:40px;border-radius:999px;border:0;cursor:pointer;background:rgba(232,241,248,.16);color:#e8f1f8;font-size:17px;display:flex;align-items:center;justify-content:center">✕</button>
+    <div style="position:absolute;bottom:26px;left:0;right:0;text-align:center;font-size:11.5px;color:rgba(232,241,248,.6)">Toca para cerrar</div>
   </div>
   </sc-if>
 
@@ -877,8 +901,8 @@ class Component extends DCLogic {
       capCat: null, capBase: null,
       offersIn: [], offersOut: [], offerFor: null, offerPrice: "", offerNote: "",
       market: [], bazarTab: "explorar", sellFor: null,
-      sellPrice: "", sellSize: "", sellCond: "Buen estado",
-      lookAt: null, marketFilter: "todo",
+      sellPrice: "", sellSize: "", sellCond: "Buen estado", sellDesc: "",
+      lookAt: null, marketFilter: "todo", zoomAt: null,
       capColor: "#3a76a9",
       capOcc: "casual"
     };
@@ -971,7 +995,7 @@ class Component extends DCLogic {
 
   demoMarket() {
     return [
-      { id: "m1", cat: "sweater", name: "Suéter tejido crudo", color: "#ddd7c6", price: 380, size: "M", cond: "Como nuevo", seller: "Ana R.", city: "Roma Norte", ago: "hace 2 días" },
+      { id: "m1", cat: "sweater", name: "Suéter tejido crudo", color: "#ddd7c6", price: 380, size: "M", cond: "Como nuevo", seller: "Ana R.", city: "Roma Norte", ago: "hace 2 días", desc: "Tejido grueso, 100% algodón. Me quedó grande de hombros, lo usé dos veces. Sin bolitas ni manchas." },
       { id: "m2", cat: "shoes", name: "Tenis blancos piel", color: "#eef3f8", price: 620, size: "27", cond: "Poco uso", seller: "Diego M.", city: "Del Valle", ago: "hace 5 h" },
       { id: "m3", cat: "pants", name: "Jeans rectos azul", color: "#4a6a8c", price: 450, size: "32", cond: "Buen estado", seller: "Luis T.", city: "Condesa", ago: "ayer" },
       { id: "m4", cat: "top", name: "Camisa lino azul", color: "#cfe0ef", price: 290, size: "L", cond: "Como nuevo", seller: "Sofía P.", city: "Nápoles", ago: "hace 3 días" },
@@ -992,7 +1016,7 @@ class Component extends DCLogic {
       .catch(e => this.setState({ market: [], marketError: "No pude leer el bazar (" + (e && e.code ? e.code : "error") + "). Revisa las reglas de Firestore." }));
   }
 
-  list(id, price, size, cond) {
+  list(id, price, size, cond, desc) {
     const it = this.get(id);
     if (!it) return;
     const p = parseInt(price, 10);
@@ -1001,11 +1025,12 @@ class Component extends DCLogic {
     const entry = {
       id: "L" + id, garmentId: id, cat: it.cat, name: it.name, color: it.color,
       photo: it.photo || null, price: p, size: size || "Único", cond: cond || "Buen estado",
+      desc: (desc || "").trim().slice(0, 400),
       seller: (st.user && st.user.email ? st.user.email.split("@")[0] : "Yo"),
       sellerUid: st.user ? st.user.uid : "local",
       city: st.city || "Tu zona", ago: "ahora", sold: false, ts: Date.now()
     };
-    const items = st.items.map(i => i.id === id ? Object.assign({}, i, { forSale: true, price: p, size: entry.size, cond: entry.cond }) : i);
+    const items = st.items.map(i => i.id === id ? Object.assign({}, i, { forSale: true, price: p, size: entry.size, cond: entry.cond, desc: entry.desc }) : i);
     this.setState({ items, market: [entry].concat(st.market || []), detail: null, sellFor: null }, () => {
       const g = this.get(id);
       if (g) this.saveGarment(g);
@@ -1483,9 +1508,9 @@ class Component extends DCLogic {
     el.setAttribute("webkit-playsinline", "");
     if (this._stream && el.srcObject !== this._stream) { el.srcObject = this._stream; el.play().catch(() => {}); }
   };
-  bg(x) {
+  bg(x, fit) {
     return x
-      ? { position: "absolute", inset: 0, backgroundImage: 'url("' + x + '")', backgroundSize: "cover", backgroundPosition: "center" }
+      ? { position: "absolute", inset: 0, backgroundImage: 'url("' + x + '")', backgroundSize: fit || "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" }
       : { display: "none" };
   }
 
@@ -1719,6 +1744,8 @@ class Component extends DCLogic {
         seller: m.seller, city: m.city, ago: m.ago,
         color: m.color, path: PATHS[m.cat] || PATHS.top,
         tint: this.tint("#e6ecf2"), photoBg: this.bg(m.photo), noPhoto: !m.photo,
+        hasPhoto: !!m.photo,
+        zoom: (e) => { e.stopPropagation(); this.setState({ zoomAt: m.photo }); },
         open: () => this.setState({ lookAt: m.id })
       })),
       marketEmpty: !(st.market || []).filter(m => (st.marketFilter === "todo" || m.cat === st.marketFilter) && m.sellerUid !== (st.user ? st.user.uid : "local")).length,
@@ -1745,6 +1772,12 @@ class Component extends DCLogic {
       lookPhotoBg: (() => { const m = (st.market || []).find(x => x.id === st.lookAt); return this.bg(m && m.photo); })(),
       lookNoPhoto: (() => { const m = (st.market || []).find(x => x.id === st.lookAt); return !(m && m.photo); })(),
       lookMeta: (() => { const m = (st.market || []).find(x => x.id === st.lookAt); return m ? m.cond + " · talla " + m.size : ""; })(),
+      lookDesc: (() => { const m = (st.market || []).find(x => x.id === st.lookAt); return m && m.desc ? m.desc : ""; })(),
+      lookDescOn: (() => { const m = (st.market || []).find(x => x.id === st.lookAt); return !!(m && m.desc); })(),
+      lookZoom: () => { const m = (st.market || []).find(x => x.id === st.lookAt); if (m && m.photo) this.setState({ zoomAt: m.photo }); },
+      zoomOn: !!st.zoomAt,
+      zoomBg: this.bg(st.zoomAt, "contain"),
+      closeZoom: () => this.setState({ zoomAt: null }),
       lookSeller: (() => { const m = (st.market || []).find(x => x.id === st.lookAt); return m ? m.seller + " · " + m.city : ""; })(),
       closeLook: () => this.setState({ lookAt: null }),
       contact: () => {
@@ -1822,36 +1855,3 @@ class Component extends DCLogic {
       dPhotoBg: this.bg(d && d.photo), dNoPhoto: !!(d && !d.photo), dWorn: d ? d.worn : 0, dCombos,
       dTags: d ? d.occ.map(o => ({ label: o })).concat([{ label: d.warm === 3 ? "abrigada" : d.warm === 2 ? "media" : "ligera" }]) : [],
       dCleanLabel: d && d.clean ? "Mandar a lavar" : "Ya está limpia",
-      dForSale: !!(d && d.forSale), dNotForSale: !!(d && !d.forSale),
-      dPrice: d && d.price ? "$" + d.price : "",
-      openSell: () => this.setState({ sellFor: st.detail, sellPrice: "", sellSize: "", sellCond: "Buen estado" }),
-      dUnlist: () => this.unlist(st.detail),
-      sellOpen: !!st.sellFor,
-      sellName: st.sellFor ? this.nm(this.get(st.sellFor)) : "",
-      sellPrice: st.sellPrice, sellSize: st.sellSize,
-      setSellPrice: e => this.setState({ sellPrice: e.target.value.replace(/[^0-9]/g, "") }),
-      setSellSize: e => this.setState({ sellSize: e.target.value }),
-      sellConds: ["Como nuevo", "Poco uso", "Buen estado"].map(c => ({
-        label: c, cls: st.sellCond === c ? "tag-accent" : "tag-neutral",
-        pick: () => this.setState({ sellCond: c })
-      })),
-      closeSell: () => this.setState({ sellFor: null }),
-      doList: () => this.list(st.sellFor, st.sellPrice, st.sellSize, st.sellCond),
-      sellCta: st.sellPrice ? "Publicar en $" + st.sellPrice : "Ponle un precio",
-      sellDisabled: !st.sellPrice,
-      dToggleClean: () => this.setState({
-        items: st.items.map(i => i.id === st.detail ? Object.assign({}, i, { clean: !i.clean }) : i)
-      }, () => { const it = this.get(st.detail); if (it && !it.demo) this.saveGarment(it); else this.saveLocal(); }),
-      dUse: () => this.setState({
-        pick: Object.assign({}, st.pick, { [d.cat]: d.id }),
-        locked: Object.assign({}, st.locked, { [d.cat]: true }),
-        detail: null, screen: "probador"
-      }),
-      closeDetail: () => this.setState({ detail: null })
-    };
-  }
-}
-
-</script>
-</body>
-</html>
