@@ -1,21 +1,27 @@
-const C = 'percha-v1';
-self.addEventListener('install', e => {
+const C = 'percha-v3';
+
+self.addEventListener('install', function (e) {
   self.skipWaiting();
-  e.waitUntil(caches.open(C).then(c => c.addAll(['./', './index.html']).catch(() => {})));
 });
-self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys()
-    .then(k => Promise.all(k.filter(x => x !== C).map(x => caches.delete(x))))
-    .then(() => self.clients.claim()));
+
+self.addEventListener('activate', function (e) {
+  e.waitUntil(
+    caches.keys()
+      .then(function (k) { return Promise.all(k.map(function (x) { return caches.delete(x); })); })
+      .then(function () { return self.clients.claim(); })
+  );
 });
-self.addEventListener('fetch', e => {
-  const u = new URL(e.request.url);
+
+self.addEventListener('fetch', function (e) {
+  var u = new URL(e.request.url);
   if (e.request.method !== 'GET' || u.origin !== location.origin) return;
   e.respondWith(
-    fetch(e.request).then(r => {
-      const cp = r.clone();
-      caches.open(C).then(c => c.put(e.request, cp)).catch(() => {});
+    fetch(e.request).then(function (r) {
+      var cp = r.clone();
+      caches.open(C).then(function (c) { c.put(e.request, cp); }).catch(function () {});
       return r;
-    }).catch(() => caches.match(e.request).then(r => r || caches.match('./index.html')))
+    }).catch(function () {
+      return caches.match(e.request).then(function (r) { return r || caches.match('./index.html'); });
+    })
   );
-}
+});
