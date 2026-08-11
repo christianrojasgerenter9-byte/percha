@@ -428,7 +428,7 @@ body{margin:0;background:#eef4fb}
           <sc-for list="{{ market }}" as="m" hint-placeholder-count="4">
             <button onClick="{{ m.open }}" style="border:0;cursor:pointer;padding:0;text-align:left;background:var(--color-surface);border-radius:28px;overflow:hidden">
               <div style="position:relative;width:100%;aspect-ratio:1;background:{{ m.tint }};display:flex;align-items:center;justify-content:center;overflow:hidden">
-                <div style="{{ m.photoBg }};transition:transform .35s cubic-bezier(.2,.8,.3,1)" style-hover="transform:scale(1.12)"></div>
+                <div style="{{ m.photoBg }}" style-hover="transform:scale(1.12)"></div>
                 <sc-if value="{{ m.noPhoto }}" hint-placeholder-val="{{ true }}">
                   <svg viewBox="0 0 100 100" width="66" height="66"><path d="{{ m.path }}" fill="{{ m.color }}"></path></svg>
                 </sc-if>
@@ -787,7 +787,7 @@ body{margin:0;background:#eef4fb}
 
   <sc-if value="{{ zoomOn }}">
   <div onClick="{{ closeZoom }}" style="position:absolute;inset:0;z-index:95;background:rgba(10,16,22,.94);cursor:zoom-out;animation:tin .2s ease-out">
-    <div style="{{ zoomBg }};top:64px;bottom:64px"></div>
+    <div style="{{ zoomBg }}"></div>
     <button onClick="{{ closeZoom }}" style="position:absolute;top:56px;right:18px;width:40px;height:40px;border-radius:999px;border:0;cursor:pointer;background:rgba(232,241,248,.16);color:#e8f1f8;font-size:17px;display:flex;align-items:center;justify-content:center">✕</button>
     <div style="position:absolute;bottom:26px;left:0;right:0;text-align:center;font-size:11.5px;color:rgba(232,241,248,.6)">Toca para cerrar</div>
   </div>
@@ -1743,7 +1743,8 @@ class Component extends DCLogic {
         name: m.name, price: "$" + m.price, size: m.size, cond: m.cond,
         seller: m.seller, city: m.city, ago: m.ago,
         color: m.color, path: PATHS[m.cat] || PATHS.top,
-        tint: this.tint("#e6ecf2"), photoBg: this.bg(m.photo), noPhoto: !m.photo,
+        tint: this.tint("#e6ecf2"), noPhoto: !m.photo,
+        photoBg: m.photo ? Object.assign(this.bg(m.photo), { transition: "transform .35s cubic-bezier(.2,.8,.3,1)" }) : this.bg(null),
         hasPhoto: !!m.photo,
         zoom: (e) => { e.stopPropagation(); this.setState({ zoomAt: m.photo }); },
         open: () => this.setState({ lookAt: m.id })
@@ -1776,7 +1777,7 @@ class Component extends DCLogic {
       lookDescOn: (() => { const m = (st.market || []).find(x => x.id === st.lookAt); return !!(m && m.desc); })(),
       lookZoom: () => { const m = (st.market || []).find(x => x.id === st.lookAt); if (m && m.photo) this.setState({ zoomAt: m.photo }); },
       zoomOn: !!st.zoomAt,
-      zoomBg: this.bg(st.zoomAt, "contain"),
+      zoomBg: st.zoomAt ? Object.assign(this.bg(st.zoomAt, "contain"), { top: "64px", bottom: "64px" }) : this.bg(null),
       closeZoom: () => this.setState({ zoomAt: null }),
       lookSeller: (() => { const m = (st.market || []).find(x => x.id === st.lookAt); return m ? m.seller + " · " + m.city : ""; })(),
       closeLook: () => this.setState({ lookAt: null }),
