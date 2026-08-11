@@ -54,6 +54,8 @@ body{margin:0;background:#eef4fb}
 @keyframes tin{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes pop{from{transform:scale(.86);opacity:0}to{transform:scale(1);opacity:1}}
 @keyframes zin{from{transform:scale(.72);opacity:0}to{transform:scale(1);opacity:1}}
+.app-light .tag-accent,.app-dark .tag-accent{background:var(--color-accent);color:var(--color-bg);border-color:var(--color-accent)}
+.app-light .tag-accent-2,.app-dark .tag-accent-2{background:var(--color-accent-2);color:var(--color-bg);border-color:var(--color-accent-2)}
 </style>
 </helmet>
 
@@ -487,6 +489,67 @@ body{margin:0;background:#eef4fb}
         </sc-if>
       </sc-if>
 
+      <sc-if value="{{ bazarPedidos }}">
+        <div style="font-size:12px;color:var(--color-neutral-700);margin-bottom:9px">Lo que compraste</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:22px">
+          <sc-for list="{{ buys }}" as="o" hint-placeholder-count="1">
+            <div style="background:var(--color-surface);border-radius:26px;padding:12px 14px">
+              <div style="display:flex;align-items:center;gap:12px">
+                <div style="position:relative;overflow:hidden;width:58px;height:58px;flex:none;border-radius:18px;background:var(--color-neutral-200)">
+                  <div style="{{ o.photoBg }}"></div>
+                </div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:13.5px;line-height:1.2">{{ o.name }}</div>
+                  <div style="font-family:var(--font-heading);font-size:16px;margin-top:2px">{{ o.price }}</div>
+                  <div style="font-size:10.5px;color:var(--color-neutral-600)">{{ o.seller }} · ref {{ o.ref }}</div>
+                </div>
+              </div>
+              <div style="font-size:11.5px;color:var(--color-accent-800);background:var(--color-accent-100);border-radius:999px;padding:7px 13px;margin-top:10px;display:inline-block">{{ o.state }}</div>
+              <div style="display:flex;gap:8px;margin-top:10px">
+                <button onClick="{{ o.contact }}" class="btn btn-secondary" style="flex:1;padding:9px;font-size:12.5px">Escribir al vendedor</button>
+                <sc-if value="{{ o.canReceive }}">
+                  <button onClick="{{ o.received }}" class="btn btn-primary" style="flex:1;padding:9px;font-size:12.5px">Ya la recibí</button>
+                </sc-if>
+              </div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ buysEmpty }}">
+            <div style="background:var(--color-surface);border-radius:26px;padding:20px;text-align:center;font-size:12.5px;color:var(--color-neutral-700);text-wrap:pretty">Aún no compras nada. Lo que pagues aparece aquí con su seguimiento.</div>
+          </sc-if>
+        </div>
+
+        <div style="font-size:12px;color:var(--color-neutral-700);margin-bottom:9px">Ventas pagadas</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ sales }}" as="v" hint-placeholder-count="1">
+            <div style="background:var(--color-surface);border-radius:26px;padding:12px 14px">
+              <div style="display:flex;align-items:center;gap:12px">
+                <div style="position:relative;overflow:hidden;width:58px;height:58px;flex:none;border-radius:18px;background:var(--color-neutral-200)">
+                  <div style="{{ v.photoBg }}"></div>
+                </div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:13.5px;line-height:1.2">{{ v.name }}</div>
+                  <div style="font-family:var(--font-heading);font-size:16px;margin-top:2px">{{ v.net }}</div>
+                  <div style="font-size:10.5px;color:var(--color-neutral-600)">{{ v.buyer }} · ref {{ v.ref }}</div>
+                </div>
+              </div>
+              <div style="font-size:11.5px;color:var(--color-accent-2-900);background:var(--color-accent-2-100);border-radius:999px;padding:7px 13px;margin-top:10px;display:inline-block">{{ v.state }}</div>
+              <div style="display:flex;gap:8px;margin-top:10px">
+                <sc-if value="{{ v.hasReceipt }}">
+                  <button onClick="{{ v.zoom }}" class="btn btn-secondary" style="flex:1;padding:9px;font-size:12.5px">Ver comprobante</button>
+                </sc-if>
+                <sc-if value="{{ v.canDeliver }}">
+                  <button onClick="{{ v.deliver }}" class="btn btn-primary" style="flex:1;padding:9px;font-size:12.5px">Ya la entregué</button>
+                </sc-if>
+              </div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ salesEmpty }}">
+            <div style="background:var(--color-surface);border-radius:26px;padding:20px;text-align:center;font-size:12.5px;color:var(--color-neutral-700);text-wrap:pretty">Cuando alguien pague una de tus prendas, aparece aquí con su comprobante.</div>
+          </sc-if>
+        </div>
+        <div style="height:12px"></div>
+      </sc-if>
+
       <sc-if value="{{ bazarOfertas }}">
         <div style="font-size:12px;color:var(--color-neutral-700);margin-bottom:9px">Te ofrecieron</div>
         <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px">
@@ -820,9 +883,9 @@ body{margin:0;background:#eef4fb}
       </sc-if>
       <div style="display:flex;gap:10px;margin-top:20px">
         <button onClick="{{ openOffer }}" class="btn btn-secondary" style="flex:1;padding:14px;font-size:14px">Hacer oferta</button>
-        <button onClick="{{ contact }}" class="btn btn-primary" style="flex:1.2;padding:14px;font-size:14px">Pagar lo que pide</button>
+        <button onClick="{{ contact }}" class="btn btn-primary" style="flex:1.2;padding:14px;font-size:14px">La quiero · pagar</button>
       </div>
-      <div style="text-align:center;font-size:11px;color:var(--color-neutral-600);margin-top:10px;text-wrap:pretty">Ambos botones abren WhatsApp con el mensaje listo. Acuerdan entrega entre ustedes; Percha no cobra comisión.</div>
+      <div style="text-align:center;font-size:11px;color:var(--color-neutral-600);margin-top:10px;text-wrap:pretty">Pagas a Percha y te damos el contacto del vendedor. Tu dinero queda respaldado hasta que recibas la prenda.</div>
     </div>
   </div>
   </sc-if>
@@ -849,6 +912,46 @@ body{margin:0;background:#eef4fb}
       </div>
       <button onClick="{{ doOffer }}" disabled="{{ offerDisabled }}" class="btn btn-primary btn-block" style="padding:14px;font-size:15px">{{ offerCta }}</button>
       <div style="text-align:center;font-size:11px;color:var(--color-neutral-600);margin-top:10px">La persona puede aceptar o rechazar. Nada se cobra aquí.</div>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ buyOpen }}">
+  <div style="position:absolute;inset:0;z-index:82;display:flex;flex-direction:column;justify-content:flex-end;background:rgba(22,35,47,.5)">
+    <button onClick="{{ closeBuy }}" style="flex:1;border:0;background:transparent;cursor:pointer"></button>
+    <div style="background:var(--color-bg);border-radius:34px 34px 0 0;padding:14px 22px 36px;max-height:88%;overflow:auto;animation:up .28s cubic-bezier(.2,.8,.3,1)">
+      <div style="width:44px;height:4px;border-radius:999px;background:var(--color-neutral-400);margin:0 auto 16px"></div>
+      <div class="card-kicker">Paso 1 de 2 · pagar</div>
+      <h3 style="margin:2px 0 4px;font-size:23px">{{ buyName }}</h3>
+      <div style="font-family:var(--font-heading);font-size:30px;line-height:1;margin-bottom:16px">{{ buyPrice }}</div>
+
+      <sc-if value="{{ payNotSet }}">
+        <div style="background:var(--color-accent-100);color:var(--color-accent-800);border-radius:20px;padding:12px 16px;margin-bottom:14px;font-size:12px;text-wrap:pretty">Faltan tus datos bancarios: en el código, llena <strong>const PAGO</strong> con tu titular, banco y CLABE.</div>
+      </sc-if>
+
+      <div style="background:var(--color-surface);border-radius:26px;padding:16px 18px;margin-bottom:16px">
+        <div style="font-size:11px;color:var(--color-neutral-700);margin-bottom:3px">Transfiere por SPEI a</div>
+        <div style="font-family:var(--font-heading);font-size:19px;letter-spacing:.03em;line-height:1.2">{{ payClabe }}</div>
+        <div style="font-size:12px;color:var(--color-neutral-800);margin-top:5px">{{ payTitular }} · {{ payBanco }}</div>
+        <div style="height:1px;background:var(--color-divider);margin:13px 0"></div>
+        <div style="font-size:11px;color:var(--color-neutral-700)">Pon esta referencia en el concepto</div>
+        <div style="font-family:var(--font-heading);font-size:17px;letter-spacing:.06em">{{ payRef }}</div>
+      </div>
+
+      <div style="font-size:12px;color:var(--color-neutral-700);margin-bottom:8px">Tu comprobante</div>
+      <sc-if value="{{ receiptOn }}">
+        <div style="position:relative;height:170px;border-radius:20px;overflow:hidden;background:var(--color-surface);margin-bottom:14px">
+          <div style="{{ receiptBg }}"></div>
+        </div>
+      </sc-if>
+      <label style="display:flex;align-items:center;justify-content:center;gap:9px;border:1.5px dashed var(--color-neutral-400);border-radius:24px;padding:15px;cursor:pointer;margin-bottom:16px;font-size:13.5px;color:var(--color-neutral-800)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"></path></svg>
+        Subir foto del comprobante
+        <input type="file" accept="image/*" onChange="{{ pickReceipt }}" style="display:none">
+      </label>
+
+      <button onClick="{{ confirmPayment }}" disabled="{{ payDisabled }}" class="btn btn-primary btn-block" style="padding:14px;font-size:15px">{{ payCta }}</button>
+      <div style="text-align:center;font-size:11px;color:var(--color-neutral-600);margin-top:10px;text-wrap:pretty">Al enviarlo te damos el WhatsApp del vendedor y le avisamos que ya está pagada.</div>
     </div>
   </div>
   </sc-if>
@@ -915,6 +1018,12 @@ const PATHS = {
 };
 const WHATSAPP = "5215646463204";
 const RECAPTCHA_KEY = "6LdG_4AtAAAAAJ1KiFp7UjIY9FlR5GuyuSiUbju3";
+const PAGO = {
+  titular: "Christian Rojas",
+  banco: "Banco Azteca",
+  clabe: "127180001961697846",
+  oxxo: ""
+};
 const MARKUP = 0.15;
 const publicPrice = (net) => Math.round((net * (1 + MARKUP)) / 5) * 5;
 const SELLER_CODES = ["PERCHA2026"];
@@ -1025,6 +1134,7 @@ class Component extends DCLogic {
       market: [], bazarTab: "explorar", sellFor: null,
       sellPrice: "", sellSize: "", sellCond: "Buen estado", sellDesc: "", sellWa: "",
       lookAt: null, marketFilter: "todo", zoomAt: null, adIdx: 0,
+      buying: null, receiptPhoto: null, payRef: "", buys: [], sales: [],
       sellerOk: false, gateOpen: false, gateCode: "", gateError: "",
       capColor: "#3a76a9",
       capOcc: "casual"
@@ -1239,6 +1349,63 @@ class Component extends DCLogic {
       b.forEach(d => sent.push(d.data()));
       this.setState({ offersIn: recv, offersOut: sent });
     }).catch(() => { });
+  }
+
+  loadOrders() {
+    if (!this._db || !this.state.user) return;
+    const { collection, getDocs, query, where } = this._fb.fs;
+    const uid = this.state.user.uid;
+    Promise.all([
+      getDocs(query(collection(this._db, "orders"), where("buyerUid", "==", uid))),
+      getDocs(query(collection(this._db, "orders"), where("sellerUid", "==", uid)))
+    ]).then(([a, b]) => {
+      const mine = [], sales = [];
+      a.forEach(d => mine.push(d.data()));
+      b.forEach(d => sales.push(d.data()));
+      this.setState({ buys: mine, sales: sales });
+    }).catch(() => { });
+  }
+
+  confirmPayment() {
+    const st = this.state;
+    const m = st.buying;
+    if (!m) return;
+    if (!st.receiptPhoto) { this.flash("Sube la foto de tu comprobante."); return; }
+    const uid = st.user ? st.user.uid : "local";
+    const o = {
+      id: "R" + m.id + "_" + uid,
+      listingId: m.id, garmentId: m.garmentId || "", name: m.name, cat: m.cat,
+      photo: m.photo || null, price: m.price, net: m.net || m.price,
+      fee: m.price - (m.net || m.price),
+      ref: st.payRef,
+      buyerUid: uid, buyer: st.user && st.user.email ? st.user.email.split("@")[0] : "Yo",
+      buyerWa: "", sellerUid: m.sellerUid, seller: m.seller, sellerWa: m.wa || "",
+      receipt: st.receiptPhoto, delivered: false, received: false,
+      status: "pagado", ts: Date.now()
+    };
+    this.track("pago_reportado", { precio: m.price, tipo: m.cat });
+    this.setState({ buys: [o].concat(st.buys || []), buying: null, receiptPhoto: null, paid: o, bazarTab: "pedidos", screen: "bazar" });
+    if (this._db && st.user) {
+      const { doc, setDoc } = this._fb.fs;
+      setDoc(doc(this._db, "orders", o.id), o)
+        .then(() => this.flash("Pago reportado · ya puedes contactar a " + m.seller))
+        .catch(e => this.flash("No se registró el pago (" + (e && e.code ? e.code : "error") + ")."));
+    }
+    window.open("https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(
+      "Percha · pago reportado\nRef: " + st.payRef + "\nPrenda: " + m.name + "\nMonto: $" + m.price +
+      "\nVendedor: " + m.seller + " (recibe $" + (m.net || m.price) + ")\nComprador: " + o.buyer), "_blank");
+  }
+
+  orderStep(id, patch) {
+    const st = this.state;
+    const apply = (list) => (list || []).map(o => o.id === id ? Object.assign({}, o, patch) : o);
+    const merged = Object.assign({}, (st.buys || []).concat(st.sales || []).find(o => o.id === id), patch);
+    if (merged.delivered && merged.received) patch = Object.assign({}, patch, { status: "cerrada" });
+    this.setState({ buys: apply(st.buys), sales: apply(st.sales) });
+    if (this._db && st.user) {
+      const { doc, updateDoc } = this._fb.fs;
+      updateDoc(doc(this._db, "orders", id), patch).catch(() => { });
+    }
   }
 
   whats(m, text) {
@@ -1882,12 +2049,33 @@ class Component extends DCLogic {
         this.setState({ screen: "armario", filter: "todo" });
       },
       bazarExplorar: st.bazarTab === "explorar", bazarMias: st.bazarTab === "mias",
-      bazarTabs: [["explorar", "Explorar"], ["mias", "Mis ventas"], ["ofertas", "Ofertas"]].map(([k, l]) => {
+      bazarPedidos: st.bazarTab === "pedidos",
+      buys: (st.buys || []).map(o => ({
+        name: o.name, price: "$" + o.price, ref: o.ref, seller: o.seller,
+        photoBg: this.bg(o.photo), noPhoto: !o.photo,
+        state: o.status === "cerrada" ? "Cerrada" : o.received ? "Recibida" : o.delivered ? "El vendedor ya la entregó" : "Pago reportado · espera entrega",
+        canReceive: !o.received,
+        contact: () => this.whats({ wa: o.sellerWa, seller: o.seller },
+          "Ya pagué en Percha (ref " + o.ref + "): " + o.name + " por $" + o.price + ". ¿Cuándo me la entregas?"),
+        received: () => { this.orderStep(o.id, { received: true }); this.flash("Confirmado. ¡Gracias!"); }
+      })),
+      buysEmpty: !(st.buys || []).length,
+      sales: (st.sales || []).map(o => ({
+        name: o.name, net: "recibes $" + o.net, ref: o.ref, buyer: o.buyer,
+        photoBg: this.bg(o.photo), noPhoto: !o.photo,
+        hasReceipt: !!o.receipt,
+        state: o.status === "cerrada" ? "Cerrada · te transferimos tu parte" : o.delivered ? "Entregada · esperando al comprador" : "Pagada · entrégala",
+        canDeliver: !o.delivered,
+        zoom: () => o.receipt && this.setState({ zoomAt: o.receipt }),
+        deliver: () => { this.orderStep(o.id, { delivered: true }); this.flash("Marcada como entregada."); }
+      })),
+      salesEmpty: !(st.sales || []).length,
+      bazarTabs: [["explorar", "Explorar"], ["mias", "Mis ventas"], ["pedidos", "Pedidos"], ["ofertas", "Ofertas"]].map(([k, l]) => {
         const pend = (st.offersIn || []).filter(o => o.status === "pendiente").length;
         return {
           label: k === "ofertas" && pend ? l + " · " + pend : l,
           cls: st.bazarTab === k ? "tag-accent" : (k === "ofertas" && pend ? "tag-accent-2" : "tag-neutral"),
-          pick: () => { this.setState({ bazarTab: k }); if (k === "ofertas") this.loadOffers(); }
+          pick: () => { this.setState({ bazarTab: k }); if (k === "ofertas") this.loadOffers(); if (k === "pedidos") this.loadOrders(); }
         };
       }),
       bazarOfertas: st.bazarTab === "ofertas",
@@ -1986,10 +2174,31 @@ class Component extends DCLogic {
       contact: () => {
         const m = (st.market || []).find(x => x.id === st.lookAt);
         if (!m) return;
-        this.track("contactar_vendedor", { tipo: m.cat, precio: m.price });
-        this.setState({ lookAt: null });
-        this.whats(m, "Estoy interesado en esta prenda: " + m.name + " ($" + m.price + "). ¿Sigue disponible?");
+        this.track("iniciar_compra", { tipo: m.cat, precio: m.price });
+        this.setState({
+          lookAt: null, buying: m, receiptPhoto: null,
+          payRef: "PER-" + Date.now().toString(36).slice(-5).toUpperCase()
+        });
       },
+      buyOpen: !!st.buying,
+      buyName: st.buying ? st.buying.name : "",
+      buyPrice: st.buying ? "$" + st.buying.price : "",
+      payRef: st.payRef,
+      payTitular: PAGO.titular, payBanco: PAGO.banco, payClabe: PAGO.clabe,
+      payNotSet: PAGO.clabe.indexOf("PON_TU") === 0,
+      closeBuy: () => this.setState({ buying: null, receiptPhoto: null }),
+      receiptOn: !!st.receiptPhoto,
+      receiptBg: st.receiptPhoto ? Object.assign(this.bg(st.receiptPhoto, "contain"), { borderRadius: "20px" }) : this.bg(null),
+      pickReceipt: (e) => {
+        const f = e.target.files && e.target.files[0];
+        if (!f) return;
+        const r = new FileReader();
+        r.onload = () => this.shrink(r.result).then(small => this.setState({ receiptPhoto: small }));
+        r.readAsDataURL(f);
+      },
+      confirmPayment: () => this.confirmPayment(),
+      payCta: st.receiptPhoto ? "Ya pagué · avisar a Percha" : "Sube tu comprobante",
+      payDisabled: !st.receiptPhoto,
       canInstall: !!st.canInstall, iosInstall: !!st.iosInstall && !st.canInstall,
       doInstall: this.doInstall,
       hideInstall: () => this.setState({ canInstall: false, iosInstall: false }),
@@ -2029,7 +2238,7 @@ class Component extends DCLogic {
       goHoy: () => { this.track("screen_view", { firebase_screen: "hoy" }); this.setState({ screen: "hoy" }); },
       goArmario: () => { this.track("screen_view", { firebase_screen: "armario" }); this.setState({ screen: "armario" }); },
       goProbador: () => { this.track("screen_view", { firebase_screen: "probador" }); this.setState({ screen: "probador" }); },
-      goBazar: () => { this.track("screen_view", { firebase_screen: "bazar" }); this.setState({ screen: "bazar" }); this.loadMarket(); this.loadOffers(); },
+      goBazar: () => { this.track("screen_view", { firebase_screen: "bazar" }); this.setState({ screen: "bazar" }); this.loadMarket(); this.loadOffers(); this.loadOrders(); },
       isBazar: st.screen === "bazar",
       tBaz: st.screen === "bazar" ? acc : dim,
       openCam: this.openCam,
