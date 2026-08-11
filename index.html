@@ -385,6 +385,11 @@ body{margin:0;background:#eef4fb}
               <sc-if value="{{ g.noPhoto }}" hint-placeholder-val="{{ true }}">
                 <svg viewBox="0 0 100 100" width="60" height="60"><path d="{{ g.path }}" fill="{{ g.color }}"></path></svg>
               </sc-if>
+              <sc-if value="{{ g.hasPhoto }}">
+                <div onClick="{{ g.zoom }}" style="position:absolute;top:5px;right:5px;width:26px;height:26px;border-radius:999px;background:rgba(22,35,47,.5);color:#fff;display:flex;align-items:center;justify-content:center;cursor:zoom-in">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.6-3.6M11 8v6M8 11h6"></path></svg>
+                </div>
+              </sc-if>
               <sc-if value="{{ g.dirty }}">
                 <div style="position:absolute;bottom:6px;right:6px;background:var(--color-neutral-800);color:var(--color-neutral-100);font-size:9px;padding:3px 7px;border-radius:999px">lavar</div>
               </sc-if>
@@ -405,6 +410,24 @@ body{margin:0;background:#eef4fb}
           <h2 style="font-size:31px;margin:2px 0 0">Vende lo que<br>ya no usas</h2>
         </div>
         <button onClick="{{ toggleTheme }}" style="margin-left:auto;width:36px;height:36px;border-radius:999px;border:1px solid var(--color-divider);background:transparent;color:var(--color-text);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center">{{ themeIcon }}</button>
+      </div>
+
+      <div style="position:relative;margin-top:18px;background:var(--color-accent-900);border-radius:30px;padding:22px 20px 18px;overflow:hidden">
+        <div style="position:absolute;top:-40px;right:-30px;width:150px;height:150px;border-radius:999px;background:var(--color-accent-700);opacity:.45"></div>
+        <div style="position:relative">
+          <div style="font-family:var(--font-heading);font-size:25px;line-height:1.08;color:var(--color-accent-100);text-wrap:pretty">{{ adTitle }}</div>
+          <div style="font-size:13px;line-height:1.45;color:var(--color-accent-300);margin-top:7px;text-wrap:pretty">{{ adBody }}</div>
+          <button onClick="{{ adGo }}" style="margin-top:15px;width:100%;border:0;cursor:pointer;border-radius:999px;padding:14px;font-family:var(--font-body);font-size:14.5px;font-weight:600;background:var(--color-accent-400);color:var(--color-accent-900)">{{ adCta }}</button>
+          <div style="display:flex;align-items:center;gap:12px;margin-top:13px">
+            <button onClick="{{ adPrev }}" style="border:0;background:transparent;cursor:pointer;color:var(--color-accent-300);font-size:16px;padding:2px 6px">‹</button>
+            <div style="flex:1;display:flex;justify-content:center;gap:6px">
+              <sc-for list="{{ adDots }}" as="d" hint-placeholder-count="3">
+                <button onClick="{{ d.pick }}" style="border:0;cursor:pointer;height:6px;border-radius:999px;padding:0;width:{{ d.w }};background:{{ d.bg }}"></button>
+              </sc-for>
+            </div>
+            <button onClick="{{ adNext }}" style="border:0;background:transparent;cursor:pointer;color:var(--color-accent-300);font-size:16px;padding:2px 6px">›</button>
+          </div>
+        </div>
       </div>
 
       <div style="display:flex;gap:8px;margin:18px 0 14px">
@@ -548,6 +571,9 @@ body{margin:0;background:#eef4fb}
                 <sc-if value="{{ s.noPhoto }}" hint-placeholder-val="{{ true }}">
                   <svg viewBox="0 0 100 100" width="40" height="40"><path d="{{ s.path }}" fill="{{ s.color }}"></path></svg>
                 </sc-if>
+                <sc-if value="{{ s.hasPhoto }}">
+                  <div onClick="{{ s.zoom }}" style="position:absolute;inset:0;cursor:zoom-in"></div>
+                </sc-if>
               </div>
               <div style="flex:1;min-width:0">
                 <div style="font-size:13.5px;line-height:1.2">{{ s.name }}</div>
@@ -653,12 +679,17 @@ body{margin:0;background:#eef4fb}
     <div style="background:var(--color-bg);border-radius:34px 34px 0 0;padding:14px 22px 40px;animation:up .28s cubic-bezier(.2,.8,.3,1)">
       <div style="width:44px;height:4px;border-radius:999px;background:var(--color-neutral-400);margin:0 auto 16px"></div>
       <div style="display:flex;gap:16px;align-items:center">
-        <div style="position:relative;width:110px;height:110px;flex:none;border-radius:999px;overflow:hidden;display:flex;align-items:center;justify-content:center;background-color:{{ dTint }}">
+        <button onClick="{{ dZoom }}" style="position:relative;width:110px;height:110px;flex:none;border:0;padding:0;cursor:zoom-in;border-radius:999px;overflow:hidden;display:flex;align-items:center;justify-content:center;background-color:{{ dTint }}">
           <div style="{{ dPhotoBg }}"></div>
           <sc-if value="{{ dNoPhoto }}">
             <svg viewBox="0 0 100 100" width="70" height="70"><path d="{{ dPath }}" fill="{{ dColor }}"></path></svg>
           </sc-if>
-        </div>
+          <sc-if value="{{ dHasPhoto }}">
+            <div style="position:absolute;bottom:4px;right:4px;width:28px;height:28px;border-radius:999px;background:rgba(22,35,47,.55);color:#fff;display:flex;align-items:center;justify-content:center">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.6-3.6M11 8v6M8 11h6"></path></svg>
+            </div>
+          </sc-if>
+        </button>
         <div style="min-width:0">
           <div class="card-kicker">{{ dSlot }}</div>
           <h3 style="margin:2px 0 8px;font-size:22px">{{ dName }}</h3>
@@ -817,6 +848,23 @@ const PATHS = {
   socks: "M32 8h30v34c0 10 4 14 12 20l10 8c8 6 8 18-1 22-8 4-16 1-21-5L38 62c-4-5-6-9-6-16z",
   belt: "M8 40h84v20H8zm52 0h22v20H60z"
 };
+const ADS = [
+  {
+    title: "Tu clóset tiene dinero parado",
+    body: "Lo que llevas un año sin ponerte, a alguien le urge esta semana.",
+    cta: "Vender una prenda"
+  },
+  {
+    title: "La ropa no paga renta",
+    body: "Sácale provecho a lo que ya no usas y hazle lugar a lo que sí.",
+    cta: "Empezar a vender"
+  },
+  {
+    title: "Alguien la está buscando",
+    body: "Publicar toma dos minutos: tu foto ya está aquí, solo ponle precio.",
+    cta: "Publicar ahora"
+  }
+];
 const TYPES = [
   { key: "sweater", label: "Suéter o saco", base: "Suéter" },
   { key: "top", label: "Playera", base: "Playera" },
@@ -906,7 +954,7 @@ class Component extends DCLogic {
       offersIn: [], offersOut: [], offerFor: null, offerPrice: "", offerNote: "",
       market: [], bazarTab: "explorar", sellFor: null,
       sellPrice: "", sellSize: "", sellCond: "Buen estado", sellDesc: "",
-      lookAt: null, marketFilter: "todo", zoomAt: null,
+      lookAt: null, marketFilter: "todo", zoomAt: null, adIdx: 0,
       capColor: "#3a76a9",
       capOcc: "casual"
     };
@@ -948,6 +996,11 @@ class Component extends DCLogic {
   };
 
   componentDidMount() {
+    this._ad = setInterval(() => {
+      if (this.state.screen === "bazar" && !this.state.zoomAt) {
+        this.setState(s => ({ adIdx: (s.adIdx + 1) % ADS.length }));
+      }
+    }, 6000);
     this.installUI();
     setTimeout(() => this.loadMarket(), 400);
     const cfg = this.cfg();
@@ -1015,7 +1068,7 @@ class Component extends DCLogic {
       .then(snap => {
         const out = [];
         snap.forEach(d => out.push(d.data()));
-        this.setState({ market: out, marketError: "" });
+        this.setState({ market: out, marketError: "", demoMode: false });
       })
       .catch(e => this.setState({ market: [], marketError: "No pude leer el bazar (" + (e && e.code ? e.code : "error") + "). Revisa las reglas de Firestore." }));
   }
@@ -1601,7 +1654,7 @@ class Component extends DCLogic {
   };
 
   componentWillUnmount() {
-    clearTimeout(this._t); clearTimeout(this._camT); this.stopCam();
+    clearTimeout(this._t); clearTimeout(this._camT); clearInterval(this._ad); this.stopCam();
     if (this._onInstallable) window.removeEventListener("percha-installable", this._onInstallable);
   }
 
@@ -1658,6 +1711,7 @@ class Component extends DCLogic {
       name: this.nm(i), color: i.color, tint: this.tint(i.tint), path: PATHS[i.cat],
       photoBg: this.bg(i.photo), hasPhoto: !!i.photo, noPhoto: !i.photo,
       dirty: !i.clean, op: i.clean ? 1 : 0.55,
+      zoom: (e) => { if (e) e.stopPropagation(); this.setState({ zoomAt: i.photo }); },
       open: () => this.setState({ detail: i.id })
     }));
 
@@ -1691,6 +1745,17 @@ class Component extends DCLogic {
       })(),
       idleOn: st.items.filter(i => !i.demo && !i.forSale && i.worn < 3).length >= 2,
       idleValue: "~$" + (st.items.filter(i => !i.demo && !i.forSale && i.worn < 3).length * 320),
+      adTitle: ADS[st.adIdx % ADS.length].title,
+      adBody: ADS[st.adIdx % ADS.length].body,
+      adCta: ADS[st.adIdx % ADS.length].cta,
+      adDots: ADS.map((a, i) => ({
+        bg: i === st.adIdx % ADS.length ? "var(--color-accent)" : "var(--color-neutral-400)",
+        w: i === st.adIdx % ADS.length ? "16px" : "6px",
+        pick: () => this.setState({ adIdx: i })
+      })),
+      adPrev: () => this.setState(s => ({ adIdx: (s.adIdx + ADS.length - 1) % ADS.length })),
+      adNext: () => this.setState(s => ({ adIdx: (s.adIdx + 1) % ADS.length })),
+      adGo: () => { this.track("ad_vender_click", { frase: ADS[st.adIdx % ADS.length].title }); this.setState({ screen: "armario", filter: "todo" }); },
       bazarExplorar: st.bazarTab === "explorar", bazarMias: st.bazarTab === "mias",
       bazarTabs: [["explorar", "Explorar"], ["mias", "Mis ventas"], ["ofertas", "Ofertas"]].map(([k, l]) => {
         const pend = (st.offersIn || []).filter(o => o.status === "pendiente").length;
@@ -1757,7 +1822,8 @@ class Component extends DCLogic {
       mine: st.items.filter(i => i.forSale).map(i => ({
         name: this.nm(i), price: "$" + i.price, cond: i.cond || "Buen estado", size: i.size || "Único",
         color: i.color, path: PATHS[i.cat] || PATHS.top, tint: this.tint(i.tint),
-        photoBg: this.bg(i.photo), noPhoto: !i.photo,
+        photoBg: this.bg(i.photo), noPhoto: !i.photo, hasPhoto: !!i.photo,
+        zoom: (e) => { if (e) e.stopPropagation(); this.setState({ zoomAt: i.photo }); },
         size: i.size || "Único", quit: () => this.unlist(i.id)
       })),
       mineEmpty: !st.items.some(i => i.forSale),
@@ -1857,7 +1923,8 @@ class Component extends DCLogic {
       detailOpen: !!d,
       dName: this.nm(d), dColor: d ? d.color : "#000", dTint: d ? this.tint(d.tint) : "#eee",
       dPath: d ? PATHS[d.cat] : PATHS.top, dSlot,
-      dPhotoBg: this.bg(d && d.photo), dNoPhoto: !!(d && !d.photo), dWorn: d ? d.worn : 0, dCombos,
+      dPhotoBg: this.bg(d && d.photo), dNoPhoto: !!(d && !d.photo), dHasPhoto: !!(d && d.photo),
+      dZoom: () => { if (d && d.photo) this.setState({ zoomAt: d.photo }); }, dWorn: d ? d.worn : 0, dCombos,
       dTags: d ? d.occ.map(o => ({ label: o })).concat([{ label: d.warm === 3 ? "abrigada" : d.warm === 2 ? "media" : "ligera" }]) : [],
       dCleanLabel: d && d.clean ? "Mandar a lavar" : "Ya está limpia",
       dForSale: !!(d && d.forSale), dNotForSale: !!(d && !d.forSale),
