@@ -1856,3 +1856,39 @@ class Component extends DCLogic {
       dPhotoBg: this.bg(d && d.photo), dNoPhoto: !!(d && !d.photo), dWorn: d ? d.worn : 0, dCombos,
       dTags: d ? d.occ.map(o => ({ label: o })).concat([{ label: d.warm === 3 ? "abrigada" : d.warm === 2 ? "media" : "ligera" }]) : [],
       dCleanLabel: d && d.clean ? "Mandar a lavar" : "Ya está limpia",
+      dForSale: !!(d && d.forSale), dNotForSale: !!(d && !d.forSale),
+      dPrice: d && d.price ? "$" + d.price : "",
+      openSell: () => this.setState({ sellFor: st.detail, sellPrice: "", sellSize: "", sellCond: "Buen estado", sellDesc: "" }),
+      dUnlist: () => this.unlist(st.detail),
+      sellOpen: !!st.sellFor,
+      sellName: st.sellFor ? this.nm(this.get(st.sellFor)) : "",
+      sellPrice: st.sellPrice, sellSize: st.sellSize,
+      setSellPrice: e => this.setState({ sellPrice: e.target.value.replace(/[^0-9]/g, "") }),
+      setSellSize: e => this.setState({ sellSize: e.target.value }),
+      sellDesc: st.sellDesc,
+      setSellDesc: e => this.setState({ sellDesc: e.target.value.slice(0, 400) }),
+      sellDescCount: (400 - (st.sellDesc || "").length) + " caracteres",
+      sellConds: ["Como nuevo", "Poco uso", "Buen estado"].map(c => ({
+        label: c, cls: st.sellCond === c ? "tag-accent" : "tag-neutral",
+        pick: () => this.setState({ sellCond: c })
+      })),
+      closeSell: () => this.setState({ sellFor: null }),
+      doList: () => this.list(st.sellFor, st.sellPrice, st.sellSize, st.sellCond, st.sellDesc),
+      sellCta: st.sellPrice ? "Publicar en $" + st.sellPrice : "Ponle un precio",
+      sellDisabled: !st.sellPrice,
+      dToggleClean: () => this.setState({
+        items: st.items.map(i => i.id === st.detail ? Object.assign({}, i, { clean: !i.clean }) : i)
+      }, () => { const it = this.get(st.detail); if (it && !it.demo) this.saveGarment(it); else this.saveLocal(); }),
+      dUse: () => this.setState({
+        pick: Object.assign({}, st.pick, { [d.cat]: d.id }),
+        locked: Object.assign({}, st.locked, { [d.cat]: true }),
+        detail: null, screen: "probador"
+      }),
+      closeDetail: () => this.setState({ detail: null })
+    };
+  }
+}
+
+</script>
+</body>
+</html>
