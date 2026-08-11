@@ -53,6 +53,7 @@ body{margin:0;background:#eef4fb}
 @keyframes up{from{transform:translateY(120%)}to{transform:translateY(0)}}
 @keyframes tin{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes pop{from{transform:scale(.86);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes zin{from{transform:scale(.72);opacity:0}to{transform:scale(1);opacity:1}}
 </style>
 </helmet>
 
@@ -428,9 +429,12 @@ body{margin:0;background:#eef4fb}
           <sc-for list="{{ market }}" as="m" hint-placeholder-count="4">
             <button onClick="{{ m.open }}" style="border:0;cursor:pointer;padding:0;text-align:left;background:var(--color-surface);border-radius:28px;overflow:hidden">
               <div style="position:relative;width:100%;aspect-ratio:1;background:{{ m.tint }};display:flex;align-items:center;justify-content:center;overflow:hidden">
-                <div style="{{ m.photoBg }}" style-hover="transform:scale(1.12)"></div>
+                <div style="{{ m.photoBg }}" style-hover="transform:scale(1.14)"></div>
                 <sc-if value="{{ m.noPhoto }}" hint-placeholder-val="{{ true }}">
                   <svg viewBox="0 0 100 100" width="66" height="66"><path d="{{ m.path }}" fill="{{ m.color }}"></path></svg>
+                </sc-if>
+                <sc-if value="{{ m.hasPhoto }}">
+                  <div onClick="{{ m.zoom }}" style="position:absolute;inset:0;cursor:zoom-in"></div>
                 </sc-if>
                 <sc-if value="{{ m.hasPhoto }}">
                   <div onClick="{{ m.zoom }}" style="position:absolute;bottom:8px;right:8px;width:32px;height:32px;border-radius:999px;background:rgba(22,35,47,.55);color:#fff;display:flex;align-items:center;justify-content:center;cursor:zoom-in;backdrop-filter:blur(4px)">
@@ -1777,7 +1781,7 @@ class Component extends DCLogic {
       lookDescOn: (() => { const m = (st.market || []).find(x => x.id === st.lookAt); return !!(m && m.desc); })(),
       lookZoom: () => { const m = (st.market || []).find(x => x.id === st.lookAt); if (m && m.photo) this.setState({ zoomAt: m.photo }); },
       zoomOn: !!st.zoomAt,
-      zoomBg: st.zoomAt ? Object.assign(this.bg(st.zoomAt, "contain"), { top: "64px", bottom: "64px" }) : this.bg(null),
+      zoomBg: st.zoomAt ? Object.assign(this.bg(st.zoomAt, "contain"), { top: "64px", bottom: "64px", animation: "zin .3s cubic-bezier(.2,.8,.3,1)" }) : this.bg(null),
       closeZoom: () => this.setState({ zoomAt: null }),
       lookSeller: (() => { const m = (st.market || []).find(x => x.id === st.lookAt); return m ? m.seller + " · " + m.city : ""; })(),
       closeLook: () => this.setState({ lookAt: null }),
