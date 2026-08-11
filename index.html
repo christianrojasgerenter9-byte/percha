@@ -354,6 +354,7 @@ body{margin:0;background:#eef4fb}
         <div>
           <button onClick="{{ changeGender }}" class="card-kicker" style="border:0;background:transparent;padding:0;cursor:pointer;font-family:var(--font-body)">Tu armario · {{ genderLabel }} ⇄</button>
           <button onClick="{{ logout }}" style="display:block;border:0;background:transparent;padding:0;margin-top:2px;cursor:pointer;font-family:var(--font-body);font-size:10.5px;color:var(--color-neutral-600)">{{ userEmail }} · salir</button>
+          <button onClick="{{ toggleSeller }}" style="display:block;border:0;background:transparent;padding:0;margin-top:1px;cursor:pointer;font-family:var(--font-body);font-size:10.5px;color:var(--color-accent)">{{ sellerBadge }}</button>
           <h2 style="font-size:31px;margin:2px 0 0">{{ countLabel }}</h2>
         </div>
         <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
@@ -1995,6 +1996,11 @@ class Component extends DCLogic {
         this.setState({ sellerOk: true, gateOpen: false, gateCode: "" }, () => { this.savePrefs(); this.flash("¡Listo! Ya puedes vender en el bazar."); });
       },
       sellerOk: !!st.sellerOk, sellerLocked: !st.sellerOk,
+      sellerBadge: st.sellerOk ? "Vendedor activo · desactivar" : "Activar cuenta de vendedor",
+      toggleSeller: () => {
+        if (st.sellerOk) { this.setState({ sellerOk: false }, () => { this.savePrefs(); this.flash("Cuenta de vendedor desactivada."); }); return; }
+        this.setState({ gateOpen: true, gateCode: "", gateError: "" });
+      },
       dUnlist: () => this.unlist(st.detail),
       sellOpen: !!st.sellFor,
       sellName: st.sellFor ? this.nm(this.get(st.sellFor)) : "",
