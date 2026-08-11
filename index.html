@@ -450,6 +450,76 @@ body{margin:0;background:#eef4fb}
         </sc-if>
       </sc-if>
 
+      <sc-if value="{{ bazarOfertas }}">
+        <div style="font-size:12px;color:var(--color-neutral-700);margin-bottom:9px">Te ofrecieron</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px">
+          <sc-for list="{{ offersIn }}" as="o" hint-placeholder-count="2">
+            <div style="background:var(--color-surface);border-radius:26px;padding:12px 14px">
+              <div style="display:flex;align-items:center;gap:12px">
+                <div style="position:relative;overflow:hidden;width:58px;height:58px;flex:none;border-radius:18px;background:{{ o.tint }};display:flex;align-items:center;justify-content:center">
+                  <div style="{{ o.photoBg }}"></div>
+                  <sc-if value="{{ o.noPhoto }}" hint-placeholder-val="{{ true }}">
+                    <svg viewBox="0 0 100 100" width="36" height="36"><path d="{{ o.path }}" fill="{{ o.color }}"></path></svg>
+                  </sc-if>
+                </div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:12.5px;line-height:1.25">{{ o.name }}</div>
+                  <div style="display:flex;align-items:baseline;gap:7px;margin-top:2px">
+                    <span style="font-family:var(--font-heading);font-size:19px">{{ o.offer }}</span>
+                    <span style="font-size:11px;color:var(--color-neutral-600);text-decoration:line-through">{{ o.ask }}</span>
+                  </div>
+                  <div style="font-size:10.5px;color:var(--color-neutral-600)">{{ o.buyer }}</div>
+                </div>
+              </div>
+              <sc-if value="{{ o.noteOn }}">
+                <div style="font-size:11.5px;color:var(--color-neutral-700);margin:9px 2px 0;text-wrap:pretty">“{{ o.note }}”</div>
+              </sc-if>
+              <sc-if value="{{ o.pending }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;gap:9px;margin-top:11px">
+                  <button onClick="{{ o.reject }}" class="btn btn-secondary" style="flex:1;padding:10px;font-size:12.5px">Rechazar</button>
+                  <button onClick="{{ o.accept }}" class="btn btn-primary" style="flex:1.4;padding:10px;font-size:12.5px">Aceptar</button>
+                </div>
+              </sc-if>
+              <sc-if value="{{ o.pending }}">
+              </sc-if>
+              <div style="margin-top:9px">
+                <span class="tag {{ o.stateCls }}">{{ o.stateLabel }}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <sc-if value="{{ offersInEmpty }}">
+          <div style="background:var(--color-surface);border-radius:28px;padding:22px 20px;text-align:center;margin-bottom:24px">
+            <div style="font-size:12.5px;color:var(--color-neutral-700);text-wrap:pretty">Nadie te ha ofrecido nada todavía. Publica más prendas para que te lleguen ofertas.</div>
+          </div>
+        </sc-if>
+
+        <div style="font-size:12px;color:var(--color-neutral-700);margin-bottom:9px">Tus ofertas</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ offersOut }}" as="o" hint-placeholder-count="1">
+            <div style="display:flex;align-items:center;gap:12px;background:var(--color-surface);border-radius:26px;padding:11px 14px 11px 11px">
+              <div style="position:relative;overflow:hidden;width:56px;height:56px;flex:none;border-radius:18px;background:{{ o.tint }};display:flex;align-items:center;justify-content:center">
+                <div style="{{ o.photoBg }}"></div>
+                <sc-if value="{{ o.noPhoto }}" hint-placeholder-val="{{ true }}">
+                  <svg viewBox="0 0 100 100" width="34" height="34"><path d="{{ o.path }}" fill="{{ o.color }}"></path></svg>
+                </sc-if>
+              </div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:12.5px;line-height:1.25">{{ o.name }}</div>
+                <div style="font-family:var(--font-heading);font-size:17px;margin-top:1px">{{ o.offer }}</div>
+                <div style="font-size:10.5px;color:var(--color-neutral-600)">a {{ o.seller }} · pedía {{ o.ask }}</div>
+              </div>
+              <span class="tag {{ o.stateCls }}" style="flex:none">{{ o.stateLabel }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <sc-if value="{{ offersOutEmpty }}">
+          <div style="background:var(--color-surface);border-radius:28px;padding:22px 20px;text-align:center">
+            <div style="font-size:12.5px;color:var(--color-neutral-700);text-wrap:pretty">Cuando algo del bazar te guste, abre la prenda y toca “Hacer oferta”.</div>
+          </div>
+        </sc-if>
+      </sc-if>
+
       <sc-if value="{{ bazarMias }}">
         <div style="display:flex;gap:10px;margin-bottom:16px">
           <div style="flex:1;background:var(--color-surface);border-radius:24px;padding:14px 16px">
@@ -664,8 +734,37 @@ body{margin:0;background:#eef4fb}
           <div style="font-size:11.5px;color:var(--color-neutral-700)">{{ lookSeller }}</div>
         </div>
       </div>
-      <button onClick="{{ contact }}" class="btn btn-primary btn-block" style="margin-top:20px;padding:14px;font-size:15px">Me interesa · contactar</button>
+      <div style="display:flex;gap:10px;margin-top:20px">
+        <button onClick="{{ openOffer }}" class="btn btn-secondary" style="flex:1;padding:14px;font-size:14px">Hacer oferta</button>
+        <button onClick="{{ contact }}" class="btn btn-primary" style="flex:1.2;padding:14px;font-size:14px">Pagar lo que pide</button>
+      </div>
       <div style="text-align:center;font-size:11px;color:var(--color-neutral-600);margin-top:10px;text-wrap:pretty">Acuerdan precio y entrega directo entre ustedes. Percha no cobra comisión.</div>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ offerOpen }}">
+  <div style="position:absolute;inset:0;z-index:78;display:flex;flex-direction:column;justify-content:flex-end;background:rgba(22,35,47,.55)">
+    <button onClick="{{ closeOffer }}" style="flex:1;border:0;background:transparent;cursor:pointer"></button>
+    <div style="background:var(--color-bg);border-radius:34px 34px 0 0;padding:14px 22px 36px;animation:up .28s cubic-bezier(.2,.8,.3,1)">
+      <div style="width:44px;height:4px;border-radius:999px;background:var(--color-neutral-400);margin:0 auto 16px"></div>
+      <div class="card-kicker">{{ offerAskLabel }}</div>
+      <h3 style="margin:2px 0 16px;font-size:22px">¿Cuánto ofreces?</h3>
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <sc-for list="{{ offerQuick }}" as="q" hint-placeholder-count="3">
+          <button onClick="{{ q.pick }}" class="tag {{ q.cls }}" style="border:0;cursor:pointer;font-family:var(--font-body);padding:9px 16px;font-size:13px">{{ q.label }}</button>
+        </sc-for>
+      </div>
+      <div class="field" style="margin-bottom:12px">
+        <label>Tu oferta (MXN)</label>
+        <input class="input" type="tel" value="{{ offerPrice }}" onChange="{{ setOfferPrice }}" placeholder="300">
+      </div>
+      <div class="field" style="margin-bottom:18px">
+        <label>Mensaje (opcional)</label>
+        <input class="input" value="{{ offerNote }}" onChange="{{ setOfferNote }}" placeholder="Puedo recogerla el sábado">
+      </div>
+      <button onClick="{{ doOffer }}" disabled="{{ offerDisabled }}" class="btn btn-primary btn-block" style="padding:14px;font-size:15px">{{ offerCta }}</button>
+      <div style="text-align:center;font-size:11px;color:var(--color-neutral-600);margin-top:10px">La persona puede aceptar o rechazar. Nada se cobra aquí.</div>
     </div>
   </div>
   </sc-if>
@@ -776,6 +875,7 @@ class Component extends DCLogic {
       camAsking: false,
       capName: "Prenda nueva",
       capCat: null, capBase: null,
+      offersIn: [], offersOut: [], offerFor: null, offerPrice: "", offerNote: "",
       market: [], bazarTab: "explorar", sellFor: null,
       sellPrice: "", sellSize: "", sellCond: "Buen estado",
       lookAt: null, marketFilter: "todo",
@@ -933,6 +1033,66 @@ class Component extends DCLogic {
       deleteDoc(doc(this._db, "market", "L" + id)).catch(e => this.flash("No pude quitarla del bazar (" + (e && e.code ? e.code : "error") + ")."));
     }
     this.flash("Quitada del bazar");
+  }
+
+  loadOffers() {
+    if (!this._db || !this.state.user) return;
+    const uid = this.state.user.uid;
+    const { collection, getDocs, query, where } = this._fb.fs;
+    Promise.all([
+      getDocs(query(collection(this._db, "offers"), where("sellerUid", "==", uid))),
+      getDocs(query(collection(this._db, "offers"), where("buyerUid", "==", uid)))
+    ]).then(([a, b]) => {
+      const recv = [], sent = [];
+      a.forEach(d => recv.push(d.data()));
+      b.forEach(d => sent.push(d.data()));
+      this.setState({ offersIn: recv, offersOut: sent });
+    }).catch(() => { });
+  }
+
+  sendOffer() {
+    const st = this.state;
+    const m = (st.market || []).find(x => x.id === st.lookAt);
+    const p = parseInt(st.offerPrice, 10);
+    if (!m) return;
+    if (!p || p < 1) { this.flash("Escribe cuánto ofreces."); return; }
+    const o = {
+      id: "O" + m.id + "_" + (st.user ? st.user.uid : "local"),
+      listingId: m.id, name: m.name, cat: m.cat, color: m.color, photo: m.photo || null,
+      ask: m.price, offer: p, note: (st.offerNote || "").slice(0, 140),
+      buyerUid: st.user ? st.user.uid : "local",
+      buyer: st.user && st.user.email ? st.user.email.split("@")[0] : "Yo",
+      sellerUid: m.sellerUid, seller: m.seller,
+      status: "pendiente", ts: Date.now()
+    };
+    this.track("oferta_enviada", { precio_pedido: m.price, precio_ofrecido: p, tipo: m.cat });
+    this.setState({
+      offersOut: [o].concat(st.offersOut || []),
+      lookAt: null, offerFor: null, offerPrice: "", offerNote: ""
+    });
+    if (this._db && st.user) {
+      const { doc, setDoc } = this._fb.fs;
+      setDoc(doc(this._db, "offers", o.id), o)
+        .then(() => this.flash("Oferta de $" + p + " enviada a " + m.seller))
+        .catch(e => this.flash("No se envió la oferta (" + (e && e.code ? e.code : "error") + ")."));
+      return;
+    }
+    this.flash(st.demoMode ? "Es una publicación de muestra — la oferta no sale de tu teléfono." : "Oferta de $" + p + " registrada solo en este teléfono.");
+  }
+
+  answerOffer(id, status) {
+    const st = this.state;
+    const o = (st.offersIn || []).find(x => x.id === id);
+    this.setState({ offersIn: (st.offersIn || []).map(x => x.id === id ? Object.assign({}, x, { status }) : x) });
+    this.track("oferta_respondida", { status, precio: o ? o.offer : 0 });
+    if (this._db && st.user) {
+      const { doc, updateDoc } = this._fb.fs;
+      updateDoc(doc(this._db, "offers", id), { status })
+        .catch(e => this.flash("No pude responder (" + (e && e.code ? e.code : "error") + ")."));
+    }
+    this.flash(status === "aceptada"
+      ? "Aceptaste $" + (o ? o.offer : "") + " · ponte de acuerdo con " + (o ? o.buyer : "el comprador")
+      : "Oferta rechazada");
   }
 
   loadCloud(uid) {
@@ -1503,10 +1663,53 @@ class Component extends DCLogic {
       idleOn: st.items.filter(i => !i.demo && !i.forSale && i.worn < 3).length >= 2,
       idleValue: "~$" + (st.items.filter(i => !i.demo && !i.forSale && i.worn < 3).length * 320),
       bazarExplorar: st.bazarTab === "explorar", bazarMias: st.bazarTab === "mias",
-      bazarTabs: [["explorar", "Explorar"], ["mias", "Mis ventas"]].map(([k, l]) => ({
-        label: l, cls: st.bazarTab === k ? "tag-accent" : "tag-neutral",
-        pick: () => this.setState({ bazarTab: k })
+      bazarTabs: [["explorar", "Explorar"], ["mias", "Mis ventas"], ["ofertas", "Ofertas"]].map(([k, l]) => {
+        const pend = (st.offersIn || []).filter(o => o.status === "pendiente").length;
+        return {
+          label: k === "ofertas" && pend ? l + " · " + pend : l,
+          cls: st.bazarTab === k ? "tag-accent" : (k === "ofertas" && pend ? "tag-accent-2" : "tag-neutral"),
+          pick: () => { this.setState({ bazarTab: k }); if (k === "ofertas") this.loadOffers(); }
+        };
+      }),
+      bazarOfertas: st.bazarTab === "ofertas",
+      offersIn: (st.offersIn || []).map(o => ({
+        name: o.name, buyer: o.buyer, offer: "$" + o.offer, ask: "$" + o.ask,
+        note: o.note || "", noteOn: !!o.note,
+        color: o.color, path: PATHS[o.cat] || PATHS.top, tint: this.tint("#e6ecf2"),
+        photoBg: this.bg(o.photo), noPhoto: !o.photo,
+        pending: o.status === "pendiente",
+        stateLabel: o.status === "aceptada" ? "Aceptada" : "Rechazada",
+        stateCls: o.status === "aceptada" ? "tag-accent-2" : "tag-neutral",
+        accept: () => this.answerOffer(o.id, "aceptada"),
+        reject: () => this.answerOffer(o.id, "rechazada")
       })),
+      offersInEmpty: !(st.offersIn || []).length,
+      offersOut: (st.offersOut || []).map(o => ({
+        name: o.name, seller: o.seller, offer: "$" + o.offer, ask: "$" + o.ask,
+        color: o.color, path: PATHS[o.cat] || PATHS.top, tint: this.tint("#e6ecf2"),
+        photoBg: this.bg(o.photo), noPhoto: !o.photo,
+        stateLabel: o.status === "aceptada" ? "¡Aceptada!" : o.status === "rechazada" ? "Rechazada" : "Esperando respuesta",
+        stateCls: o.status === "aceptada" ? "tag-accent-2" : o.status === "rechazada" ? "tag-neutral" : "tag-outline"
+      })),
+      offersOutEmpty: !(st.offersOut || []).length,
+      offerOpen: !!st.offerFor,
+      openOffer: () => this.setState({ offerFor: st.lookAt, offerPrice: "", offerNote: "" }),
+      closeOffer: () => this.setState({ offerFor: null }),
+      offerPrice: st.offerPrice, offerNote: st.offerNote,
+      setOfferPrice: e => this.setState({ offerPrice: e.target.value.replace(/[^0-9]/g, "") }),
+      setOfferNote: e => this.setState({ offerNote: e.target.value }),
+      doOffer: () => this.sendOffer(),
+      offerCta: st.offerPrice ? "Ofrecer $" + st.offerPrice : "Escribe tu oferta",
+      offerDisabled: !st.offerPrice,
+      offerAskLabel: (() => { const m = (st.market || []).find(x => x.id === st.lookAt); return m ? "Pide $" + m.price : ""; })(),
+      offerQuick: (() => {
+        const m = (st.market || []).find(x => x.id === st.lookAt);
+        if (!m) return [];
+        return [0.9, 0.8, 0.7].map(f => {
+          const v = Math.round(m.price * f / 10) * 10;
+          return { label: "$" + v, cls: String(v) === st.offerPrice ? "tag-accent" : "tag-neutral", pick: () => this.setState({ offerPrice: String(v) }) };
+        });
+      })(),
       mFilters: [["todo", "Todo"], ["sweater", "Suéteres"], ["top", "Playeras"], ["pants", "Pantalones"], ["shoes", "Calzado"], ["belt", "Cinturones"]].map(([k, l]) => ({
         label: l, cls: st.marketFilter === k ? "tag-accent" : "tag-neutral",
         pick: () => this.setState({ marketFilter: k })
@@ -1591,7 +1794,7 @@ class Component extends DCLogic {
       goHoy: () => { this.track("screen_view", { firebase_screen: "hoy" }); this.setState({ screen: "hoy" }); },
       goArmario: () => { this.track("screen_view", { firebase_screen: "armario" }); this.setState({ screen: "armario" }); },
       goProbador: () => { this.track("screen_view", { firebase_screen: "probador" }); this.setState({ screen: "probador" }); },
-      goBazar: () => { this.track("screen_view", { firebase_screen: "bazar" }); this.setState({ screen: "bazar" }); this.loadMarket(); },
+      goBazar: () => { this.track("screen_view", { firebase_screen: "bazar" }); this.setState({ screen: "bazar" }); this.loadMarket(); this.loadOffers(); },
       isBazar: st.screen === "bazar",
       tBaz: st.screen === "bazar" ? acc : dim,
       openCam: this.openCam,
