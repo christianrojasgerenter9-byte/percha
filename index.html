@@ -54,13 +54,14 @@ body{margin:0;background:#eef4fb}
 @keyframes tin{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes pop{from{transform:scale(.86);opacity:0}to{transform:scale(1);opacity:1}}
 @keyframes zin{from{transform:scale(.72);opacity:0}to{transform:scale(1);opacity:1}}
+@media (display-mode:standalone){.shell{padding:0!important;display:block!important;min-height:100dvh}}
 .app-light .tag-accent,.app-dark .tag-accent{background:var(--color-accent);color:var(--color-bg);border-color:var(--color-accent)}
 .app-light .tag-accent-2,.app-dark .tag-accent-2{background:var(--color-accent-2);color:var(--color-bg);border-color:var(--color-accent-2)}
 </style>
 </helmet>
 
-<div class="app-{{ theme }}" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:36px 20px;background:var(--color-bg)">
-<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ isCam }}" hint-size="402px,874px">
+<div class="app-{{ theme }} shell" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:36px 20px;background:var(--color-bg)">
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ isCam }}" bare="{{ bare }}" hint-size="402px,874px">
 
 <sc-if value="{{ isCam }}">
 <div style="height:100%;display:flex;flex-direction:column;background:#101923;color:#e8f1f8;font-family:var(--font-body)">
@@ -1157,6 +1158,7 @@ class Component extends DCLogic {
 
   installUI() {
     const standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+    this.setState({ bare: standalone });
     if (standalone) return;
     const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
     if (window.__perchaInstall) this.setState({ canInstall: true });
@@ -1476,12 +1478,7 @@ class Component extends DCLogic {
   }
 
   merge(mine, prefs) {
-    let items = this.seed();
-    mine.forEach(g => {
-      const v = items.find(i => i.demo && i.cat === g.cat);
-      if (v) items = items.filter(i => i.id !== v.id);
-    });
-    items = items.concat(mine);
+    const items = this.seed().concat(mine);
     const pick = Object.assign({}, this.state.pick, prefs.pick || {});
     SLOTS.forEach(s => {
       const it = items.find(i => i.id === pick[s.cat]);
@@ -1668,7 +1665,14 @@ class Component extends DCLogic {
   }
 
   nm(i) { return i && this.state.gender === "mujer" ? (NAMES_M[i.id] || i.name) : (i ? i.name : ""); }
-  byCat(cat) { return this.state.items.filter(i => i.cat === cat); }
+  pool() {
+    const own = this.state.items.filter(i => !i.demo);
+    return own.length ? own : this.state.items;
+  }
+  byCat(cat) {
+    const p = this.pool().filter(i => i.cat === cat);
+    return p.length ? p : this.state.items.filter(i => i.cat === cat);
+  }
   get(id) { return this.state.items.find(i => i.id === id); }
   targetWarm() { const t = this.temp(); return t < 14 ? 3 : t < 23 ? 2 : 1; }
 
@@ -1827,8 +1831,7 @@ class Component extends DCLogic {
         tint: "#e6ecf2", warm: c === "sweater" ? 3 : 1, occ: [occ],
         bold: true, worn: 0, clean: true, photo: photo || null
       };
-      const victim = this.state.items.find(i => i.demo && i.cat === c);
-      const items = this.state.items.filter(i => !victim || i.id !== victim.id).concat([item]);
+      const items = this.state.items.concat([item]);
       const pick = Object.assign({}, this.state.pick, { [c]: id });
       SLOTS.forEach(s => {
         const it = items.find(i => i.id === pick[s.cat]);
@@ -1838,10 +1841,8 @@ class Component extends DCLogic {
       this.setState({ items, cam: burst ? "view" : null, screen: burst ? this.state.screen : "armario", filter: c, pick, capPhoto: null, capCat: null, capBase: null, capNamed: false, guess: "" },
         () => { this.saveGarment(item); this.savePrefs(); if (burst) this.startCam(); });
       this.track("prenda_registrada", { tipo: c, con_foto: !!item.photo, total_propias: items.filter(i => !i.demo).length });
-      const left = items.filter(i => i.demo).length;
-      this.flash(victim
-        ? name + " sustituyó a " + this.nm(victim).toLowerCase() + " · quedan " + left + " de ejemplo"
-        : name + " ya está en tu armario");
+      const n = items.filter(i => !i.demo).length;
+      this.flash(name + " ya está en tu armario · " + n + (n === 1 ? " prenda tuya" : " prendas tuyas"));
     });
   };
 
@@ -1995,7 +1996,7 @@ class Component extends DCLogic {
     const filters = fdefs.map(([k, l]) => ({
       label: l, cls: chip(st.filter === k), pick: () => this.setState({ filter: k })
     }));
-    const shelf = st.items.filter(i => st.filter === "todo" || i.cat === st.filter).map(i => ({
+    const shelf = this.pool().filter(i => st.filter === "todo" || i.cat === st.filter).map(i => ({
       name: this.nm(i), color: i.color, tint: this.tint(i.tint), path: PATHS[i.cat],
       photoBg: this.bg(i.photo), hasPhoto: !!i.photo, noPhoto: !i.photo,
       dirty: !i.clean, op: i.clean ? 1 : 0.55,
@@ -2199,6 +2200,7 @@ class Component extends DCLogic {
       confirmPayment: () => this.confirmPayment(),
       payCta: st.receiptPhoto ? "Ya pagué · avisar a Percha" : "Sube tu comprobante",
       payDisabled: !st.receiptPhoto,
+      bare: !!st.bare,
       canInstall: !!st.canInstall, iosInstall: !!st.iosInstall && !st.canInstall,
       doInstall: this.doInstall,
       hideInstall: () => this.setState({ canInstall: false, iosInstall: false }),
@@ -2217,7 +2219,7 @@ class Component extends DCLogic {
       authError: st.authError, authErrorOn: !!st.authError, authBusy: st.authBusy,
       needsGender: !st.cam && !st.gender && (!st.cloud || !!st.user),
       genders: [
-        { key: "hombre", label: "Hombre", note: "suéter · playera · pantalón · zapatos", tint: this.tint("#dfeaf7"), pathA: PATHS.top, colorA: "#5b9bcb", pathB: PATHS.shoes, colorB: "#2a4a68" },
+        { key: "hombre", label: "Hombre", note: "suéter · playera · pantalón · zapatos", tint: this.tint("#d3e6f7"), pathA: PATHS.top, colorA: "#5b9bcb", pathB: PATHS.shoes, colorB: "#2a4a68" },
         { key: "mujer", label: "Mujer", note: "saco · blusa · pantalón · zapatos", tint: this.tint("#e4f2ef"), pathA: PATHS.sweater, colorA: "#7fb8ae", pathB: PATHS.pants, colorB: "#4a6a8c" }
       ].map(x => Object.assign(x, { pick: () => this.setState({ gender: x.key }, () => this.savePrefs()) })),
       pickNeutral: () => this.setState({ gender: "todo" }, () => this.savePrefs()),
@@ -2231,7 +2233,7 @@ class Component extends DCLogic {
       tempLabel: t + "°", weatherWord: t < 14 ? "frío, viento" : t < 23 ? "fresco, nublado" : "cálido y seco",
       outfit, alts, occs, filters, shelf, showScore,
       score: this.scoreOf(cur), reason: this.reasonOf(cur),
-      countLabel: st.items.length + " prendas",
+      countLabel: this.pool().length + " prendas",
       tHoy: st.screen === "hoy" ? acc : dim,
       tArm: st.screen === "armario" ? acc : dim,
       tPro: st.screen === "probador" ? acc : dim,
