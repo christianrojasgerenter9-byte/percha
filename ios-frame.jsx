@@ -18,7 +18,7 @@
 // ─────────────────────────────────────────────────────────────
 // Status bar
 // ─────────────────────────────────────────────────────────────
-function IOSStatusBar({ dark = false, time = '9:41' }) {
+function IOSStatusBar({ dark = false, time = '' }) {
   const c = dark ? '#fff' : '#000';
   return (
     <div style={{
@@ -201,8 +201,23 @@ function IOSList({ header, children, dark = false }) {
 // ─────────────────────────────────────────────────────────────
 function IOSDevice({
   children, width = 402, height = 874, dark = false,
-  title, keyboard = false,
+  title, keyboard = false, bare = false,
 }) {
+  // Installed on a real phone: no fake bezel, island or status bar.
+  if (bare) {
+    return (
+      <div data-om-starter="ios-frame" style={{
+        width: '100%', minHeight: '100dvh', position: 'relative',
+        background: dark ? '#000' : '#F2F2F7',
+        display: 'flex', flexDirection: 'column',
+        fontFamily: '-apple-system, system-ui, sans-serif',
+        WebkitFontSmoothing: 'antialiased',
+      }}>
+        {title !== undefined && <IOSNavBar title={title} dark={dark} />}
+        <div style={{ flex: 1, minHeight: 0 }}>{children}</div>
+      </div>
+    );
+  }
   return (
     // data-om-starter: inert presence marker — Claude Design's starter-usage
     // probe reads it; it renders nothing. Keep it on this root element.
@@ -213,13 +228,21 @@ function IOSDevice({
       fontFamily: '-apple-system, system-ui, sans-serif',
       WebkitFontSmoothing: 'antialiased',
     }}>
-      {/* dynamic island */}
+
+      {/* top band — covers where the notch and status icons used to be */}
       <div style={{
-        position: 'absolute', top: 11, left: '50%', transform: 'translateX(-50%)',
-        width: 126, height: 37, borderRadius: 24, background: '#000', zIndex: 50,
-      }} />
+        position: 'absolute', top: 0, left: 0, right: 0, height: 54, zIndex: 40,
+        background: '#4d8bc0',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9,
+      }}>
+        <img src="icon-192.png" alt="" width="26" height="26" style={{ borderRadius: 7, display: 'block' }} />
+        <span style={{
+          fontFamily: 'Caprasimo, Georgia, serif', fontSize: 16, letterSpacing: '.01em',
+          color: '#f2f8fd', lineHeight: 1,
+        }}>Bienvenido a Percha</span>
+      </div>
       {/* status bar (absolute) */}
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10, display: 'none' }}>
         <IOSStatusBar dark={dark} />
       </div>
       {/* nav + content */}
