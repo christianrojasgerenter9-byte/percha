@@ -77,7 +77,7 @@ body{margin:0;background:#eef4fb}
     </div>
     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px">
       <div style="position:relative;width:250px;height:310px;border-radius:28px;border:2px dashed rgba(108,173,222,.75);display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0b1219">
-        <video ref="{{ videoRef }}" autoPlay playsInline muted="{{ true }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></video>
+        <video ref="{{ videoRef }}" autoplay="" playsinline="" muted="{{ true }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></video>
         <sc-if value="{{ camAsking }}">
           <div style="position:relative;z-index:2;padding:20px;text-align:center;font-size:12.5px;line-height:1.5;opacity:.8">Solicitando acceso a la cámara…</div>
         </sc-if>
@@ -248,14 +248,14 @@ body{margin:0;background:#eef4fb}
     <div style="padding:60px 20px 20px">
       <div style="display:flex;align-items:flex-start">
         <div>
-          <div class="card-kicker">{{ today }}</div>
-          <h2 style="font-size:31px;margin:2px 0 0">Hoy te pondría<br>esto</h2>
-        </div>
+          
+          
+        <h2 style="font-size: 31px; margin: 2px 0 0; position: static; color: #5C8DB3; text-align: right">Hoy te pondría<br>esto</h2></div>
         <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
           <button onClick="{{ toggleTheme }}" style="width:36px;height:36px;border-radius:999px;border:1px solid var(--color-divider);background:transparent;color:var(--color-text);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center">{{ themeIcon }}</button>
           <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-            <div style="width:46px;height:46px;border-radius:999px;background:var(--color-accent-200);display:flex;align-items:center;justify-content:center;font-family:var(--font-heading);font-size:15px;color:var(--color-accent-800)">{{ tempLabel }}</div>
-            <div style="font-size:11px;color:var(--color-neutral-700)">{{ weatherWord }}</div>
+            
+            
           </div>
         </div>
       </div>
@@ -326,6 +326,17 @@ body{margin:0;background:#eef4fb}
         <button onClick="{{ shuffle }}" class="btn btn-secondary" style="flex:1;padding:14px;font-size:14.5px">Otra idea</button>
         <button onClick="{{ wear }}" class="btn btn-primary" style="flex:1.3;padding:14px;font-size:14.5px">Me lo pongo</button>
       </div>
+
+      <button onClick="{{ goBazarGap }}" style="width:100%;margin-top:12px;border:1px solid var(--color-divider);cursor:pointer;text-align:left;display:flex;align-items:center;gap:13px;background:var(--color-surface);border-radius:26px;padding:14px 16px">
+        <div style="width:40px;height:40px;flex:none;border-radius:999px;background:var(--color-accent-200);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12.6 2.6a2 2 0 0 0-1.4-.6H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.6 8.6a2 2 0 0 0 2.8 0l6.8-6.8a2 2 0 0 0 0-2.8Z"></path><circle cx="7.5" cy="7.5" r="1.2" fill="currentColor"></circle></svg>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13.5px;line-height:1.3;color:var(--color-text)">{{ gap.line }}</div>
+          <div style="font-size:11.5px;color:var(--color-neutral-600);margin-top:2px">Ver en el Bazar</div>
+        </div>
+        <span style="flex:none;color:var(--color-accent);font-size:18px">→</span>
+      </button>
 
       <div style="margin-top:26px">
         <div style="display:flex;align-items:baseline;margin-bottom:10px">
@@ -2071,6 +2082,46 @@ class Component extends DCLogic {
       themeLabel: st.dark ? "Modo claro" : "Modo oscuro",
       toggleTheme: () => this.setState({ dark: !st.dark }, () => this.savePrefs()),
       userEmail: st.user ? st.user.email : "", logout: this.logout,
+      gap: (() => {
+        const mujer = st.gender === "mujer";
+        const W = {
+          sweater: mujer
+            ? { falta: "Te falta un saco", neutro: "Un saco en neutro", otro: "Otro saco" }
+            : { falta: "Te falta un suéter o saco", neutro: "Un suéter en neutro", otro: "Otro suéter" },
+          top: mujer
+            ? { falta: "Te falta una blusa", neutro: "Una blusa en neutro", otro: "Otra blusa" }
+            : { falta: "Te falta una playera", neutro: "Una playera en neutro", otro: "Otra playera" },
+          pants: { falta: "Te falta un pantalón", neutro: "Un pantalón en neutro", otro: "Otro pantalón" },
+          shoes: { falta: "Te faltan zapatos", neutro: "Unos zapatos en neutro", otro: "Otros zapatos" }
+        };
+        const own = st.items.filter(i => !i.demo);
+        if (!own.length) return { cat: "todo", line: "Encuentra la pieza que te falta" };
+        const miss = SLOTS.find(s => !own.some(i => i.cat === s.cat));
+        if (miss) return { cat: miss.cat, line: W[miss.cat].falta + " para cerrar este look" };
+        const loud = SLOTS.map(s => this.get(st.pick[s.cat])).filter(Boolean)
+          .filter(p => !this.hsl(p.color).neutral);
+        if (loud.length >= 2) {
+          const cat = loud[1].cat;
+          return { cat, line: W[cat].neutro + " le sentaría mejor" };
+        }
+        const thin = SLOTS.map(s => ({ s, n: own.filter(i => i.cat === s.cat).length }))
+          .sort((a, b) => a.n - b.n)[0];
+        return { cat: thin.s.cat, line: W[thin.s.cat].otro + " te daría más combinaciones" };
+      })(),
+      goBazarGap: () => {
+        const own = st.items.filter(i => !i.demo);
+        let cat = "todo";
+        if (own.length) {
+          const miss = SLOTS.find(s => !own.some(i => i.cat === s.cat));
+          const loud = SLOTS.map(s => this.get(st.pick[s.cat])).filter(Boolean)
+            .filter(p => !this.hsl(p.color).neutral);
+          const thin = SLOTS.map(s => ({ s, n: own.filter(i => i.cat === s.cat).length })).sort((a, b) => a.n - b.n)[0];
+          cat = miss ? miss.cat : (loud.length >= 2 ? loud[1].cat : thin.s.cat);
+        }
+        this.track("bazar_desde_hoy", { tipo: cat });
+        this.setState({ screen: "bazar", bazarTab: "explorar", marketFilter: cat });
+        this.loadMarket(); this.loadOrders();
+      },
       idle: (() => {
         const n = st.items.filter(i => !i.demo && !i.forSale && i.worn < 3).length;
         return n >= 2 ? n + " prendas casi sin usar" : "";
