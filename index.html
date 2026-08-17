@@ -864,7 +864,31 @@ body{margin:0;background:#eef4fb}
     <div style="background:var(--color-bg);border-radius:34px 34px 0 0;padding:14px 22px 36px;animation:up .28s cubic-bezier(.2,.8,.3,1)">
       <div style="width:44px;height:4px;border-radius:999px;background:var(--color-neutral-400);margin:0 auto 16px"></div>
       <div class="card-kicker">{{ sellTitle }}</div>
-      <h3 style="margin:2px 0 16px;font-size:22px">{{ sellName }}</h3>
+      <h3 style="margin:2px 0 14px;font-size:22px">{{ sellName }}</h3>
+
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px">
+        <div style="font-size:12px;color:var(--color-neutral-700)">Cuatro tomas · vende mucho mejor</div>
+        <div style="margin-left:auto;font-size:11px;color:var(--color-accent)">{{ shotsCount }}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:16px">
+        <sc-for list="{{ sellShots }}" as="s" hint-placeholder-count="4">
+          <label style="position:relative;display:block;cursor:pointer">
+            <div style="position:relative;overflow:hidden;width:100%;aspect-ratio:.82;border-radius:18px;background:var(--color-surface);border:1.5px dashed var(--color-neutral-400);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:4px;box-sizing:border-box">
+              <div style="{{ s.bg }}"></div>
+              <sc-if value="{{ s.empty }}" hint-placeholder-val="{{ true }}">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-neutral-600)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
+                <div style="font-size:9px;line-height:1.15;text-align:center;color:var(--color-neutral-700)">{{ s.hint }}</div>
+              </sc-if>
+              <sc-if value="{{ s.has }}">
+                <button onClick="{{ s.clear }}" style="position:absolute;top:4px;right:4px;width:20px;height:20px;border:0;border-radius:999px;background:rgba(22,35,47,.55);color:#fff;font-size:11px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
+              </sc-if>
+            </div>
+            <div style="font-size:9.5px;text-align:center;margin-top:4px;color:var(--color-neutral-700)">{{ s.label }}</div>
+            <input type="file" accept="image/*" onChange="{{ s.pick }}" style="display:none">
+          </label>
+        </sc-for>
+      </div>
+
       <div style="display:flex;gap:10px;margin-bottom:14px">
         <div class="field" style="flex:1.2">
           <label>Lo que quieres recibir</label>
@@ -917,6 +941,15 @@ body{margin:0;background:#eef4fb}
           <sc-if value="{{ lookNoPhoto }}" hint-placeholder-val="{{ true }}">
             <svg viewBox="0 0 100 100" width="82" height="82"><path d="{{ lookPath }}" fill="{{ lookColor }}"></path></svg>
           </sc-if>
+        </button>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <sc-for list="{{ lookShots }}" as="t" hint-placeholder-count="0">
+            <button onClick="{{ t.pick }}" title="{{ t.label }}" style="position:relative;overflow:hidden;width:38px;height:38px;border:0;padding:0;cursor:pointer;border-radius:12px;background:var(--color-surface);outline:{{ t.ring }};outline-offset:1px">
+              <div style="{{ t.bg }}"></div>
+            </button>
+          </sc-for>
+        </div>
+        <button style="display:none">
           <div style="position:absolute;bottom:7px;right:7px;width:30px;height:30px;border-radius:999px;background:rgba(22,35,47,.55);color:#fff;display:flex;align-items:center;justify-content:center">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.6-3.6M11 8v6M8 11h6"></path></svg>
           </div>
@@ -1074,6 +1107,12 @@ const PAGO = {
   clabe: "127180001961697846",
   oxxo: ""
 };
+const SHOTS = [
+  { label: "Frente", hint: "extendida, completa" },
+  { label: "Espalda", hint: "el otro lado" },
+  { label: "Detalle", hint: "tela, marca, costura" },
+  { label: "Puesta", hint: "cómo cae" }
+];
 const MARKUP = 0.15;
 const publicPrice = (net) => Math.round((net * (1 + MARKUP)) / 5) * 5;
 const SELLER_CODES = ["PERCHA2026"];
@@ -1183,6 +1222,7 @@ class Component extends DCLogic {
       offersIn: [], offersOut: [], offerFor: null, offerPrice: "", offerNote: "",
       market: [], bazarTab: "explorar", sellFor: null,
       sellPrice: "", sellSize: "", sellCond: "Buen estado", sellDesc: "", sellWa: "",
+      sellShots: [null, null, null, null], lookShot: 0,
       lookAt: null, marketFilter: "todo", zoomAt: null, adIdx: 0,
       buying: null, receiptPhoto: null, payRef: "", buys: [], sales: [],
       sellerOk: false, gateOpen: false, gateCode: "", gateError: "",
@@ -1322,17 +1362,22 @@ class Component extends DCLogic {
     if (!p || p < 1) { this.flash("Ponle un precio para publicarla."); return; }
     if (p > 200000) { this.flash("El precio máximo es $200,000."); return; }
     const st = this.state;
+    const shots = (st.sellShots || []).slice(0, 4);
+    const photos = shots.filter(Boolean);
     const entry = {
       id: "L" + id, garmentId: id, cat: it.cat, name: it.name, color: it.color,
-      photo: it.photo || null, price: publicPrice(p), net: p, size: size || "Único", cond: cond || "Buen estado",
+      photo: photos[0] || it.photo || null, photos, price: publicPrice(p), net: p, size: size || "Único", cond: cond || "Buen estado",
       desc: (desc || "").trim().slice(0, 400),
       wa: (this.state.sellWa || "").replace(/[^0-9]/g, "").slice(0, 15),
       seller: (st.user && st.user.email ? st.user.email.split("@")[0] : "Yo"),
       sellerUid: st.user ? st.user.uid : "local",
       city: st.city || "Tu zona", ago: "ahora", sold: false, ts: Date.now()
     };
-    const items = st.items.map(i => i.id === id ? Object.assign({}, i, { forSale: true, sold: false, price: entry.price, net: p, size: entry.size, cond: entry.cond, desc: entry.desc, wa: entry.wa }) : i);
-    this.setState({ items, market: [entry].concat(st.market || []), detail: null, sellFor: null }, () => {
+    const items = st.items.map(i => i.id === id ? Object.assign({}, i, { forSale: true, sold: false, price: entry.price, net: p, size: entry.size, cond: entry.cond, desc: entry.desc, wa: entry.wa, photos, photo: entry.photo }) : i);
+    this.setState({
+      items, detail: null, sellFor: null, sellShots: [null, null, null, null],
+      market: [entry].concat((st.market || []).filter(m => m.id !== entry.id))
+    }, () => {
       const g = this.get(id);
       if (g) this.saveGarment(g);
     });
@@ -1345,6 +1390,24 @@ class Component extends DCLogic {
       return;
     }
     this.flash(it.name + " publicada · recibes $" + p + " · solo en este teléfono");
+  }
+
+  seedShots(it) {
+    const out = [null, null, null, null];
+    const src = (it && it.photos && it.photos.length) ? it.photos : (it && it.photo ? [it.photo] : []);
+    src.slice(0, 4).forEach((p, i) => { out[i] = p; });
+    return out;
+  }
+
+  setShot(i, file) {
+    if (!file) return;
+    const r = new FileReader();
+    r.onload = () => this.shrink(r.result).then(small => {
+      const next = (this.state.sellShots || [null, null, null, null]).slice();
+      next[i] = small;
+      this.setState({ sellShots: next });
+    });
+    r.readAsDataURL(file);
   }
 
   markSold(id) {
@@ -1369,7 +1432,8 @@ class Component extends DCLogic {
       sellFor: id, editing: true,
       sellPrice: String(it.net || it.price || ""),
       sellSize: it.size || "", sellCond: it.cond || "Buen estado",
-      sellDesc: it.desc || "", sellWa: it.wa || ""
+      sellDesc: it.desc || "", sellWa: it.wa || "",
+      sellShots: this.seedShots(it)
     });
   }
 
@@ -2224,7 +2288,7 @@ class Component extends DCLogic {
         photoBg: m.photo ? Object.assign(this.bg(m.photo), { transition: "transform .35s cubic-bezier(.2,.8,.3,1)" }) : this.bg(null),
         hasPhoto: !!m.photo,
         zoom: (e) => { e.stopPropagation(); this.setState({ zoomAt: m.photo }); },
-        open: () => this.setState({ lookAt: m.id })
+        open: () => this.setState({ lookAt: m.id, lookShot: 0 })
       })),
       marketEmpty: !(st.market || []).filter(m => (st.marketFilter === "todo" || m.cat === st.marketFilter) && m.sellerUid !== (st.user ? st.user.uid : "local")).length,
       mine: st.items.filter(i => i.forSale).map(i => ({
@@ -2255,8 +2319,23 @@ class Component extends DCLogic {
       lookPrice: (() => { const m = (st.market || []).find(x => x.id === st.lookAt); return m ? "$" + m.price : ""; })(),
       lookColor: (() => { const m = (st.market || []).find(x => x.id === st.lookAt); return m ? m.color : "#888"; })(),
       lookPath: (() => { const m = (st.market || []).find(x => x.id === st.lookAt); return m ? (PATHS[m.cat] || PATHS.top) : PATHS.top; })(),
-      lookPhotoBg: (() => { const m = (st.market || []).find(x => x.id === st.lookAt); return this.bg(m && m.photo); })(),
-      lookNoPhoto: (() => { const m = (st.market || []).find(x => x.id === st.lookAt); return !(m && m.photo); })(),
+      lookPhotoBg: (() => {
+        const m = (st.market || []).find(x => x.id === st.lookAt);
+        if (!m) return this.bg(null);
+        const ph = (m.photos && m.photos.length) ? m.photos : (m.photo ? [m.photo] : []);
+        return this.bg(ph[st.lookShot] || ph[0]);
+      })(),
+      lookNoPhoto: (() => { const m = (st.market || []).find(x => x.id === st.lookAt); return !(m && (m.photo || (m.photos || []).length)); })(),
+      lookShots: (() => {
+        const m = (st.market || []).find(x => x.id === st.lookAt);
+        const ph = m ? ((m.photos && m.photos.length) ? m.photos : (m.photo ? [m.photo] : [])) : [];
+        if (ph.length < 2) return [];
+        return ph.slice(0, 4).map((p, i) => ({
+          bg: this.bg(p), label: (SHOTS[i] || {}).label || "",
+          ring: st.lookShot === i ? "2px solid var(--color-accent)" : "2px solid transparent",
+          pick: () => this.setState({ lookShot: i })
+        }));
+      })(),
       lookMeta: (() => { const m = (st.market || []).find(x => x.id === st.lookAt); return m ? m.cond + " · talla " + m.size : ""; })(),
       lookDesc: (() => { const m = (st.market || []).find(x => x.id === st.lookAt); return m && m.desc ? m.desc : ""; })(),
       lookDescOn: (() => { const m = (st.market || []).find(x => x.id === st.lookAt); return !!(m && m.desc); })(),
@@ -2385,7 +2464,7 @@ class Component extends DCLogic {
       dPrice: d && d.price ? "$" + d.price : "",
       openSell: () => {
         if (!st.sellerOk) { this.track("gate_vendedor_visto"); this.setState({ gateOpen: true, gateCode: "", gateError: "" }); return; }
-        this.setState({ sellFor: st.detail, editing: false, sellPrice: "", sellSize: "", sellCond: "Buen estado", sellDesc: "", sellWa: st.sellWa || "" });
+        this.setState({ sellFor: st.detail, editing: false, sellPrice: "", sellSize: "", sellCond: "Buen estado", sellDesc: "", sellWa: st.sellWa || "", sellShots: this.seedShots(this.get(st.detail)) });
       },
       gateOpen: !!st.gateOpen,
       gateCode: st.gateCode,
@@ -2427,6 +2506,24 @@ class Component extends DCLogic {
         pick: () => this.setState({ sellCond: c })
       })),
       closeSell: () => this.setState({ sellFor: null, editing: false }),
+      sellShots: SHOTS.map((s, i) => {
+        const src = (st.sellShots || [])[i];
+        return {
+          label: s.label, hint: src ? "" : s.hint, has: !!src, empty: !src,
+          bg: this.bg(src), main: i === 0,
+          pick: (e) => this.setShot(i, e.target.files && e.target.files[0]),
+          clear: (e) => {
+            if (e) { e.preventDefault(); e.stopPropagation(); }
+            const next = (st.sellShots || []).slice();
+            next[i] = null;
+            this.setState({ sellShots: next });
+          }
+        };
+      }),
+      shotsCount: (() => {
+        const n = (st.sellShots || []).filter(Boolean).length;
+        return n + " de 4";
+      })(),
       doList: () => this.list(st.sellFor, st.sellPrice, st.sellSize, st.sellCond, st.sellDesc),
       sellCta: st.sellPrice ? (st.editing ? "Guardar cambios" : "Publicar · recibes $" + st.sellPrice) : "Ponle un precio",
       sellDisabled: !st.sellPrice,
