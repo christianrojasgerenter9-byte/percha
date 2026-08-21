@@ -1,0 +1,145 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function str(v, max) {
+      return v is string && v.size() <= max;
+    }
+
+    function money(v) {
+      return v is int && v > 0 && v <= 200000;
+    }
+
+    // ---- Armario privado -------------------------------------------------
+    // Solo el dueño lee y escribe lo suyo. Nadie más, nunca.
+    match /users/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+
+      // Ganchos y saldo: solo el dueño, y dentro de topes razonables.
+      allow write: if signedIn() && request.auth.uid == uid
+        && (!('points' in request.resource.data)
+            || (request.resource.data.points is int
+                && request.resource.data.points >= 0
+                && request.resource.data.points <= 200000))
+        && (!('credit' in request.resource.data)
+            || (request.resource.data.credit is int
+                && request.resource.data.credit >= 0
+                && request.resource.data.credit <= 5000))
+        // Horario y racha del bazar: horas cortas, historial acotado.
+        && (!('wakeAt' in request.resource.data) || str(request.resource.data.wakeAt, 5))
+        && (!('bazarAt' in request.resource.data) || str(request.resource.data.bazarAt, 5))
+        && (!('bzDays' in request.resource.data)
+            || (request.resource.data.bzDays is list
+                && request.resource.data.bzDays.size() <= 60));
+
+      match /garments/{gid} {
+        allow read: if signedIn() && request.auth.uid == uid;
+        allow write: if signedIn()
+          && request.auth.uid == uid
+          && request.resource.data.keys().hasAll(['id', 'cat', 'name'])
+          && str(request.resource.data.id, 60)
+          && str(request.resource.data.cat, 20)
+          && str(request.resource.data.name, 80)
+          && (!('photo' in request.resource.data)
+              || request.resource.data.photo == null
+              || str(request.resource.data.photo, 700000))
+          && (!('desc' in request.resource.data)
+              || str(request.resource.data.desc, 400));
+      }
+    }
+
+    // ---- Bazar público ---------------------------------------------------
+    // Cualquiera con cuenta puede mirar; solo el dueño publica y borra lo suyo.
+    match /market/{id} {
+      allow read: if signedIn();
+
+      allow create: if signedIn()
+        && request.auth.uid == request.resource.data.sellerUid
+        && request.resource.data.keys().hasAll(['id', 'sellerUid', 'price', 'name', 'cat'])
+        && money(request.resource.data.price)
+        && str(request.resource.data.name, 80)
+        && str(request.resource.data.cat, 20)
+        && str(request.resource.data.size, 20)
+        && str(request.resource.data.cond, 30)
+        && (!('desc' in request.resource.data) || str(request.resource.data.desc, 400))
+        && (!('wa' in request.resource.data) || str(request.resource.data.wa, 15))
+        && request.resource.data.sold == false;
+
+      // El vendedor puede editar lo suyo, pero nunca cambiar de dueño.
+      allow update: if signedIn()
+        && request.auth.uid == resource.data.sellerUid
+        && request.resource.data.sellerUid == resource.data.sellerUid
+        && money(request.resource.data.price)
+        && str(request.resource.data.name, 80);
+
+      allow delete: if signedIn() && request.auth.uid == resource.data.sellerUid;
+    }
+
+    // ---- Ofertas ---------------------------------------------------------
+    // Privadas entre comprador y vendedor.
+    match /offers/{id} {
+      allow read: if signedIn()
+        && (request.auth.uid == resource.data.buyerUid
+         || request.auth.uid == resource.data.sellerUid);
+
+      allow create: if signedIn()
+        && request.auth.uid == request.resource.data.buyerUid
+        && request.resource.data.buyerUid != request.resource.data.sellerUid
+        && money(request.resource.data.offer)
+        && money(request.resource.data.ask)
+        && str(request.resource.data.name, 80)
+        && str(request.resource.data.note, 140)
+        && request.resource.data.status == 'pendiente';
+
+      // Solo el vendedor responde, y solo puede tocar el estado.
+      allow update: if signedIn()
+        && request.auth.uid == resource.data.sellerUid
+        && request.resource.data.buyerUid == resource.data.buyerUid
+        && request.resource.data.sellerUid == resource.data.sellerUid
+        && request.resource.data.offer == resource.data.offer
+        && request.resource.data.status in ['aceptada', 'rechazada'];
+
+      allow delete: if false;
+    }
+
+    // ---- Pedidos (pago con comprobante) ---------------------------------
+    // Solo comprador y vendedor ven el pedido y su comprobante.
+    match /orders/{id} {
+      allow read: if signedIn()
+        && (request.auth.uid == resource.data.buyerUid
+         || request.auth.uid == resource.data.sellerUid);
+
+      allow create: if signedIn()
+        && request.auth.uid == request.resource.data.buyerUid
+        && request.resource.data.buyerUid != request.resource.data.sellerUid
+        && money(request.resource.data.price)
+        && str(request.resource.data.name, 80)
+        && str(request.resource.data.ref, 30)
+        && (!('receipt' in request.resource.data)
+            || request.resource.data.receipt == null
+            || str(request.resource.data.receipt, 700000))
+        && request.resource.data.status == 'pagado';
+
+      // Ambas partes confirman; nadie cambia dueños ni montos.
+      allow update: if signedIn()
+        && (request.auth.uid == resource.data.buyerUid
+         || request.auth.uid == resource.data.sellerUid)
+        && request.resource.data.buyerUid == resource.data.buyerUid
+        && request.resource.data.sellerUid == resource.data.sellerUid
+        && request.resource.data.price == resource.data.price
+        && request.resource.data.net == resource.data.net;
+
+      allow delete: if false;
+    }
+
+    // ---- Todo lo demás: cerrado -----------------------------------------
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
