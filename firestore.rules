@@ -77,7 +77,36 @@ service cloud.firestore {
         && money(request.resource.data.price)
         && str(request.resource.data.name, 80);
 
+      // Vistas y guardados: cualquiera con cuenta puede sumar, y NADA más.
+      // Solo se permiten esas dos llaves, así que no se puede tocar precio ni dueño.
+      allow update: if signedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['views', 'favs'])
+        && request.resource.data.views is int
+        && request.resource.data.views >= 0
+        && request.resource.data.views <= 1000000;
+
       allow delete: if signedIn() && request.auth.uid == resource.data.sellerUid;
+    }
+
+    // ---- Reputación de vendedores ---------------------------------------
+    // Un documento por vendedor: n calificaciones, sum de estrellas.
+    // Todos leen el promedio; quien califica solo puede sumar una de 1 a 5.
+    match /sellers/{uid} {
+      allow read: if signedIn();
+
+      allow create: if signedIn()
+        && request.auth.uid != uid
+        && request.resource.data.keys().hasOnly(['n', 'sum'])
+        && request.resource.data.n == 1
+        && request.resource.data.sum >= 1
+        && request.resource.data.sum <= 5;
+
+      allow update: if signedIn()
+        && request.auth.uid != uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['n', 'sum'])
+        && request.resource.data.n == resource.data.n + 1
+        && request.resource.data.sum >= resource.data.sum + 1
+        && request.resource.data.sum <= resource.data.sum + 5;
     }
 
     // ---- Ofertas ---------------------------------------------------------
