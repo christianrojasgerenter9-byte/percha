@@ -1,4 +1,4 @@
-const C = 'percha-v4';
+const C = 'percha-v5';
 
 self.addEventListener('install', function (e) {
   self.skipWaiting();
