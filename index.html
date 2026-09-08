@@ -1,321 +1,470 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Percha - Tu Asistente de Estilo y Bazar</title>
-  <style>
-    :root {
-      --bg-color: #000000;
-      --surface-color: #121212;
-      --surface-hover: #1a1a1a;
-      --text-primary: #FFFFFF;
-      --text-secondary: #C0C5CE;
-      --accent-color: #E8ECEF;
-      --accent-hover: #FFFFFF;
-      --border-color: #2A2A2A;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bazar Percha</title>
+    <style>
+        :root {
+            --bg-color: #0b131a;
+            --surface-color: #15202b;
+            --surface-hover: #1e2c3a;
+            --text-primary: #FFFFFF;
+            --text-secondary: #94a3b8;
+            --accent-blue: #608bc1;
+            --accent-blue-hover: #739ccf;
+            --border-color: #22303c;
+        }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Georgia', serif;
+        }
 
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-primary);
-      display: flex;
-      justify-content: center;
-      min-height: 100vh;
-    }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
 
-    .app-container {
-      width: 100%;
-      max-width: 450px;
-      min-height: 100vh;
-      background-color: var(--bg-color);
-      position: relative;
-      padding-bottom: 90px;
-      border-left: 1px solid var(--border-color);
-      border-right: 1px solid var(--border-color);
-    }
+        .app-container {
+            width: 100%;
+            max-width: 450px;
+            min-height: 100vh;
+            background-color: var(--bg-color);
+            position: relative;
+            padding-bottom: 100px;
+            box-shadow: 0 0 25px rgba(0,0,0,0.9);
+        }
 
-    .header-banner {
-      padding: 20px;
-      background-color: var(--bg-color);
-      border-bottom: 1px solid var(--border-color);
-    }
+        /* Header / Banner */
+        .header-banner {
+            padding: 24px 20px 16px 20px;
+            background-color: var(--bg-color);
+        }
 
-    .banner-title {
-      font-size: 1.6rem;
-      font-weight: bold;
-      margin-bottom: 5px;
-      color: var(--text-primary);
-      letter-spacing: 0.5px;
-    }
+        .top-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 4px;
+        }
 
-    .promo-card {
-      background-color: var(--surface-color);
-      border-radius: 16px;
-      padding: 20px;
-      margin-top: 15px;
-      border: 1px solid var(--border-color);
-    }
+        .banner-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+        }
 
-    .promo-card h3 {
-      font-size: 1.2rem;
-      margin-bottom: 8px;
-      color: var(--text-primary);
-    }
+        .promo-card {
+            background-color: var(--surface-color);
+            border-radius: 20px;
+            padding: 22px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
 
-    .promo-card p {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-      margin-bottom: 15px;
-      line-height: 1.4;
-    }
+        .promo-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
 
-    .btn-primary {
-      display: block;
-      width: 100%;
-      background-color: var(--accent-color);
-      color: #000000;
-      text-align: center;
-      padding: 12px;
-      border-radius: 25px;
-      font-weight: bold;
-      text-decoration: none;
-      font-size: 0.9rem;
-      border: none;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
+        .promo-card p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 18px;
+            line-height: 1.4;
+        }
 
-    .btn-primary:hover {
-      opacity: 0.85;
-    }
+        .btn-action {
+            display: block;
+            width: 100%;
+            background-color: var(--accent-blue);
+            color: #0b131a;
+            text-align: center;
+            padding: 12px;
+            border-radius: 25px;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 0.95rem;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
 
-    .nav-tabs {
-      display: flex;
-      gap: 10px;
-      padding: 15px 20px;
-      overflow-x: auto;
-      white-space: nowrap;
-      border-bottom: 1px solid var(--border-color);
-    }
+        .btn-action:hover {
+            background-color: var(--accent-blue-hover);
+        }
 
-    .nav-tab {
-      background-color: var(--surface-color);
-      color: var(--text-secondary);
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      cursor: pointer;
-      border: 1px solid var(--border-color);
-      text-decoration: none;
-    }
+        /* Pestañas de navegación secundaria */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            padding: 12px 20px;
+            overflow-x: auto;
+            white-space: nowrap;
+            border-bottom: 1px solid var(--border-color);
+        }
 
-    .nav-tab.active {
-      background-color: var(--accent-color);
-      color: #000000;
-      font-weight: bold;
-      border-color: var(--accent-color);
-    }
+        .nav-tab {
+            background-color: var(--surface-color);
+            color: var(--text-secondary);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
 
-    .categories-filter {
-      display: flex;
-      gap: 8px;
-      padding: 12px 20px;
-      overflow-x: auto;
-    }
+        .nav-tab.active {
+            background-color: var(--accent-blue);
+            color: #0b131a;
+            font-weight: bold;
+            border-color: var(--accent-blue);
+        }
 
-    .cat-chip {
-      background-color: var(--surface-color);
-      color: var(--text-primary);
-      padding: 6px 14px;
-      border-radius: 16px;
-      font-size: 0.8rem;
-      border: 1px solid var(--border-color);
-      cursor: pointer;
-    }
+        /* Filtros de categorías */
+        .categories-filter {
+            display: flex;
+            gap: 8px;
+            padding: 14px 20px;
+            overflow-x: auto;
+        }
 
-    .cat-chip.active {
-      background-color: var(--text-primary);
-      color: #000000;
-      font-weight: bold;
-    }
+        .cat-chip {
+            background-color: var(--surface-color);
+            color: var(--text-primary);
+            padding: 6px 16px;
+            border-radius: 16px;
+            font-size: 0.8rem;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            white-space: nowrap;
+        }
 
-    .content-body {
-      padding: 20px;
-    }
+        .cat-chip.active {
+            background-color: var(--text-primary);
+            color: var(--bg-color);
+            font-weight: bold;
+        }
 
-    .item-card {
-      background-color: var(--surface-color);
-      border-radius: 16px;
-      padding: 15px;
-      margin-bottom: 15px;
-      border: 1px solid var(--border-color);
-      display: flex;
-      gap: 15px;
-      align-items: center;
-    }
+        /* Contenido dinámico */
+        .content-section {
+            padding: 10px 20px;
+            display: none;
+        }
 
-    .item-thumb {
-      width: 80px;
-      height: 80px;
-      background-color: #1a1a1a;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-secondary);
-      font-size: 0.75rem;
-      border: 1px solid var(--border-color);
-    }
+        .content-section.active {
+            display: block;
+        }
 
-    .item-info h4 {
-      font-size: 1rem;
-      margin-bottom: 4px;
-      color: var(--text-primary);
-    }
+        /* Tarjetas de Estadísticas (Mis Ventas) */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
 
-    .item-price {
-      font-size: 1.1rem;
-      font-weight: bold;
-      color: var(--accent-color);
-      margin-bottom: 4px;
-    }
+        .stat-card {
+            background-color: var(--surface-color);
+            border-radius: 16px;
+            padding: 18px;
+            border: 1px solid var(--border-color);
+        }
 
-    .item-meta {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-    }
+        .stat-card .stat-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
 
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      max-width: 450px;
-      background-color: var(--surface-color);
-      border-top: 1px solid var(--border-color);
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding: 10px 0;
-      z-index: 100;
-    }
+        .stat-card .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
 
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: var(--text-secondary);
-      text-decoration: none;
-      font-size: 0.7rem;
-      gap: 4px;
-    }
+        /* Tarjeta de prenda en Mis Ventas */
+        .item-card-manage {
+            background-color: var(--surface-color);
+            border-radius: 20px;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            margin-top: 15px;
+        }
 
-    .nav-item.active {
-      color: var(--text-primary);
-      font-weight: bold;
-    }
+        .item-flex {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
 
-    .nav-center-btn {
-      background-color: var(--accent-color);
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #000000;
-      margin-top: -20px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-      cursor: pointer;
-      border: none;
-    }
+        .item-thumb {
+            width: 75px;
+            height: 75px;
+            background-color: #22303c;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            flex-shrink: 0;
+        }
 
-    .footer-note {
-      text-align: center;
-      font-size: 0.7rem;
-      color: var(--text-secondary);
-      margin-top: 30px;
-      padding-bottom: 20px;
-    }
-  </style>
+        .item-details h4 {
+            font-size: 1.05rem;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .item-price-main {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .item-subtext {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sub {
+            flex: 1;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            border-radius: 14px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-align: center;
+            font-family: sans-serif;
+            transition: background 0.2s;
+        }
+
+        .btn-sub.highlight {
+            background-color: var(--accent-blue);
+            color: #0b131a;
+            font-weight: bold;
+            border-color: var(--accent-blue);
+        }
+
+        .btn-sub:hover {
+            background-color: var(--surface-hover);
+        }
+
+        /* Barra de navegación inferior fija */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 450px;
+            background-color: var(--surface-color);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.7rem;
+            gap: 4px;
+            font-family: sans-serif;
+        }
+
+        .nav-item.active {
+            color: var(--text-primary);
+        }
+
+        .nav-center-btn {
+            background-color: var(--accent-blue);
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0b131a;
+            margin-top: -22px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+            cursor: pointer;
+            border: none;
+            font-size: 1.2rem;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 40px;
+            font-family: sans-serif;
+        }
+    </style>
 </head>
-
 <body>
 
-  <div class="app-container">
-    <div class="header-banner">
-      <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px;">
-        Bazar Percha</div>
-      <div class="banner-title">Vende lo que ya no usas</div>
-
-      <div class="promo-card">
-        <h3>La ropa no paga renta</h3>
-        <p>Sácale provecho a lo que ya no usas y hazle lugar a lo que sí.</p>
-        <a href="#" class="btn-primary">Empezar a vender</a>
-      </div>
-    </div>
-
-    <div class="nav-tabs">
-      <a href="#" class="nav-tab active">Explorar</a>
-      <a href="#" class="nav-tab">Mis ventas</a>
-      <a href="#" class="nav-tab">Pedidos</a>
-      <a href="#" class="nav-tab">Ofertas</a>
-    </div>
-
-    <div class="categories-filter">
-      <div class="cat-chip active">Todo</div>
-      <div class="cat-chip">Suéteres</div>
-      <div class="cat-chip">Playeras</div>
-      <div class="cat-chip">Pantalones</div>
-      <div class="cat-chip">Calzado</div>
-    </div>
-
-    <div class="content-body">
-      <div class="item-card">
-        <div class="item-thumb">[ Foto ]</div>
-        <div class="item-info">
-          <h4>Camisa azul con flores</h4>
-          <div class="item-price">$175</div>
-          <div class="item-meta">Poco uso · Talla M</div>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header-banner">
+            <div class="top-subtitle">Bazar Percha</div>
+            <div class="banner-title">Vende lo que ya no usas</div>
+            
+            <div class="promo-card">
+                <h3>La ropa no paga renta</h3>
+                <p>Sácale provecho a lo que ya no usas y hazle lugar a lo que sí.</p>
+                <button class="btn-action">Empezar a vender</button>
+            </div>
         </div>
-      </div>
 
-      <div class="footer-note">
-        © 2026 Christian Rojas · Todos los derechos reservados
-      </div>
+        <!-- Pestañas Superiores -->
+        <div class="nav-tabs">
+            <a href="#" class="nav-tab active" onclick="switchTab('explorar', event)">Explorar</a>
+            <a href="#" class="nav-tab" onclick="switchTab('mis-ventas', event)">Mis ventas</a>
+            <a href="#" class="nav-tab" onclick="switchTab('pedidos', event)">Pedidos</a>
+            <a href="#" class="nav-tab" onclick="switchTab('ofertas', event)">Ofertas</a>
+        </div>
+
+        <!-- SECCIÓN: EXPLORAR -->
+        <div id="section-explorar" class="content-section active">
+            <div class="categories-filter">
+                <div class="cat-chip active">Todo</div>
+                <div class="cat-chip">Suéteres</div>
+                <div class="cat-chip">Playeras</div>
+                <div class="cat-chip">Pantalones</div>
+                <div class="cat-chip">Calzado</div>
+            </div>
+
+            <div class="item-card-manage">
+                <div class="item-flex">
+                    <div class="item-thumb">[ Foto ]</div>
+                    <div class="item-details">
+                        <div class="item-price-main">$175</div>
+                        <h4>Camisa azul con flores</h4>
+                        <div class="item-subtext">Poco uso · Talla M</div>
+                        <div class="item-subtext" style="margin-top: 2px;">christian.rojas · Tu zona</div>
+                    </div>
+                </div>
+                <div class="item-actions">
+                    <button class="btn-sub">Hacer oferta</button>
+                    <button class="btn-sub highlight">La quiero · pagar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN: MIS VENTAS -->
+        <div id="section-mis-ventas" class="content-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">$150</div>
+                    <div class="stat-label">si vendes todo</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1 publicada</div>
+                    <div class="stat-label">en el bazar</div>
+                </div>
+            </div>
+
+            <div class="item-card-manage">
+                <div class="item-flex">
+                    <div class="item-thumb">[ Foto ]</div>
+                    <div class="item-details">
+                        <h4>Camisa azul con flores</h4>
+                        <div class="item-price-main">$175</div>
+                        <div class="item-subtext">recibes $150 · talla M</div>
+                    </div>
+                </div>
+                <div class="item-actions">
+                    <button class="btn-sub">Editar</button>
+                    <button class="btn-sub highlight">Vendida</button>
+                    <button class="btn-sub">Quitar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN: PEDIDOS -->
+        <div id="section-pedidos" class="content-section">
+            <div class="promo-card" style="text-align: center; padding: 30px 20px;">
+                <p style="margin-bottom: 0;">No tienes pedidos activos por el momento.</p>
+            </div>
+        </div>
+
+        <!-- SECCIÓN: OFERTAS -->
+        <div id="section-ofertas" class="content-section">
+            <div class="promo-card" style="text-align: center; padding: 30px 20px;">
+                <p style="margin-bottom: 0;">No hay ofertas recientes en este momento.</p>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            © 2026 Christian Rojas · Todos los derechos reservados
+        </div>
+
+        <!-- Menú inferior fijo -->
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item">
+                <span>☼</span>
+                <span>Hoy</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span>☷</span>
+                <span>Armario</span>
+            </a>
+            <button class="nav-center-btn">
+                <span>📷</span>
+            </button>
+            <a href="#" class="nav-item active">
+                <span>🏷️</span>
+                <span>Bazar</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span>⛶</span>
+                <span>Probador</span>
+            </a>
+        </nav>
     </div>
 
-    <nav class="bottom-nav">
-      <a href="#" class="nav-item">
-        <span>☼</span>
-        <span>Hoy</span>
-      </a>
-      <a href="#" class="nav-item">
-        <span>☷</span>
-        <span>Armario</span>
-      </a>
-      <button class="nav-center-btn">
-        <span>📷</span>
-      </button>
-      <a href="#" class="nav-item active">
-        <span>🏷️</span>
-        <span>Bazar</span>
-      </a>
-      <a href="#" class="nav-item">
-        <span>⛶</span>
-        <span>Probador</span>
-      </a>
-    </nav>
-  </div>
+    <script>
+        function switchTab(tabId, event) {
+            event.preventDefault();
+            
+            // Remover activo de pestañas
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            // Ocultar secciones
+            document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+            
+            // Mostrar sección seleccionada
+            document.getElementById('section-' + tabId).classList.add('active');
+        }
+    </script>
 
 </body>
-
 </html>
