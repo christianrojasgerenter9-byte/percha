@@ -1,3 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Percha - Recomendación de Estilo</title>
+    <style>
+        :root {
+            --bg-color: #000000;
+            --surface-color: #121212;
+            --text-primary: #FFFFFF;
+            --text-secondary: #C0C5CE;
+            --accent-color: #E8ECEF;
+            --border-color: #2A2A2A;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 414px;
+            min-height: 100vh;
+            background-color: var(--bg-color);
+            border-left: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: var(--text-primary);
+        }
+
+        .menu-icon {
+            width: 24px;
+            height: 2px;
+            background-color: var(--accent-color);
+            position: relative;
+        }
+
+        .menu-icon::before, .menu-icon::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 2px;
+            background-color: var(--accent-color);
+        }
+
+        .menu-icon::before { top: -6px; }
+        .menu-icon::after { top: 6px; }
+
+        main {
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .hero-card {
+            background-color: var(--surface-color);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+
+        .hero-content {
+            padding: 15px;
+        }
+
+        .hero-content h2 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .hero-content p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: #000000;
+            padding: 10px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: opacity 0.3s;
+        }
+
+        .btn:hover {
+            opacity: 0.8;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .item-card {
+            background-color: var(--surface-color);
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .item-image-placeholder {
+            width: 100%;
+            height: 120px;
+            background-color: #1a1a1a;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .item-card h3 {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .item-card p {
+            color: var(--accent-color);
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>PERCHA</h1>
+            <div class="menu-icon"></div>
+        </header>
+
+        <main>
+            <h2 class="section-title">Tu Estilo de Hoy</h2>
+            
+            <div class="hero-card">
+                <div class="hero-image">
                     [ Imagen de Conjunto ]
                 </div>
                 <div class="hero-content">
@@ -32,6 +217,5 @@
             </div>
         </main>
     </div>
-
 </body>
 </html>
