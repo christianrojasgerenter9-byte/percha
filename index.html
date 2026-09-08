@@ -1,327 +1,321 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Percha - Tu Asistente de Estilo y Bazar</title>
-    <style>
-        :root {
-            --bg-color: #000000;         /* Negro absoluto */
-            --surface-color: #121212;    /* Superficies de tarjetas */
-            --surface-hover: #1a1a1a;    
-            --text-primary: #FFFFFF;     /* Blanco puro */
-            --text-secondary: #C0C5CE;   /* Plata para textos secundarios */
-            --accent-color: #E8ECEF;     /* Blanco plateado (reemplaza al dorado) */
-            --accent-hover: #FFFFFF;     
-            --border-color: #2A2A2A;     /* Bordes sutiles oscuros */
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Percha - Tu Asistente de Estilo y Bazar</title>
+  <style>
+    :root {
+      --bg-color: #000000;
+      --surface-color: #121212;
+      --surface-hover: #1a1a1a;
+      --text-primary: #FFFFFF;
+      --text-secondary: #C0C5CE;
+      --accent-color: #E8ECEF;
+      --accent-hover: #FFFFFF;
+      --border-color: #2A2A2A;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-        }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-        }
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-primary);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
 
-        .app-container {
-            width: 100%;
-            max-width: 450px;
-            min-height: 100vh;
-            background-color: var(--bg-color);
-            position: relative;
-            padding-bottom: 90px;
-            border-left: 1px solid var(--border-color);
-            border-right: 1px solid var(--border-color);
-        }
+    .app-container {
+      width: 100%;
+      max-width: 450px;
+      min-height: 100vh;
+      background-color: var(--bg-color);
+      position: relative;
+      padding-bottom: 90px;
+      border-left: 1px solid var(--border-color);
+      border-right: 1px solid var(--border-color);
+    }
 
-        /* Header / Banner */
-        .header-banner {
-            padding: 20px;
-            background-color: var(--bg-color);
-            border-bottom: 1px solid var(--border-color);
-        }
+    .header-banner {
+      padding: 20px;
+      background-color: var(--bg-color);
+      border-bottom: 1px solid var(--border-color);
+    }
 
-        .banner-title {
-            font-size: 1.6rem;
-            font-weight: bold;
-            margin-bottom: 5px;
-            color: var(--text-primary);
-            letter-spacing: 0.5px;
-        }
+    .banner-title {
+      font-size: 1.6rem;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: var(--text-primary);
+      letter-spacing: 0.5px;
+    }
 
-        .promo-card {
-            background-color: var(--surface-color);
-            border-radius: 16px;
-            padding: 20px;
-            margin-top: 15px;
-            border: 1px solid var(--border-color);
-        }
+    .promo-card {
+      background-color: var(--surface-color);
+      border-radius: 16px;
+      padding: 20px;
+      margin-top: 15px;
+      border: 1px solid var(--border-color);
+    }
 
-        .promo-card h3 {
-            font-size: 1.2rem;
-            margin-bottom: 8px;
-            color: var(--text-primary);
-        }
+    .promo-card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
 
-        .promo-card p {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-bottom: 15px;
-            line-height: 1.4;
-        }
+    .promo-card p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 15px;
+      line-height: 1.4;
+    }
 
-        .btn-primary {
-            display: block;
-            width: 100%;
-            background-color: var(--accent-color);
-            color: #000000;
-            text-align: center;
-            padding: 12px;
-            border-radius: 25px;
-            font-weight: bold;
-            text-decoration: none;
-            font-size: 0.9rem;
-            border: none;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
+    .btn-primary {
+      display: block;
+      width: 100%;
+      background-color: var(--accent-color);
+      color: #000000;
+      text-align: center;
+      padding: 12px;
+      border-radius: 25px;
+      font-weight: bold;
+      text-decoration: none;
+      font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
 
-        .btn-primary:hover {
-            opacity: 0.85;
-        }
+    .btn-primary:hover {
+      opacity: 0.85;
+    }
 
-        /* Navegación por pestañas */
-        .nav-tabs {
-            display: flex;
-            gap: 10px;
-            padding: 15px 20px;
-            overflow-x: auto;
-            white-space: nowrap;
-            border-bottom: 1px solid var(--border-color);
-        }
+    .nav-tabs {
+      display: flex;
+      gap: 10px;
+      padding: 15px 20px;
+      overflow-x: auto;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--border-color);
+    }
 
-        .nav-tab {
-            background-color: var(--surface-color);
-            color: var(--text-secondary);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            border: 1px solid var(--border-color);
-            text-decoration: none;
-        }
+    .nav-tab {
+      background-color: var(--surface-color);
+      color: var(--text-secondary);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+      text-decoration: none;
+    }
 
-        .nav-tab.active {
-            background-color: var(--accent-color);
-            color: #000000;
-            font-weight: bold;
-            border-color: var(--accent-color);
-        }
+    .nav-tab.active {
+      background-color: var(--accent-color);
+      color: #000000;
+      font-weight: bold;
+      border-color: var(--accent-color);
+    }
 
-        /* Filtros de categorías */
-        .categories-filter {
-            display: flex;
-            gap: 8px;
-            padding: 12px 20px;
-            overflow-x: auto;
-        }
+    .categories-filter {
+      display: flex;
+      gap: 8px;
+      padding: 12px 20px;
+      overflow-x: auto;
+    }
 
-        .cat-chip {
-            background-color: var(--surface-color);
-            color: var(--text-primary);
-            padding: 6px 14px;
-            border-radius: 16px;
-            font-size: 0.8rem;
-            border: 1px solid var(--border-color);
-            cursor: pointer;
-        }
+    .cat-chip {
+      background-color: var(--surface-color);
+      color: var(--text-primary);
+      padding: 6px 14px;
+      border-radius: 16px;
+      font-size: 0.8rem;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+    }
 
-        .cat-chip.active {
-            background-color: var(--text-primary);
-            color: #000000;
-            font-weight: bold;
-        }
+    .cat-chip.active {
+      background-color: var(--text-primary);
+      color: #000000;
+      font-weight: bold;
+    }
 
-        /* Contenido principal / Listados */
-        .content-body {
-            padding: 20px;
-        }
+    .content-body {
+      padding: 20px;
+    }
 
-        .item-card {
-            background-color: var(--surface-color);
-            border-radius: 16px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border: 1px solid var(--border-color);
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
+    .item-card {
+      background-color: var(--surface-color);
+      border-radius: 16px;
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
 
-        .item-thumb {
-            width: 80px;
-            height: 80px;
-            background-color: #1a1a1a;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-secondary);
-            font-size: 0.75rem;
-            border: 1px solid var(--border-color);
-        }
+    .item-thumb {
+      width: 80px;
+      height: 80px;
+      background-color: #1a1a1a;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      border: 1px solid var(--border-color);
+    }
 
-        .item-info h4 {
-            font-size: 1rem;
-            margin-bottom: 4px;
-            color: var(--text-primary);
-        }
+    .item-info h4 {
+      font-size: 1rem;
+      margin-bottom: 4px;
+      color: var(--text-primary);
+    }
 
-        .item-price {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: var(--accent-color);
-            margin-bottom: 4px;
-        }
+    .item-price {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: var(--accent-color);
+      margin-bottom: 4px;
+    }
 
-        .item-meta {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
+    .item-meta {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
 
-        /* Barra de navegación inferior */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            max-width: 450px;
-            background-color: var(--surface-color);
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 10px 0;
-            z-index: 100;
-        }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      max-width: 450px;
+      background-color: var(--surface-color);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 0;
+      z-index: 100;
+    }
 
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.7rem;
-            gap: 4px;
-        }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.7rem;
+      gap: 4px;
+    }
 
-        .nav-item.active {
-            color: var(--text-primary);
-            font-weight: bold;
-        }
+    .nav-item.active {
+      color: var(--text-primary);
+      font-weight: bold;
+    }
 
-        .nav-center-btn {
-            background-color: var(--accent-color);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #000000;
-            margin-top: -20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            cursor: pointer;
-            border: none;
-        }
+    .nav-center-btn {
+      background-color: var(--accent-color);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000000;
+      margin-top: -20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+      border: none;
+    }
 
-        .footer-note {
-            text-align: center;
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-            margin-top: 30px;
-            padding-bottom: 20px;
-        }
-    </style>
+    .footer-note {
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      margin-top: 30px;
+      padding-bottom: 20px;
+    }
+  </style>
 </head>
+
 <body>
 
-    <div class="app-container">
-        <!-- Header -->
-        <div class="header-banner">
-            <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px;">Bazar Percha</div>
-            <div class="banner-title">Vende lo que ya no usas</div>
-            
-            <div class="promo-card">
-                <h3>La ropa no paga renta</h3>
-                <p>Sácale provecho a lo que ya no usas y hazle lugar a lo que sí.</p>
-                <a href="#" class="btn-primary">Empezar a vender</a>
-            </div>
-        </div>
+  <div class="app-container">
+    <div class="header-banner">
+      <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px;">
+        Bazar Percha</div>
+      <div class="banner-title">Vende lo que ya no usas</div>
 
-        <!-- Pestañas de navegación secundaria -->
-        <div class="nav-tabs">
-            <a href="#" class="nav-tab active">Explorar</a>
-            <a href="#" class="nav-tab">Mis ventas</a>
-            <a href="#" class="nav-tab">Pedidos</a>
-            <a href="#" class="nav-tab">Ofertas</a>
-        </div>
-
-        <!-- Filtros -->
-        <div class="categories-filter">
-            <div class="cat-chip active">Todo</div>
-            <div class="cat-chip">Suéteres</div>
-            <div class="cat-chip">Playeras</div>
-            <div class="cat-chip">Pantalones</div>
-            <div class="cat-chip">Calzado</div>
-        </div>
-
-        <!-- Contenido -->
-        <div class="content-body">
-            <div class="item-card">
-                <div class="item-thumb">[ Foto ]</div>
-                <div class="item-info">
-                    <h4>Camisa azul con flores</h4>
-                    <div class="item-price">$175</div>
-                    <div class="item-meta">Poco uso · Talla M</div>
-                </div>
-            </div>
-            
-            <div class="footer-note">
-                © 2026 Christian Rojas · Todos los derechos reservados
-            </div>
-        </div>
-
-        <!-- Menú inferior fijo -->
-        <nav class="bottom-nav">
-            <a href="#" class="nav-item">
-                <span>☼</span>
-                <span>Hoy</span>
-            </a>
-            <a href="#" class="nav-item">
-                <span>☷</span>
-                <span>Armario</span>
-            </a>
-            <button class="nav-center-btn">
-                <span>📷</span>
-            </button>
-            <a href="#" class="nav-item active">
-                <span>🏷️</span>
-                <span>Bazar</span>
-            </a>
-            <a href="#" class="nav-item">
-                <span>⛶</span>
-                <span>Probador</span>
-            </a>
-        </nav>
+      <div class="promo-card">
+        <h3>La ropa no paga renta</h3>
+        <p>Sácale provecho a lo que ya no usas y hazle lugar a lo que sí.</p>
+        <a href="#" class="btn-primary">Empezar a vender</a>
+      </div>
     </div>
 
+    <div class="nav-tabs">
+      <a href="#" class="nav-tab active">Explorar</a>
+      <a href="#" class="nav-tab">Mis ventas</a>
+      <a href="#" class="nav-tab">Pedidos</a>
+      <a href="#" class="nav-tab">Ofertas</a>
+    </div>
+
+    <div class="categories-filter">
+      <div class="cat-chip active">Todo</div>
+      <div class="cat-chip">Suéteres</div>
+      <div class="cat-chip">Playeras</div>
+      <div class="cat-chip">Pantalones</div>
+      <div class="cat-chip">Calzado</div>
+    </div>
+
+    <div class="content-body">
+      <div class="item-card">
+        <div class="item-thumb">[ Foto ]</div>
+        <div class="item-info">
+          <h4>Camisa azul con flores</h4>
+          <div class="item-price">$175</div>
+          <div class="item-meta">Poco uso · Talla M</div>
+        </div>
+      </div>
+
+      <div class="footer-note">
+        © 2026 Christian Rojas · Todos los derechos reservados
+      </div>
+    </div>
+
+    <nav class="bottom-nav">
+      <a href="#" class="nav-item">
+        <span>☼</span>
+        <span>Hoy</span>
+      </a>
+      <a href="#" class="nav-item">
+        <span>☷</span>
+        <span>Armario</span>
+      </a>
+      <button class="nav-center-btn">
+        <span>📷</span>
+      </button>
+      <a href="#" class="nav-item active">
+        <span>🏷️</span>
+        <span>Bazar</span>
+      </a>
+      <a href="#" class="nav-item">
+        <span>⛶</span>
+        <span>Probador</span>
+      </a>
+    </nav>
+  </div>
+
 </body>
+
 </html>
