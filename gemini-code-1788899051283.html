@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bazar Percha</title>
+    <style>
+        :root {
+            --bg-base: #080e14;
+            --surface-card: #111a24;
+            --surface-hover: #17222f;
+            --text-main: #FFFFFF;
+            --text-muted: #8b9bb4;
+            --accent-blue: #608bc1;
+            --accent-blue-hover: #739ccf;
+            --border-subtle: #1e2c3a;
+            --danger-color: #cf6679;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Georgia, serif;
+        }
+
+        body {
+            background-color: #030609;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 414px;
+            min-height: 100vh;
+            background-color: var(--bg-base);
+            position: relative;
+            padding-bottom: 100px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.95);
+            border-left: 1px solid var(--border-subtle);
+            border-right: 1px solid var(--border-subtle);
+        }
+
+        .header-banner {
+            padding: 24px 20px 16px 20px;
+        }
+
+        .top-subtitle {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 6px;
+            font-family: sans-serif;
+        }
+
+        .banner-title {
+            font-size: 1.75rem;
+            font-weight: bold;
+            color: var(--text-main);
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .promo-card {
+            background-color: var(--surface-card);
+            border-radius: 20px;
+            padding: 22px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .promo-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .promo-card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 18px;
+            line-height: 1.4;
+            font-family: sans-serif;
+        }
+
+        .btn-action {
+            display: block;
+            width: 100%;
+            background-color: var(--accent-blue);
+            color: #080e14;
+            text-align: center;
+            padding: 13px;
+            border-radius: 25px;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            font-family: sans-serif;
+            transition: background 0.2s;
+        }
+
+        .btn-action:hover {
+            background-color: var(--accent-blue-hover);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            padding: 12px 20px;
+            overflow-x: auto;
+            white-space: nowrap;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .nav-tab {
+            background-color: var(--surface-card);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            border: 1px solid var(--border-subtle);
+            text-decoration: none;
+            font-family: sans-serif;
+            transition: all 0.2s;
+        }
+
+        .nav-tab.active {
+            background-color: var(--accent-blue);
+            color: #080e14;
+            font-weight: bold;
+            border-color: var(--accent-blue);
+        }
+
+        .categories-filter {
+            display: flex;
+            gap: 8px;
+            padding: 14px 20px;
+            overflow-x: auto;
+        }
+
+        .cat-chip {
+            background-color: var(--surface-card);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 0.78rem;
+            border: 1px solid var(--border-subtle);
+            cursor: pointer;
+            white-space: nowrap;
+            font-family: sans-serif;
+        }
+
+        .cat-chip.active {
+            background-color: var(--text-main);
+            color: var(--bg-base);
+            font-weight: bold;
+        }
+
+        .content-section {
+            padding: 10px 20px;
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .stat-card {
+            background-color: var(--surface-card);
+            border-radius: 18px;
+            padding: 18px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .stat-card .stat-value {
+            font-size: 1.35rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: var(--text-main);
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-family: sans-serif;
+        }
+
+        .item-card-manage {
+            background-color: var(--surface-card);
+            border-radius: 20px;
+            padding: 16px;
+            border: 1px solid var(--border-subtle);
+            margin-top: 15px;
+        }
+
+        .item-flex {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .item-thumb {
+            width: 76px;
+            height: 76px;
+            background-color: #17222f;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            flex-shrink: 0;
+            font-family: sans-serif;
+        }
+
+        .item-details h4 {
+            font-size: 1.05rem;
+            margin-bottom: 4px;
+            color: var(--text-main);
+        }
+
+        .item-price-main {
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: var(--text-main);
+            margin-bottom: 2px;
+        }
+
+        .item-subtext {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: sans-serif;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sub {
+            flex: 1;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            border: 1px solid var(--border-subtle);
+            padding: 9px;
+            border-radius: 14px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            text-align: center;
+            font-family: sans-serif;
+            transition: background 0.2s;
+        }
+
+        .btn-sub.highlight {
+            background-color: var(--accent-blue);
+            color: #080e14;
+            font-weight: bold;
+            border-color: var(--accent-blue);
+        }
+
+        .btn-sub:hover {
+            background-color: var(--surface-hover);
+        }
+
+        /* Modal / Checkout Screen */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(3, 6, 9, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: flex-end;
+            z-index: 1000;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 414px;
+            background-color: var(--bg-base);
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            border: 1px solid var(--border-subtle);
+            padding: 24px 20px 30px 20px;
+            animation: slideUp 0.3s ease-out;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-header {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            font-family: sans-serif;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .modal-price {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .transfer-box {
+            background-color: var(--surface-card);
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid var(--border-subtle);
+            margin-bottom: 16px;
+        }
+
+        .transfer-box label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: sans-serif;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .transfer-number {
+            font-size: 1.15rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+            font-family: monospace;
+        }
+
+        .transfer-sub {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 414px;
+            background-color: var(--surface-card);
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.68rem;
+            gap: 4px;
+            font-family: sans-serif;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: var(--text-main);
+        }
+
+        .nav-center-btn {
+            background-color: var(--accent-blue);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #080e14;
+            margin-top: -22px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.7);
+            cursor: pointer;
+            border: none;
+            font-size: 1.15rem;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            margin-top: 35px;
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Header Principal -->
+        <div class="header-banner">
+            <div class="top-subtitle">Bazar Percha</div>
+            <div class="banner-title">Vende lo que ya no usas</div>
+            
+            <div class="promo-card">
+                <h3>La ropa no paga renta</h3>
+                <p>Sácale provecho a lo que ya no usas y hazle lugar a lo que sí.</p>
+                <button class="btn-action" onclick="alert('Iniciando asistente de venta...')">Empezar a vender</button>
+            </div>
+        </div>
+
+        <!-- Pestañas Superiores -->
+        <div class="nav-tabs">
+            <a href="#" class="nav-tab active" onclick="switchTab('explorar', event)">Explorar</a>
+            <a href="#" class="nav-tab" onclick="switchTab('mis-ventas', event)">Mis ventas</a>
+            <a href="#" class="nav-tab" onclick="switchTab('pedidos', event)">Pedidos</a>
+            <a href="#" class="nav-tab" onclick="switchTab('ofertas', event)">Ofertas</a>
+        </div>
+
+        <!-- SECCIÓN: EXPLORAR -->
+        <div id="section-explorar" class="content-section active">
+            <div class="categories-filter">
+                <div class="cat-chip active" onclick="filterCat(this)">Todo</div>
+                <div class="cat-chip" onclick="filterCat(this)">Suéteres</div>
+                <div class="cat-chip" onclick="filterCat(this)">Playeras</div>
+                <div class="cat-chip" onclick="filterCat(this)">Pantalones</div>
+                <div class="cat-chip" onclick="filterCat(this)">Calzado</div>
+            </div>
+
+            <div class="item-card-manage">
+                <div class="item-flex">
+                    <div class="item-thumb">🌿</div>
+                    <div class="item-details">
+                        <div class="item-price-main">$175</div>
+                        <h4>Camisa azul con flores</h4>
+                        <div class="item-subtext">Poco uso · Talla M</div>
+                        <div class="item-subtext" style="margin-top: 2px;">christian.rojas · Tu zona</div>
+                    </div>
+                </div>
+                <div class="item-actions">
+                    <button class="btn-sub" onclick="alert('Oferta enviada al vendedor.')">Hacer oferta</button>
+                    <button class="btn-sub highlight" onclick="openCheckout()">La quiero · pagar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN: MIS VENTAS -->
+        <div id="section-mis-ventas" class="content-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">$150</div>
+                    <div class="stat-label">si vendes todo</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1 publicada</div>
+                    <div class="stat-label">en el bazar</div>
+                </div>
+            </div>
+
+            <div class="item-card-manage" id="my-item-row">
+                <div class="item-flex">
+                    <div class="item-thumb">🌿</div>
+                    <div class="item-details">
+                        <h4>Camisa azul con flores</h4>
+                        <div class="item-price-main">$175</div>
+                        <div class="item-subtext">recibes $150 · talla M</div>
+                    </div>
+                </div>
+                <div class="item-actions">
+                    <button class="btn-sub" onclick="alert('Modo edición activado.')">Editar</button>
+                    <button class="btn-sub highlight" onclick="markSold()">Vendida</button>
+                    <button class="btn-sub" onclick="removeItem()">Quitar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN: PEDIDOS -->
+        <div id="section-pedidos" class="content-section">
+            <div class="promo-card" style="text-align: center; padding: 25px 15px;">
+                <p style="margin-bottom: 0;">No tienes pedidos activos por el momento.</p>
+            </div>
+        </div>
+
+        <!-- SECCIÓN: OFERTAS -->
+        <div id="section-ofertas" class="content-section">
+            <div class="promo-card" style="text-align: center; padding: 25px 15px;">
+                <p style="margin-bottom: 0;">No hay ofertas recientes en este momento.</p>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            © 2026 Christian Rojas · Todos los derechos reservados
+        </div>
+
+        <!-- Menú inferior fijo -->
+        <nav class="bottom-nav">
+            <div class="nav-item" onclick="alert('Vista: Hoy')">
+                <span>☼</span>
+                <span>Hoy</span>
+            </div>
+            <div class="nav-item" onclick="alert('Vista: Armario')">
+                <span>☷</span>
+                <span>Armario</span>
+            </div>
+            <button class="nav-center-btn" onclick="alert('Abriendo cámara para subir prenda...')">
+                <span>📷</span>
+            </button>
+            <div class="nav-item active">
+                <span>🏷️</span>
+                <span>Bazar</span>
+            </div>
+            <div class="nav-item" onclick="alert('Vista: Probador')">
+                <span>⛶</span>
+                <span>Probador</span>
+            </div>
+        </nav>
+    </div>
+
+    <!-- MODAL DE PAGO (SPEI) -->
+    <div class="modal-overlay" id="checkoutModal">
+        <div class="modal-content">
+            <div class="modal-header">Paso 1 de 2 · Pagar</div>
+            <div class="modal-title">Camisa azul con flores</div>
+            <div class="modal-price">$175</div>
+
+            <div class="transfer-box">
+                <label>Transfiere por SPEI a</label>
+                <div class="transfer-number">127180001961697846</div>
+                <div class="transfer-sub">Christian Rojas · Banco Azteca</div>
+            </div>
+
+            <div class="transfer-box">
+                <label>Pon esta referencia en el concepto</label>
+                <div class="transfer-number" style="color: var(--accent-blue);">PER-JPCTS</div>
+            </div>
+
+            <button class="btn-action" style="margin-bottom: 10px;" onclick="alert('Comprobante simulado con éxito. Notificando a Percha...')">Subir foto del comprobante</button>
+            <button class="btn-sub" style="width: 100%; padding: 12px; border-radius: 25px;" onclick="closeCheckout()">Cancelar / Volver</button>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabId, event) {
+            event.preventDefault();
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById('section-' + tabId).classList.add('active');
+        }
+
+        function filterCat(element) {
+            document.querySelectorAll('.cat-chip').forEach(chip => chip.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        function openCheckout() {
+            document.getElementById('checkoutModal').classList.add('open');
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkoutModal').classList.remove('open');
+        }
+
+        function markSold() {
+            if(confirm('¿Marcar esta prenda como vendida?')) {
+                document.getElementById('my-item-row').style.opacity = '0.5';
+                alert('Prenda marcada como vendida exitosamente.');
+            }
+        }
+
+        function removeItem() {
+            if(confirm('¿Estás seguro de quitar esta prenda del bazar?')) {
+                document.getElementById('my-item-row.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
