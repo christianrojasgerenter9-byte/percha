@@ -6,21 +6,21 @@
     <title>Percha - Tu Asistente de Estilo y Bazar</title>
     <style>
         :root {
-            --bg-color: #0b131a;
-            --surface-color: #15202b;
-            --surface-hover: #1e2c3a;
-            --text-primary: #FFFFFF;
-            --text-secondary: #94a3b8;
-            --accent-color: #729ab8;
-            --accent-hover: #8caecb;
-            --border-color: #22303c;
+            --bg-color: #000000;         /* Negro absoluto */
+            --surface-color: #121212;    /* Superficies de tarjetas */
+            --surface-hover: #1a1a1a;    
+            --text-primary: #FFFFFF;     /* Blanco puro */
+            --text-secondary: #C0C5CE;   /* Plata para textos secundarios */
+            --accent-color: #E8ECEF;     /* Blanco plateado (reemplaza al dorado) */
+            --accent-hover: #FFFFFF;     
+            --border-color: #2A2A2A;     /* Bordes sutiles oscuros */
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Georgia', serif;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
         }
 
         body {
@@ -38,13 +38,14 @@
             background-color: var(--bg-color);
             position: relative;
             padding-bottom: 90px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            border-left: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
         }
 
         /* Header / Banner */
         .header-banner {
             padding: 20px;
-            background: linear-gradient(135deg, #15202b 0%, #0b131a 100%);
+            background-color: var(--bg-color);
             border-bottom: 1px solid var(--border-color);
         }
 
@@ -53,6 +54,7 @@
             font-weight: bold;
             margin-bottom: 5px;
             color: var(--text-primary);
+            letter-spacing: 0.5px;
         }
 
         .promo-card {
@@ -61,26 +63,26 @@
             padding: 20px;
             margin-top: 15px;
             border: 1px solid var(--border-color);
-            position: relative;
-            overflow: hidden;
         }
 
         .promo-card h3 {
             font-size: 1.2rem;
             margin-bottom: 8px;
+            color: var(--text-primary);
         }
 
         .promo-card p {
             font-size: 0.85rem;
             color: var(--text-secondary);
             margin-bottom: 15px;
+            line-height: 1.4;
         }
 
         .btn-primary {
             display: block;
             width: 100%;
             background-color: var(--accent-color);
-            color: #0b131a;
+            color: #000000;
             text-align: center;
             padding: 12px;
             border-radius: 25px;
@@ -89,11 +91,11 @@
             font-size: 0.9rem;
             border: none;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: opacity 0.2s;
         }
 
         .btn-primary:hover {
-            background-color: var(--accent-hover);
+            opacity: 0.85;
         }
 
         /* Navegación por pestañas */
@@ -119,7 +121,7 @@
 
         .nav-tab.active {
             background-color: var(--accent-color);
-            color: #0b131a;
+            color: #000000;
             font-weight: bold;
             border-color: var(--accent-color);
         }
@@ -144,7 +146,7 @@
 
         .cat-chip.active {
             background-color: var(--text-primary);
-            color: var(--bg-color);
+            color: #000000;
             font-weight: bold;
         }
 
@@ -167,20 +169,26 @@
         .item-thumb {
             width: 80px;
             height: 80px;
-            background-color: #22303c;
+            background-color: #1a1a1a;
             border-radius: 10px;
-            object-fit: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            border: 1px solid var(--border-color);
         }
 
         .item-info h4 {
             font-size: 1rem;
             margin-bottom: 4px;
+            color: var(--text-primary);
         }
 
         .item-price {
             font-size: 1.1rem;
             font-weight: bold;
-            color: var(--text-primary);
+            color: var(--accent-color);
             margin-bottom: 4px;
         }
 
@@ -216,6 +224,7 @@
 
         .nav-item.active {
             color: var(--text-primary);
+            font-weight: bold;
         }
 
         .nav-center-btn {
@@ -226,7 +235,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #0b131a;
+            color: #000000;
             margin-top: -20px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
             cursor: pointer;
@@ -277,7 +286,7 @@
         <!-- Contenido -->
         <div class="content-body">
             <div class="item-card">
-                <div class="item-thumb" style="display:flex; align-items:center; justify-content:center; color:var(--text-secondary); font-size:0.7rem;">[ Foto ]</div>
+                <div class="item-thumb">[ Foto ]</div>
                 <div class="item-info">
                     <h4>Camisa azul con flores</h4>
                     <div class="item-price">$175</div>
