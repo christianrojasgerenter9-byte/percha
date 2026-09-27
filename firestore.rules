@@ -149,6 +149,9 @@ service cloud.firestore {
         && money(request.resource.data.price)
         && str(request.resource.data.name, 80)
         && str(request.resource.data.ref, 30)
+        && str(request.resource.data.buyer, 60)
+        && str(request.resource.data.buyerWa, 10)
+        && request.resource.data.buyerWa.size() == 10
         && (!('receipt' in request.resource.data)
             || request.resource.data.receipt == null
             || str(request.resource.data.receipt, 700000))
@@ -163,6 +166,23 @@ service cloud.firestore {
         && request.resource.data.price == resource.data.price
         && request.resource.data.net == resource.data.net;
 
+      allow delete: if false;
+    }
+
+    // ---- Base de clientes (interna) -------------------------------------
+    // Cada comprador escribe solo su ficha. Nadie más la lee desde la app;
+    // Percha la consulta desde la consola de Firebase.
+    match /customers/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow write: if signedIn() && request.auth.uid == uid
+        && request.resource.data.uid == uid
+        && str(request.resource.data.name, 60)
+        && str(request.resource.data.wa, 10)
+        && request.resource.data.orders is int
+        && request.resource.data.spent is int
+        && (!('zone' in request.resource.data) || str(request.resource.data.zone, 60))
+        && (!('promos' in request.resource.data) || request.resource.data.promos is bool)
+        && request.resource.data.size() <= 40;
       allow delete: if false;
     }
 
