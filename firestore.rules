@@ -166,6 +166,56 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // ---- Tiendas (ej. naturista) ----------------------------------------
+    function storeAdmins(sid) {
+      return get(/databases/$(database)/documents/stores/$(sid)).data.admins;
+    }
+    function isStoreAdmin(sid) {
+      return signedIn() && request.auth.token.email.lower() in storeAdmins(sid);
+    }
+    match /stores/{sid} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && request.resource.data.admins is list
+        && request.auth.token.email.lower() in request.resource.data.admins
+        && str(request.resource.data.name, 80);
+      allow update: if isStoreAdmin(sid)
+        && request.resource.data.admins is list
+        && request.resource.data.admins.size() >= 1
+        && request.resource.data.admins.size() <= 10
+        && str(request.resource.data.name, 80)
+        && (!('clabe' in request.resource.data) || str(request.resource.data.clabe, 18));
+      allow delete: if false;
+
+      match /products/{pid} {
+        allow read: if signedIn();
+        allow write: if isStoreAdmin(sid)
+          && (request.method == 'delete'
+              || (str(request.resource.data.name, 80)
+                  && money(request.resource.data.price)
+                  && (!('photo' in request.resource.data) || request.resource.data.photo == null || str(request.resource.data.photo, 400000))));
+      }
+    }
+
+    // Pedidos apartados en tienda: el comprador crea, los admins de la tienda atienden.
+    match /storeOrders/{id} {
+      allow create: if signedIn()
+        && request.auth.uid == request.resource.data.buyerUid
+        && request.resource.data.status == 'nuevo'
+        && money(request.resource.data.total)
+        && request.resource.data.admins == storeAdmins(request.resource.data.storeId)
+        && str(request.resource.data.name, 60)
+        && str(request.resource.data.phone, 10);
+      allow read: if signedIn()
+        && (request.auth.uid == resource.data.buyerUid
+         || request.auth.token.email.lower() in resource.data.admins);
+      allow update: if signedIn()
+        && request.auth.token.email.lower() in resource.data.admins
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status in ['nuevo', 'pagado', 'listo', 'entregado'];
+      allow delete: if false;
+    }
+
     // ---- Todo lo demás: cerrado -----------------------------------------
     match /{document=**} {
       allow read, write: if false;

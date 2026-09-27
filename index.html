@@ -701,6 +701,18 @@ button,input,select,textarea{font:inherit}
           </button>
         </div>
 
+        <sc-if value="{{ shCardOn }}">
+          <button onClick="{{ shOpenStore }}" style="width:100%;border:0;cursor:pointer;text-align:left;color:inherit;font-family:var(--font-body);display:flex;align-items:center;gap:13px;background:var(--color-surface);border-radius:24px;padding:12px 14px 12px 12px;margin-bottom:14px">
+            <div style="flex:none;width:52px;height:52px;border-radius:999px;background:var(--color-accent-2-200);display:flex;align-items:center;justify-content:center;color:var(--color-text)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:9px;letter-spacing:.16em;color:var(--color-neutral-600)">TIENDA · RECOGE EN LOCAL</div>
+              <div style="font-size:15px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ shName }}</div>
+              <div style="font-size:11px;color:var(--color-neutral-600);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ shOpenLabel }} · {{ shHood }}</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-neutral-600)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+          </button>
+        </sc-if>
+
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px 10px">
           <sc-for list="{{ market }}" as="m" hint-placeholder-count="4">
             <div style="position:relative;background:var(--color-surface);border-radius:24px;overflow:hidden">
@@ -1524,6 +1536,414 @@ button,input,select,textarea{font:inherit}
   </div>
   </sc-if>
 
+  <sc-if value="{{ shOpen }}">
+  <div style="position:absolute;top:58px;left:0;right:0;bottom:0;z-index:70;display:flex;flex-direction:column;background:var(--color-bg);animation:up .28s cubic-bezier(.2,.8,.3,1)">
+    <div style="flex:none;padding:14px 18px 0">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button onClick="{{ shClose }}" aria-label="Volver" style="flex:none;width:40px;height:40px;border-radius:999px;border:1px solid var(--color-divider);background:transparent;color:var(--color-text);cursor:pointer;display:flex;align-items:center;justify-content:center">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+        </button>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:17px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ shName }}</div>
+          <div style="font-size:11px;color:var(--color-neutral-600);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ shHeaderSub }}</div>
+        </div>
+        <a href="{{ shWaLink }}" target="_blank" rel="noopener" aria-label="WhatsApp" style="flex:none;width:40px;height:40px;border-radius:999px;border:1px solid var(--color-divider);color:var(--color-text);display:flex;align-items:center;justify-content:center">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path></svg>
+        </a>
+        <sc-if value="{{ shCanAdmin }}">
+          <button onClick="{{ shToggleMode }}" class="btn btn-secondary" style="flex:none;font-size:12px;padding:9px 13px;white-space:nowrap">{{ shModeLabel }}</button>
+        </sc-if>
+      </div>
+      <div style="display:flex;margin-top:14px;box-shadow:inset 0 -1px 0 var(--color-divider)">
+        <sc-for list="{{ shTabs }}" as="b" hint-placeholder-count="3">
+          <button onClick="{{ b.pick }}" style="flex:1;min-width:0;border:0;background:transparent;cursor:pointer;font-family:var(--font-body);padding:10px 4px 11px;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:{{ b.ink }};box-shadow:{{ b.line }}">{{ b.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div ref="{{ shScrollRef }}" style="flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:16px 18px 28px">
+
+      <sc-if value="{{ shvShop }}" hint-placeholder-val="{{ true }}">
+        <div style="position:relative;overflow:hidden;background:var(--color-surface);border-radius:24px;padding:18px 18px 16px">
+          <div style="position:absolute;right:-34px;top:-38px;width:130px;height:130px;border-radius:999px;background:var(--color-accent-2-200)"></div>
+          <div style="position:relative">
+            <span class="tag {{ shOpenCls }}">{{ shOpenLabel }}</span>
+            <div style="font-size:22px;line-height:1.15;margin:10px 0 5px;font-weight:300;max-width:250px;text-wrap:balance">Pide aquí y pasa a recoger</div>
+            <div style="font-size:12.5px;color:var(--color-neutral-700);text-wrap:pretty">{{ shAddress }}</div>
+            <div style="font-size:12px;color:var(--color-neutral-600);margin-top:2px;text-wrap:pretty">{{ shHorario }}</div>
+          </div>
+        </div>
+        <div style="position:relative;display:flex;align-items:center;margin-top:14px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-neutral-600)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:15px;pointer-events:none"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.6-3.6"></path></svg>
+          <input class="input" value="{{ shQ }}" onChange="{{ shSetQ }}" placeholder="Busca moringa, miel, té…" style="padding-left:40px;font-size:13px;min-height:44px">
+        </div>
+        <div style="display:flex;gap:7px;overflow-x:auto;margin:12px -18px 14px;padding:0 18px 2px;scrollbar-width:none">
+          <sc-for list="{{ shCats }}" as="c" hint-placeholder-count="4">
+            <button onClick="{{ c.pick }}" class="tag {{ c.cls }}" style="flex:none;border:0;cursor:pointer;font-family:var(--font-body);padding:8px 14px;font-size:12px;white-space:nowrap">{{ c.label }}</button>
+          </sc-for>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px 10px">
+          <sc-for list="{{ shProds }}" as="p" hint-placeholder-count="4">
+            <div style="display:flex;flex-direction:column;background:var(--color-surface);border-radius:24px;overflow:hidden">
+              <button onClick="{{ p.open }}" style="border:0;padding:0;background:transparent;cursor:pointer;text-align:left;color:inherit;font-family:var(--font-body);display:flex;flex-direction:column">
+                <div style="position:relative;width:100%;aspect-ratio:1;background:var(--color-accent-2-200);overflow:hidden;display:flex;align-items:center;justify-content:center">
+                  <sc-if value="{{ p.hasPhoto }}"><div style="position:absolute;inset:0;background-color:#fff;background-size:cover;background-position:center;background-image:{{ p.bg }}"></div></sc-if>
+                  <sc-if value="{{ p.noPhoto }}" hint-placeholder-val="{{ true }}"><div style="width:58%;height:58%;border-radius:999px;background:var(--color-accent-2-300);display:flex;align-items:center;justify-content:center;font-family:var(--font-heading);font-size:34px;font-weight:300">{{ p.initial }}</div></sc-if>
+                  <sc-if value="{{ p.out }}"><span class="tag tag-neutral" style="position:absolute;left:8px;top:8px">Agotado</span></sc-if>
+                </div>
+                <div style="padding:10px 11px 0">
+                  <div style="font-size:12.5px;line-height:1.25">{{ p.name }}</div>
+                  <div style="font-size:10px;color:var(--color-neutral-600);margin-top:2px">{{ p.pres }}</div>
+                </div>
+              </button>
+              <div style="display:flex;align-items:center;gap:6px;padding:8px 8px 10px 11px;margin-top:auto">
+                <div style="flex:1;font-family:var(--font-heading);font-size:15px">{{ p.priceTxt }}</div>
+                <sc-if value="{{ p.canAdd }}"><button onClick="{{ p.add }}" aria-label="Agregar" class="btn btn-primary" style="width:34px;height:34px;padding:0"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></button></sc-if>
+                <sc-if value="{{ p.inBag }}"><span class="tag tag-accent-2">{{ p.qtyTxt }}</span></sc-if>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <sc-if value="{{ shNoProds }}">
+          <div style="background:var(--color-surface);border-radius:24px;padding:22px 18px;text-align:center;font-size:12.5px;color:var(--color-neutral-700);text-wrap:pretty">No encontramos eso. <button onClick="{{ shAskAbout }}" style="border:0;background:none;padding:0;color:var(--color-text);text-decoration:underline;cursor:pointer;font-family:var(--font-body)">Pregúntale al asistente</button></div>
+        </sc-if>
+      </sc-if>
+
+      <sc-if value="{{ shvChat }}">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="font-size:12px;color:var(--color-neutral-600);text-align:center;padding:0 16px 6px;text-wrap:pretty">Contesto al momento horario, ubicación, pagos, envíos y precios. Si no sé algo, te paso con {{ shOwner }}.</div>
+          <sc-for list="{{ shChat }}" as="m" hint-placeholder-count="1">
+            <sc-if value="{{ m.bot }}">
+              <div style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;max-width:88%">
+                <div style="background:var(--color-surface);border-radius:20px 20px 20px 6px;padding:10px 14px;font-size:13.5px;line-height:1.45;white-space:pre-line;text-wrap:pretty">{{ m.text }}</div>
+                <sc-if value="{{ m.hasProds }}">
+                  <div style="display:flex;flex-wrap:wrap;gap:6px">
+                    <sc-for list="{{ m.prods }}" as="x"><button onClick="{{ x.open }}" class="btn btn-secondary" style="font-size:12px;padding:6px 12px">Ver {{ x.name }}</button></sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ m.hasWa }}"><a href="{{ m.wa }}" target="_blank" rel="noopener" class="btn btn-primary" style="font-size:12.5px;padding:8px 14px;text-decoration:none">Escribirle a {{ shOwner }}</a></sc-if>
+              </div>
+            </sc-if>
+            <sc-if value="{{ m.me }}">
+              <div style="align-self:flex-end;max-width:80%;background:var(--color-text);color:var(--color-bg);border-radius:20px 20px 6px 20px;padding:10px 14px;font-size:13.5px;line-height:1.45;text-wrap:pretty">{{ m.text }}</div>
+            </sc-if>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ shvBagEmpty }}">
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:40px 16px">
+          <div style="width:84px;height:84px;border-radius:999px;background:var(--color-accent-2-200);display:flex;align-items:center;justify-content:center;color:var(--color-text)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg></div>
+          <div style="font-size:20px;font-weight:300;margin:14px 0 4px">Tu bolsa está vacía</div>
+          <div style="font-size:12.5px;color:var(--color-neutral-600)">Agrega productos y pasa por ellos a la tienda.</div>
+          <button onClick="{{ shGoShop }}" class="btn btn-primary" style="margin-top:16px;padding:12px 20px">Ver productos</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ shvBag }}">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ shBag }}" as="i" hint-placeholder-count="2">
+            <div style="display:flex;align-items:center;gap:12px;background:var(--color-surface);border-radius:24px;padding:8px 10px 8px 8px">
+              <div style="position:relative;flex:none;width:52px;height:52px;border-radius:999px;overflow:hidden;background:var(--color-accent-2-200);display:flex;align-items:center;justify-content:center">
+                <sc-if value="{{ i.hasPhoto }}"><div style="position:absolute;inset:0;background-color:#fff;background-size:cover;background-position:center;background-image:{{ i.bg }}"></div></sc-if>
+                <sc-if value="{{ i.noPhoto }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-size:20px;color:var(--color-text)">{{ i.initial }}</span></sc-if>
+              </div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:12.5px;line-height:1.25">{{ i.name }}</div>
+                <div style="font-size:11px;color:var(--color-neutral-600)">{{ i.priceTxt }} c/u</div>
+              </div>
+              <div style="flex:none;display:flex;align-items:center;gap:2px;background:var(--color-bg);border-radius:999px;padding:3px">
+                <button onClick="{{ i.dec }}" aria-label="Quitar uno" class="btn btn-ghost" style="width:32px;height:32px;padding:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round"><path d="M5 12h14"></path></svg></button>
+                <span style="min-width:18px;text-align:center;font-size:13px">{{ i.qty }}</span>
+                <button onClick="{{ i.inc }}" aria-label="Agregar uno" class="btn btn-ghost" style="width:32px;height:32px;padding:0"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></button>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-600);margin:18px 0 7px">Entrega</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ shEntregas }}" as="o" hint-placeholder-count="1">
+            <button onClick="{{ o.pick }}" style="display:flex;align-items:center;gap:12px;text-align:left;cursor:pointer;color:inherit;font-family:var(--font-body);background:var(--color-surface);border-radius:24px;padding:12px 15px;border:1.5px solid {{ o.ring }}">
+              <span style="flex:none;width:18px;height:18px;border-radius:999px;border:2px solid var(--color-text);display:flex;align-items:center;justify-content:center"><span style="width:8px;height:8px;border-radius:999px;background:{{ o.dot }}"></span></span>
+              <span style="flex:1;min-width:0"><span style="display:block;font-size:13px">{{ o.label }}</span><span style="display:block;font-size:11px;color:var(--color-neutral-600);text-wrap:pretty">{{ o.sub }}</span></span>
+              <span style="flex:none;font-size:12px">{{ o.cost }}</span>
+            </button>
+          </sc-for>
+        </div>
+        <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-600);margin:18px 0 7px">Pago</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ shPagos }}" as="o" hint-placeholder-count="2">
+            <button onClick="{{ o.pick }}" style="display:flex;align-items:center;gap:12px;text-align:left;cursor:pointer;color:inherit;font-family:var(--font-body);background:var(--color-surface);border-radius:24px;padding:12px 15px;border:1.5px solid {{ o.ring }}">
+              <span style="flex:none;width:18px;height:18px;border-radius:999px;border:2px solid var(--color-text);display:flex;align-items:center;justify-content:center"><span style="width:8px;height:8px;border-radius:999px;background:{{ o.dot }}"></span></span>
+              <span style="flex:1;min-width:0"><span style="display:block;font-size:13px">{{ o.label }}</span><span style="display:block;font-size:11px;color:var(--color-neutral-600);text-wrap:pretty">{{ o.sub }}</span></span>
+            </button>
+          </sc-for>
+        </div>
+        <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-600);margin:18px 0 7px">Tus datos</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <input class="input" value="{{ shCName }}" onChange="{{ shSetCName }}" placeholder="Tu nombre" autocomplete="name" style="min-height:44px;font-size:13px">
+          <input class="input" value="{{ shCPhone }}" onChange="{{ shSetCPhone }}" placeholder="Tu WhatsApp (10 dígitos)" inputmode="tel" autocomplete="tel" style="min-height:44px;font-size:13px">
+          <input class="input" value="{{ shCNote }}" onChange="{{ shSetCNote }}" placeholder="Nota (opcional)" style="min-height:44px;font-size:13px">
+        </div>
+        <div style="background:var(--color-surface);border-radius:24px;padding:14px 17px;margin-top:16px;display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;font-size:12.5px"><span style="flex:1;color:var(--color-neutral-700)">Productos</span><span>{{ shSubTxt }}</span></div>
+          <sc-if value="{{ shShipOn }}"><div style="display:flex;font-size:12.5px"><span style="flex:1;color:var(--color-neutral-700)">Envío</span><span>{{ shShipTxt }}</span></div></sc-if>
+          <div style="height:1px;background:var(--color-divider);margin:4px 0"></div>
+          <div style="display:flex;align-items:baseline"><span style="flex:1;font-size:13px">Total</span><span style="font-family:var(--font-heading);font-size:24px">{{ shTotalTxt }}</span></div>
+        </div>
+        <sc-if value="{{ shErrOn }}"><div style="margin-top:10px;font-size:12.5px;color:var(--color-accent-800)">{{ shErr }}</div></sc-if>
+        <button onClick="{{ shPlace }}" class="btn btn-primary btn-block" style="padding:15px;font-size:15px;margin-top:14px">Apartar pedido</button>
+        <div style="text-align:center;font-size:11px;color:var(--color-neutral-600);margin-top:9px;text-wrap:pretty">Te lo guardamos 72 horas en tienda.</div>
+      </sc-if>
+
+      <sc-if value="{{ shvDone }}">
+        <div style="position:relative;overflow:hidden;background:var(--color-surface);border-radius:24px;padding:20px 18px">
+          <div style="position:absolute;right:-30px;top:-30px;width:110px;height:110px;border-radius:999px;background:var(--color-accent-2-200)"></div>
+          <div style="position:relative">
+            <div style="font-size:10px;letter-spacing:.16em;color:var(--color-neutral-600)">PEDIDO {{ shLo.id }}</div>
+            <div style="font-size:24px;font-weight:300;margin:6px 0 4px">¡Listo, {{ shLo.first }}!</div>
+            <div style="font-size:13px;color:var(--color-neutral-700)">Total {{ shLo.totalTxt }} · {{ shLo.entregaTxt }}</div>
+          </div>
+        </div>
+        <sc-if value="{{ shLo.isTransfer }}">
+          <div style="background:var(--color-surface);border-radius:24px;padding:16px 17px;margin-top:12px">
+            <div style="font-size:15px">1. Transfiere {{ shLo.totalTxt }}</div>
+            <div style="display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px 12px;align-items:center;margin-top:12px;font-size:12.5px">
+              <div style="color:var(--color-neutral-600)">CLABE</div>
+              <div style="font-variant-numeric:tabular-nums;letter-spacing:.03em;overflow-wrap:anywhere">{{ shClabeFmt }}</div>
+              <button onClick="{{ shCopyClabe }}" class="btn btn-ghost" style="font-size:11px;padding:5px 10px;border:1px solid var(--color-divider)">{{ shCopyClabeLbl }}</button>
+              <div style="color:var(--color-neutral-600)">Banco</div>
+              <div style="grid-column:span 2">{{ shBank }}</div>
+              <div style="color:var(--color-neutral-600)">Titular</div>
+              <div style="grid-column:span 2">{{ shHolder }}</div>
+              <div style="color:var(--color-neutral-600)">Concepto</div>
+              <div>{{ shLo.id }}</div>
+              <button onClick="{{ shCopyRef }}" class="btn btn-ghost" style="font-size:11px;padding:5px 10px;border:1px solid var(--color-divider)">{{ shCopyRefLbl }}</button>
+            </div>
+            <sc-if value="{{ shNoClabe }}"><div style="margin-top:10px;font-size:12px;color:var(--color-accent-800);text-wrap:pretty">La tienda aún no registra su CLABE; te la mandan por WhatsApp.</div></sc-if>
+          </div>
+        </sc-if>
+        <div style="background:var(--color-surface);border-radius:24px;padding:16px 17px;margin-top:12px">
+          <div style="font-size:15px">{{ shLo.stepWa }}</div>
+          <div style="font-size:12px;color:var(--color-neutral-600);margin-top:3px;text-wrap:pretty">{{ shLo.waHint }}</div>
+          <a href="{{ shLo.wa }}" target="_blank" rel="noopener" class="btn btn-primary btn-block" style="margin-top:12px;padding:14px;text-decoration:none;box-sizing:border-box">Enviar pedido por WhatsApp</a>
+        </div>
+        <div style="font-size:12px;color:var(--color-neutral-600);margin:14px 4px 0;text-wrap:pretty">Recoge en {{ shAddress }} · {{ shHorario }}.</div>
+        <button onClick="{{ shNewOrder }}" class="btn btn-ghost btn-block" style="margin-top:12px;padding:12px;border:1px solid var(--color-divider)">Seguir comprando</button>
+      </sc-if>
+
+      <sc-if value="{{ shvPedidos }}">
+        <sc-if value="{{ shActivateOn }}">
+          <div style="background:var(--color-surface);border-radius:24px;padding:16px 17px;margin-bottom:14px">
+            <div style="font-size:15px">Activa la tienda en la nube</div>
+            <div style="font-size:12px;color:var(--color-neutral-700);margin-top:4px;text-wrap:pretty">Así los clientes ven tus productos y los pedidos te llegan aquí. Quedas como administrador; luego agregas a quien te ayude en Datos.</div>
+            <button onClick="{{ shActivate }}" class="btn btn-primary" style="margin-top:12px;padding:11px 18px;white-space:nowrap">Activar tienda</button>
+          </div>
+        </sc-if>
+        <div style="display:flex;gap:7px;overflow-x:auto;margin:0 -18px 14px;padding:0 18px;scrollbar-width:none">
+          <sc-for list="{{ shOFilters }}" as="x" hint-placeholder-count="4">
+            <button onClick="{{ x.pick }}" class="tag {{ x.cls }}" style="flex:none;border:0;cursor:pointer;font-family:var(--font-body);padding:7px 13px;font-size:11.5px;white-space:nowrap">{{ x.label }}</button>
+          </sc-for>
+        </div>
+        <sc-if value="{{ shNoOrders }}">
+          <div style="background:var(--color-surface);border-radius:24px;padding:22px 18px;text-align:center;font-size:12.5px;color:var(--color-neutral-700);text-wrap:pretty">Aquí aparecen los pedidos que aparten desde Percha.</div>
+        </sc-if>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ shOrders }}" as="o" hint-placeholder-count="2">
+            <div style="background:var(--color-surface);border-radius:24px;padding:15px 16px">
+              <div style="display:flex;align-items:baseline;gap:8px">
+                <div style="flex:1;min-width:0;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ o.name }}</div>
+                <div style="font-family:var(--font-heading);font-size:17px">{{ o.totalTxt }}</div>
+              </div>
+              <div style="font-size:11px;color:var(--color-neutral-600);margin-top:1px">{{ o.id }} · {{ o.ago }}</div>
+              <div style="font-size:12px;line-height:1.5;margin-top:8px;white-space:pre-line">{{ o.lines }}</div>
+              <sc-if value="{{ o.noteOn }}"><div style="font-size:11.5px;color:var(--color-neutral-700);margin-top:4px">Nota: {{ o.note }}</div></sc-if>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
+                <span class="tag {{ o.statusCls }}">{{ o.statusTxt }}</span>
+                <span class="tag tag-neutral">{{ o.entregaTxt }}</span>
+                <span class="tag tag-neutral">{{ o.pagoTxt }}</span>
+              </div>
+              <div style="display:flex;gap:6px;margin-top:12px">
+                <sc-for list="{{ o.steps }}" as="s">
+                  <button onClick="{{ s.pick }}" class="btn {{ s.cls }}" style="flex:1;min-width:0;font-size:11.5px;padding:8px 4px;white-space:nowrap">{{ s.label }}</button>
+                </sc-for>
+              </div>
+              <a href="{{ o.wa }}" target="_blank" rel="noopener" class="btn btn-ghost btn-block" style="margin-top:8px;padding:9px;font-size:12px;text-decoration:none;border:1px solid var(--color-divider);box-sizing:border-box">{{ o.waLabel }}</a>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ shvAProds }}">
+        <button onClick="{{ shNewProduct }}" class="btn btn-primary btn-block" style="padding:13px;font-size:14px">+ Nuevo producto</button>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+          <sc-for list="{{ shAProds }}" as="p" hint-placeholder-count="3">
+            <div style="display:flex;align-items:center;gap:12px;background:var(--color-surface);border-radius:24px;padding:8px 10px 8px 8px">
+              <div style="position:relative;flex:none;width:52px;height:52px;border-radius:999px;overflow:hidden;background:var(--color-accent-2-200);display:flex;align-items:center;justify-content:center">
+                <sc-if value="{{ p.hasPhoto }}"><div style="position:absolute;inset:0;background-color:#fff;background-size:cover;background-position:center;background-image:{{ p.bg }}"></div></sc-if>
+                <sc-if value="{{ p.noPhoto }}" hint-placeholder-val="{{ true }}"><span style="font-family:var(--font-heading);font-size:20px;color:var(--color-text)">{{ p.initial }}</span></sc-if>
+              </div>
+              <button onClick="{{ p.edit }}" style="flex:1;min-width:0;border:0;background:transparent;padding:0;text-align:left;cursor:pointer;color:inherit;font-family:var(--font-body)">
+                <div style="font-size:12.5px;line-height:1.25">{{ p.name }}</div>
+                <div style="font-size:11px;color:var(--color-neutral-600)">{{ p.priceTxt }} · {{ p.pres }}</div>
+              </button>
+              <button onClick="{{ p.toggle }}" class="tag {{ p.stockCls }}" style="flex:none;border:0;cursor:pointer;font-family:var(--font-body);padding:7px 11px;font-size:11px">{{ p.stockLbl }}</button>
+            </div>
+          </sc-for>
+        </div>
+        <sc-if value="{{ shHasDemo }}"><div style="font-size:11.5px;color:var(--color-neutral-600);margin-top:12px;text-wrap:pretty">Los productos marcados como ejemplo son para arrancar: edítalos con fotos y precios reales o bórralos.</div></sc-if>
+      </sc-if>
+
+      <sc-if value="{{ shvDatos }}">
+        <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-600);margin:18px 0 7px;margin-top:0">Negocio</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <input class="input" value="{{ shD.name }}" onChange="{{ shOn.name }}" placeholder="Nombre del negocio" style="min-height:44px;font-size:13px">
+          <input class="input" value="{{ shD.owner }}" onChange="{{ shOn.owner }}" placeholder="Nombre de quien atiende" style="min-height:44px;font-size:13px">
+          <input class="input" value="{{ shD.address }}" onChange="{{ shOn.address }}" placeholder="Dirección de la tienda" style="min-height:44px;font-size:13px">
+          <input class="input" value="{{ shD.wa }}" onChange="{{ shOn.wa }}" placeholder="WhatsApp del negocio (10 dígitos)" inputmode="tel" style="min-height:44px;font-size:13px">
+        </div>
+        <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-600);margin:18px 0 7px">Horario</div>
+        <div style="display:flex;gap:6px">
+          <sc-for list="{{ shDias }}" as="d" hint-placeholder-count="7">
+            <button onClick="{{ d.toggle }}" class="tag {{ d.cls }}" style="flex:1;min-width:0;border:0;cursor:pointer;font-family:var(--font-body);padding:9px 0;font-size:12px;justify-content:center">{{ d.label }}</button>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+          <input class="input" type="time" value="{{ shD.abre }}" onChange="{{ shOn.abre }}" style="flex:1;min-height:44px;font-size:13px">
+          <span style="font-size:12px;color:var(--color-neutral-600)">a</span>
+          <input class="input" type="time" value="{{ shD.cierra }}" onChange="{{ shOn.cierra }}" style="flex:1;min-height:44px;font-size:13px">
+        </div>
+        <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-600);margin:18px 0 7px">Cuenta para transferencias</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <input class="input" value="{{ shD.clabe }}" onChange="{{ shOn.clabe }}" placeholder="CLABE interbancaria (18 dígitos)" inputmode="numeric" maxlength="22" style="min-height:44px;font-size:13px;letter-spacing:.04em">
+          <sc-if value="{{ shClabeMsgOn }}"><div style="font-size:11.5px;padding:0 6px;color:{{ shClabeMsgInk }}">{{ shClabeMsg }}</div></sc-if>
+          <input class="input" value="{{ shD.banco }}" onChange="{{ shOn.banco }}" placeholder="{{ shBankPh }}" style="min-height:44px;font-size:13px">
+          <input class="input" value="{{ shD.titular }}" onChange="{{ shOn.titular }}" placeholder="Titular de la cuenta" style="min-height:44px;font-size:13px">
+        </div>
+        <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-600);margin:18px 0 7px">Envío a domicilio</div>
+        <button onClick="{{ shToggleEnvio }}" style="width:100%;display:flex;align-items:center;gap:12px;text-align:left;cursor:pointer;color:inherit;font-family:var(--font-body);background:var(--color-surface);border-radius:24px;padding:12px 15px;border:0">
+          <span style="flex:1;font-size:13px">{{ shEnvioLbl }}</span>
+          <span style="flex:none;width:42px;height:24px;border-radius:999px;background:{{ shEnvioTrack }};position:relative"><span style="position:absolute;top:3px;left:{{ shEnvioKnob }};width:18px;height:18px;border-radius:999px;background:var(--color-bg)"></span></span>
+        </button>
+        <sc-if value="{{ shEnvioOn }}">
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <input class="input" value="{{ shD.envioCosto }}" onChange="{{ shOn.envioCosto }}" placeholder="Costo $" inputmode="numeric" style="flex:none;width:96px;min-height:44px;font-size:13px">
+            <input class="input" value="{{ shD.envioZona }}" onChange="{{ shOn.envioZona }}" placeholder="Zona que cubres" style="flex:1;min-width:0;min-height:44px;font-size:13px">
+          </div>
+        </sc-if>
+        <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-600);margin:18px 0 7px">Quién administra</div>
+        <textarea class="input" value="{{ shAdminsTxt }}" onChange="{{ shSetAdmins }}" placeholder="correo1@gmail.com, correo2@gmail.com" style="min-height:70px;font-size:13px;border-radius:20px;padding:12px 14px"></textarea>
+        <div style="font-size:11px;color:var(--color-neutral-600);margin:6px 6px 0;text-wrap:pretty">Los correos con los que entran a Percha. Todos los de la lista pueden editar productos, datos y pedidos.</div>
+        <button onClick="{{ shSaveInfo }}" class="btn btn-primary btn-block" style="padding:14px;font-size:14px;margin-top:18px">Guardar cambios</button>
+      </sc-if>
+
+      <sc-if value="{{ shvBot }}">
+        <div style="font-size:12.5px;color:var(--color-neutral-700);text-wrap:pretty">El asistente de la tienda contesta con estas respuestas. Las palabras clave son lo que suele escribir la gente; sepáralas con comas. Puedes usar {horario}, {direccion} y {envio} y se llenan solas.</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
+          <sc-for list="{{ shFaqs }}" as="q" hint-placeholder-count="3">
+            <div style="background:var(--color-surface);border-radius:24px;padding:12px;display:flex;flex-direction:column;gap:7px">
+              <div style="display:flex;gap:8px;align-items:center">
+                <input class="input" value="{{ q.q }}" onChange="{{ q.setQ }}" placeholder="Tema" style="flex:1;min-width:0;min-height:40px;font-size:13px">
+                <button onClick="{{ q.del }}" aria-label="Borrar" style="flex:none;width:36px;height:36px;border-radius:999px;border:0;background:transparent;color:var(--color-neutral-600);cursor:pointer;font-size:14px">✕</button>
+              </div>
+              <input class="input" value="{{ q.keys }}" onChange="{{ q.setKeys }}" placeholder="Palabras clave" style="min-height:40px;font-size:12px">
+              <textarea class="input" value="{{ q.a }}" onChange="{{ q.setA }}" placeholder="Respuesta" style="min-height:70px;font-size:13px;border-radius:18px;padding:10px 14px"></textarea>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button onClick="{{ shAddFaq }}" class="btn btn-secondary" style="flex:1;padding:12px">+ Respuesta</button>
+          <button onClick="{{ shSaveFaqs }}" class="btn btn-primary" style="flex:1;padding:12px">Guardar</button>
+        </div>
+        <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-600);margin:18px 0 7px;margin-top:26px">Para tu WhatsApp Business</div>
+        <div style="font-size:12px;color:var(--color-neutral-700);text-wrap:pretty">Copia cada una en WhatsApp Business › Herramientas para la empresa › Respuestas rápidas. En el chat escribes el atajo y sale el texto completo.</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+          <sc-for list="{{ shQuick }}" as="r" hint-placeholder-count="3">
+            <div style="background:var(--color-surface);border-radius:24px;padding:12px 14px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="flex:1;min-width:0;font-size:12.5px">{{ r.short }}</span>
+                <button onClick="{{ r.copy }}" class="btn btn-ghost" style="flex:none;font-size:11px;padding:5px 11px;border:1px solid var(--color-divider)">{{ r.lbl }}</button>
+              </div>
+              <div style="font-size:12px;line-height:1.45;color:var(--color-neutral-700);margin-top:5px;text-wrap:pretty">{{ r.text }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+    </div>
+
+    <sc-if value="{{ shBagBarOn }}">
+      <div style="flex:none;padding:10px 18px 26px;background:var(--color-bg);box-shadow:0 -1px 0 var(--color-divider)">
+        <button onClick="{{ shGoBag }}" class="btn btn-primary btn-block" style="padding:14px;font-size:14px;display:flex;gap:10px"><span style="flex:1;text-align:left">Ver bolsa · {{ shBagN }}</span><span>{{ shSubTxt }}</span></button>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ shvChat }}">
+      <div style="flex:none;padding:10px 14px 26px;background:var(--color-bg);box-shadow:0 -1px 0 var(--color-divider)">
+        <div style="display:flex;gap:7px;overflow-x:auto;margin-bottom:9px;scrollbar-width:none">
+          <sc-for list="{{ shSuggest }}" as="g" hint-placeholder-count="4">
+            <button onClick="{{ g.pick }}" class="tag tag-outline" style="flex:none;cursor:pointer;font-family:var(--font-body);padding:7px 12px;font-size:11.5px;white-space:nowrap;background:transparent">{{ g.label }}</button>
+          </sc-for>
+        </div>
+        <form onSubmit="{{ shSubmit }}" style="display:flex;gap:8px;margin:0">
+          <input class="input" value="{{ shChatIn }}" onChange="{{ shSetChat }}" placeholder="Escribe tu pregunta" style="flex:1;min-width:0;min-height:44px;font-size:13px">
+          <button type="submit" aria-label="Enviar" class="btn btn-primary" style="flex:none;width:44px;height:44px;padding:0"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg></button>
+        </form>
+      </div>
+    </sc-if>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ shPOpen }}">
+  <div style="position:absolute;inset:0;z-index:72;display:flex;flex-direction:column;justify-content:flex-end;background:rgba(0,0,0,.55)">
+    <button onClick="{{ shPClose }}" style="flex:1;border:0;background:transparent;cursor:pointer"></button>
+    <div style="background:var(--color-bg);border-radius:34px 34px 0 0;padding:14px 22px 30px;max-height:88%;overflow:auto;animation:up .28s cubic-bezier(.2,.8,.3,1)">
+      <div style="width:44px;height:4px;border-radius:999px;background:var(--color-neutral-400);margin:0 auto 14px"></div>
+      <div style="position:relative;width:100%;aspect-ratio:4/3;border-radius:26px;overflow:hidden;background:var(--color-accent-2-200);display:flex;align-items:center;justify-content:center">
+        <sc-if value="{{ shP.hasPhoto }}"><div style="position:absolute;inset:0;background-color:#fff;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ shP.bg }}"></div></sc-if>
+        <sc-if value="{{ shP.noPhoto }}"><div style="width:120px;height:120px;border-radius:999px;background:var(--color-accent-2-300);display:flex;align-items:center;justify-content:center;font-family:var(--font-heading);font-size:52px;font-weight:300">{{ shP.initial }}</div></sc-if>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:10px;margin-top:14px">
+        <div style="flex:1;min-width:0;font-size:21px;font-weight:300;line-height:1.2">{{ shP.name }}</div>
+        <div style="font-family:var(--font-heading);font-size:22px">{{ shP.priceTxt }}</div>
+      </div>
+      <div style="font-size:12px;color:var(--color-neutral-600);margin-top:3px">{{ shP.pres }} · {{ shP.cat }} · {{ shP.stockTxt }}</div>
+      <sc-if value="{{ shP.descOn }}"><p style="font-size:13px;line-height:1.55;color:var(--color-neutral-700);margin:12px 0 0;text-wrap:pretty">{{ shP.desc }}</p></sc-if>
+      <sc-if value="{{ shP.canAdd }}"><button onClick="{{ shP.add }}" class="btn btn-primary btn-block" style="padding:15px;font-size:15px;margin-top:18px">{{ shP.addLbl }}</button></sc-if>
+      <a href="{{ shP.wa }}" target="_blank" rel="noopener" class="btn btn-ghost btn-block" style="padding:12px;font-size:13px;margin-top:8px;text-decoration:none;border:1px solid var(--color-divider);box-sizing:border-box">Preguntar por WhatsApp</a>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ shEOpen }}">
+  <div style="position:absolute;inset:0;z-index:73;display:flex;flex-direction:column;justify-content:flex-end;background:rgba(0,0,0,.55)">
+    <button onClick="{{ shEClose }}" style="flex:1;border:0;background:transparent;cursor:pointer"></button>
+    <div style="background:var(--color-bg);border-radius:34px 34px 0 0;padding:14px 22px 30px;max-height:92%;overflow:auto;animation:up .28s cubic-bezier(.2,.8,.3,1)">
+      <div style="width:44px;height:4px;border-radius:999px;background:var(--color-neutral-400);margin:0 auto 14px"></div>
+      <div style="font-size:21px;font-weight:300;margin-bottom:12px">{{ shETitle }}</div>
+      <label style="position:relative;display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:4/3;border-radius:26px;overflow:hidden;background:var(--color-surface);border:1.5px dashed var(--color-divider);cursor:pointer">
+        <sc-if value="{{ shE.hasPhoto }}"><div style="position:absolute;inset:0;background-color:#fff;background-size:contain;background-repeat:no-repeat;background-position:center;background-image:{{ shE.bg }}"></div></sc-if>
+        <span style="position:relative;background:rgba(0,0,0,.6);color:#f5f5f7;border-radius:999px;padding:8px 14px;font-size:12px">{{ shEPhotoLbl }}</span>
+        <input type="file" accept="image/*" onChange="{{ shPickPhoto }}" style="position:absolute;inset:0;opacity:0;cursor:pointer">
+      </label>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+        <input class="input" value="{{ shE.name }}" onChange="{{ shEOn.name }}" placeholder="Nombre del producto" style="min-height:44px;font-size:13px">
+        <div style="display:flex;gap:8px">
+          <input class="input" value="{{ shE.price }}" onChange="{{ shEOn.price }}" placeholder="Precio $" inputmode="numeric" style="flex:none;width:110px;min-height:44px;font-size:13px">
+          <input class="input" value="{{ shE.pres }}" onChange="{{ shEOn.pres }}" placeholder="Presentación (500 g, 60 cáps…)" style="flex:1;min-width:0;min-height:44px;font-size:13px">
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <sc-for list="{{ shECats }}" as="c" hint-placeholder-count="5">
+            <button onClick="{{ c.pick }}" class="tag {{ c.cls }}" style="border:0;cursor:pointer;font-family:var(--font-body);padding:8px 12px;font-size:11.5px">{{ c.label }}</button>
+          </sc-for>
+        </div>
+        <textarea class="input" value="{{ shE.desc }}" onChange="{{ shEOn.desc }}" placeholder="Descripción y modo de uso (como viene en la etiqueta)" style="min-height:80px;font-size:13px;border-radius:20px;padding:12px 14px"></textarea>
+      </div>
+      <button onClick="{{ shESave }}" class="btn btn-primary btn-block" style="padding:15px;font-size:15px;margin-top:16px">Guardar producto</button>
+      <sc-if value="{{ shECanDel }}"><button onClick="{{ shEDel }}" class="btn btn-ghost btn-block" style="padding:12px;font-size:13px;margin-top:8px;color:var(--color-accent-800)">Borrar producto</button></sc-if>
+    </div>
+  </div>
+  </sc-if>
+
   <sc-if value="{{ toastOn }}">
   <div style="position:absolute;left:20px;right:20px;bottom:106px;z-index:80;background:var(--color-neutral-900);color:var(--color-neutral-100);border-radius:999px;padding:13px 20px;font-size:13px;text-align:center;animation:tin .25s ease-out;box-shadow:var(--shadow-lg)">{{ toast }}</div>
   </sc-if>
@@ -1551,6 +1971,35 @@ const PATHS = {
 const WHATSAPP = "5215646463204";
 const RECAPTCHA_KEY = "6LdG_4AtAAAAAJ1KiFp7UjIY9FlR5GuyuSiUbju3";
 const PROMO = { on: true, uses: 2, days: 7, min: 150 };
+const STORE_ID = "naturista-omar";
+const STORE_CATS = ["Suplementos", "Tés e infusiones", "Miel y superfoods", "Aceites", "Cuidado personal"];
+const BANKS = { "002": "Banamex", "012": "BBVA", "014": "Santander", "021": "HSBC", "030": "BanBajío", "036": "Inbursa", "044": "Scotiabank", "058": "Banregio", "072": "Banorte", "127": "Banco Azteca", "137": "BanCoppel", "638": "Nu México", "646": "STP", "722": "Mercado Pago" };
+const STORE_SEED = {
+  id: STORE_ID, name: "Naturista Omar", owner: "Omar", address: "Col. Santa María la Ribera, CDMX",
+  abre: "00:00", cierra: "23:59", dias: [true, true, true, true, true, true, true],
+  wa: "5578940125", clabe: "", banco: "", titular: "", envio: false, envioCosto: 0, envioZona: "Santa María la Ribera y colonias vecinas",
+  admins: ["christian.rojas.gerente.r9@gmail.com"],
+  faqs: [
+    { q: "Precios", keys: "precio, precios, cuanto, cuesta, costo, lista", a: "Todos los precios están en la pestaña Productos. Escríbeme el nombre de lo que buscas y te digo cuánto cuesta." },
+    { q: "Información", keys: "informacion, info, catalogo, que venden, que tienen, productos", a: "Somos una tienda naturista en {direccion}: suplementos, tés, miel, aceites y cuidado personal. Aparta aquí en Percha y pasa a recoger." },
+    { q: "Horario", keys: "horario, hora, abren, cierran, abierto, abierta", a: "Abrimos {horario}." },
+    { q: "Ubicación", keys: "donde, ubicacion, direccion, llegar, local", a: "Estamos en {direccion}. Aparta aquí en Percha y pasa a recoger." },
+    { q: "Dónde entregan", keys: "entrega, entregan, envio, envios, domicilio, mandan, llevan", a: "{envio}" },
+    { q: "Pagos", keys: "pago, pagar, tarjeta, transferencia, efectivo, deposito", a: "Puedes pagar por transferencia (te damos la CLABE al apartar tu pedido) o en efectivo al recoger." },
+    { q: "Apartar", keys: "apartar, apartado, guardar, reservar", a: "Aparta tu pedido aquí y te lo guardamos 72 horas en tienda." },
+    { q: "Cómo se toma", keys: "dosis, tomar, toma, como se usa, sirve, embarazo, medicamento, enfermedad", a: "Cada producto trae su modo de uso en la etiqueta. Si estás embarazada, tomas medicamentos o tienes algún padecimiento, consulta primero a tu médico." },
+    { q: "Mayoreo", keys: "mayoreo, mayor, precio especial, revender, cantidad", a: "Sí manejamos precio de mayoreo. Escríbenos por WhatsApp con productos y cantidades." }
+  ]
+};
+const STORE_PRODUCTS = [
+  { id: "sp1", name: "Moringa en polvo", pres: "250 g", price: 180, cat: "Suplementos", stock: true, demo: true, desc: "" },
+  { id: "sp2", name: "Espirulina", pres: "100 cápsulas", price: 220, cat: "Suplementos", stock: true, demo: true, desc: "" },
+  { id: "sp3", name: "Té de manzanilla", pres: "25 sobres", price: 65, cat: "Tés e infusiones", stock: true, demo: true, desc: "" },
+  { id: "sp4", name: "Miel de abeja pura", pres: "500 g", price: 140, cat: "Miel y superfoods", stock: true, demo: true, desc: "" },
+  { id: "sp5", name: "Chía orgánica", pres: "500 g", price: 90, cat: "Miel y superfoods", stock: true, demo: true, desc: "" },
+  { id: "sp6", name: "Aceite de coco extra virgen", pres: "500 ml", price: 160, cat: "Aceites", stock: true, demo: true, desc: "" },
+  { id: "sp7", name: "Jabón artesanal de avena", pres: "120 g", price: 55, cat: "Cuidado personal", stock: false, demo: true, desc: "" }
+];
 const PAGO = {
   titular: "Christian Rojas",
   banco: "Banco Azteca",
@@ -1685,6 +2134,9 @@ class Component extends DCLogic {
       q: "", mSize: "todo", mCond: "todo", mMax: 0, favsView: false,
       favs: [], cart: [], cartOpen: false, filtersOpen: false, views: {},
       sellers: {}, rateFor: null, rateStars: 0,
+      store: null, storeCloud: false, shOpen: false, shMode: "shop", shView: "shop", shATab: "pedidos", shQ: "", shCat: "Todo",
+      shBag: {}, shEntrega: "tienda", shPago: "transfer", shCName: "", shCPhone: "", shCNote: "", shErr: "", shLast: null,
+      shChat: [], shChatIn: "", shPAt: null, shEdit: null, shOrders: [], shOF: "activos", shCopied: "",
       promoLeft: null, promoExp: 0,
       sellShots: [null, null, null, null], lookShot: 0,
       lookAt: null, marketFilter: "todo", zoomAt: null, adIdx: 0,
@@ -1747,7 +2199,7 @@ class Component extends DCLogic {
       }
     }, 6000);
     this.installUI();
-    setTimeout(() => this.loadMarket(), 400);
+    setTimeout(() => { this.loadMarket(); this.loadStore(); }, 400);
     const cfg = this.cfg();
     if (!cfg) { this.setState({ authReady: true, cloud: false }); this.loadLocal(); return; }
     Promise.all([
@@ -1775,6 +2227,7 @@ class Component extends DCLogic {
         this.setState({ user: u ? { uid: u.uid, email: u.email } : null, authReady: true, cloud: true });
         if (u) { try { if (this._an) an.setUserId(this._an, u.uid); } catch (e) { } this.track("login"); }
         if (u) this.loadCloud(u.uid); else this.setState({ items: this.seed(), gender: null });
+        this.loadStore();
       });
     }).catch(() => { this.setState({ authReady: true, cloud: false, authError: "No pude conectar con la nube. Trabajarás solo en este teléfono." }); this.loadLocal(); });
   }
@@ -2946,6 +3399,451 @@ class Component extends DCLogic {
     if (this._onInstallable) window.removeEventListener("percha-installable", this._onInstallable);
   }
 
+  loadStore() {
+    let local = null;
+    try { local = JSON.parse(localStorage.getItem("percha:store") || "null"); } catch (e) { }
+    const seed = () => Object.assign({}, STORE_SEED, { products: STORE_PRODUCTS.slice() });
+    if (!this._db || !this.state.user) { this.setState({ store: local || seed(), storeCloud: false }); return; }
+    const { doc, getDoc, collection, getDocs } = this._fb.fs;
+    Promise.all([getDoc(doc(this._db, "stores", STORE_ID)), getDocs(collection(this._db, "stores", STORE_ID, "products"))])
+      .then(([d, ps]) => {
+        if (!d.exists()) { this.setState({ store: seed(), storeCloud: false }); return; }
+        const products = [];
+        ps.forEach(x => products.push(x.data()));
+        this.setState({ store: Object.assign({}, STORE_SEED, d.data(), { products }), storeCloud: true });
+      })
+      .catch(() => this.setState({ store: local || seed(), storeCloud: false }));
+  }
+
+  isStoreAdmin() {
+    const st = this.state, s = st.store;
+    if (!s) return false;
+    if (!this._db || !st.user) return true;
+    const e = String(st.user.email || "").toLowerCase();
+    return (s.admins || []).map(x => String(x).toLowerCase()).indexOf(e) >= 0;
+  }
+
+  shLocal(s) { try { localStorage.setItem("percha:store", JSON.stringify(s)); } catch (e) { this.flash("Ya no cabe más en este teléfono; activa la tienda en la nube."); } }
+
+  shSave(patch, msg) {
+    const st = this.state;
+    const s = Object.assign({}, st.store, patch || {});
+    this.setState({ store: s });
+    if (!this._db || !st.user || !st.storeCloud) { this.shLocal(s); if (msg) this.flash(msg); return; }
+    const info = Object.assign({}, s);
+    delete info.products;
+    const { doc, setDoc } = this._fb.fs;
+    setDoc(doc(this._db, "stores", STORE_ID), info).then(() => msg && this.flash(msg)).catch(e => this.flash("No se guardó (" + (e.code || "error") + ")."));
+  }
+
+  shActivate() {
+    const st = this.state;
+    if (!this._db || !st.user) return;
+    const { doc, writeBatch } = this._fb.fs;
+    const me = String(st.user.email || "").toLowerCase();
+    const admins = (st.store.admins || []).map(x => String(x).toLowerCase());
+    if (admins.indexOf(me) < 0) admins.unshift(me);
+    const s = Object.assign({}, st.store, { admins });
+    const info = Object.assign({}, s);
+    delete info.products;
+    const b = writeBatch(this._db);
+    b.set(doc(this._db, "stores", STORE_ID), info);
+    (s.products || []).forEach(p => b.set(doc(this._db, "stores", STORE_ID, "products", p.id), p));
+    b.commit().then(() => { this.setState({ store: s, storeCloud: true }); this.flash("Tienda activada."); })
+      .catch(e => this.flash("No pude activarla (" + (e.code || "error") + "). Revisa las reglas de Firestore."));
+  }
+
+  shSaveProduct() {
+    const st = this.state, e = st.shEdit;
+    if (!e) return;
+    const price = parseInt(String(e.price).replace(/\D/g, ""), 10);
+    if (!String(e.name || "").trim()) { this.flash("Ponle nombre al producto."); return; }
+    if (!(price > 0)) { this.flash("Escribe el precio."); return; }
+    const p = { id: e.id || ("p" + Date.now().toString(36)), name: e.name.trim().slice(0, 80), pres: String(e.pres || "").trim().slice(0, 40), price, cat: e.cat || STORE_CATS[0], desc: String(e.desc || "").trim().slice(0, 600), photo: e.photo || null, stock: e.stock !== false, demo: false };
+    const list = st.store.products || [];
+    const products = list.some(x => x.id === p.id) ? list.map(x => x.id === p.id ? p : x) : [p].concat(list);
+    const s = Object.assign({}, st.store, { products });
+    this.setState({ store: s, shEdit: null });
+    if (!this._db || !st.user || !st.storeCloud) { this.shLocal(s); this.flash("Producto guardado."); return; }
+    const { doc, setDoc } = this._fb.fs;
+    setDoc(doc(this._db, "stores", STORE_ID, "products", p.id), p).then(() => this.flash("Producto guardado.")).catch(err => this.flash("No se guardó (" + (err.code || "error") + ")."));
+  }
+
+  shDelProduct(id) {
+    const st = this.state;
+    const s = Object.assign({}, st.store, { products: (st.store.products || []).filter(x => x.id !== id) });
+    this.setState({ store: s, shEdit: null });
+    if (!this._db || !st.user || !st.storeCloud) { this.shLocal(s); return; }
+    const { doc, deleteDoc } = this._fb.fs;
+    deleteDoc(doc(this._db, "stores", STORE_ID, "products", id)).catch(() => { });
+  }
+
+  shStock(p) {
+    const st = this.state;
+    const np = Object.assign({}, p, { stock: p.stock === false });
+    const s = Object.assign({}, st.store, { products: (st.store.products || []).map(x => x.id === p.id ? np : x) });
+    this.setState({ store: s });
+    if (!this._db || !st.user || !st.storeCloud) { this.shLocal(s); return; }
+    const { doc, setDoc } = this._fb.fs;
+    setDoc(doc(this._db, "stores", STORE_ID, "products", p.id), np).catch(() => { });
+  }
+
+  shPickPhoto = (e) => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    const r = new FileReader();
+    r.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const M = 640, k = Math.min(1, M / Math.max(img.width, img.height));
+        const c = document.createElement("canvas");
+        c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+        const x = c.getContext("2d");
+        x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height);
+        x.drawImage(img, 0, 0, c.width, c.height);
+        this.setState(s => ({ shEdit: Object.assign({}, s.shEdit, { photo: c.toDataURL("image/jpeg", 0.78) }) }));
+      };
+      img.onerror = () => this.flash("No pude leer esa foto.");
+      img.src = r.result;
+    };
+    r.readAsDataURL(file);
+  };
+
+  shLoadOrders() {
+    const st = this.state;
+    if (this._db && st.user && st.storeCloud) {
+      const { collection, getDocs, query, where, limit } = this._fb.fs;
+      getDocs(query(collection(this._db, "storeOrders"), where("admins", "array-contains", String(st.user.email || "").toLowerCase()), limit(150)))
+        .then(snap => { const out = []; snap.forEach(d => out.push(d.data())); out.sort((a, b) => b.at - a.at); this.setState({ shOrders: out }); })
+        .catch(e => this.flash("No pude leer los pedidos (" + (e.code || "error") + ")."));
+      return;
+    }
+    try { this.setState({ shOrders: JSON.parse(localStorage.getItem("percha:storeOrders") || "[]") }); } catch (e) { }
+  }
+
+  shSetStatus(id, status) {
+    const st = this.state;
+    const list = (st.shOrders || []).map(o => o.id === id ? Object.assign({}, o, { status }) : o);
+    this.setState({ shOrders: list });
+    if (this._db && st.user && st.storeCloud) {
+      const { doc, updateDoc } = this._fb.fs;
+      updateDoc(doc(this._db, "storeOrders", id), { status }).catch(e => this.flash("No se actualizó (" + (e.code || "error") + ")."));
+    } else { try { localStorage.setItem("percha:storeOrders", JSON.stringify(list)); } catch (e) { } }
+  }
+
+  shBagList() {
+    const st = this.state, ps = (st.store && st.store.products) || [];
+    return Object.keys(st.shBag || {}).map(id => { const p = ps.find(x => x.id === id); return p ? Object.assign({}, p, { qty: st.shBag[id] }) : null; }).filter(Boolean);
+  }
+
+  shAdd(id, by) {
+    this.setState(s => {
+      const b = Object.assign({}, s.shBag);
+      b[id] = (b[id] || 0) + by;
+      if (b[id] <= 0) delete b[id];
+      return { shBag: b };
+    });
+  }
+
+  shPlace() {
+    const st = this.state, s = st.store, items = this.shBagList();
+    if (!items.length) return;
+    if (!st.shCName.trim()) { this.setState({ shErr: "Escribe tu nombre para apartar el pedido." }); return; }
+    const ph = st.shCPhone.replace(/\D/g, "");
+    if (ph.length < 10) { this.setState({ shErr: "Escribe tu WhatsApp a 10 dígitos para avisarte." }); return; }
+    const ship = st.shEntrega === "envio" && s.envio ? (+s.envioCosto || 0) : 0;
+    const sub = items.reduce((a, i) => a + i.price * i.qty, 0);
+    const o = {
+      id: "OM-" + Date.now().toString(36).slice(-5).toUpperCase(), storeId: STORE_ID,
+      buyerUid: st.user ? st.user.uid : "local", admins: (s.admins || []).map(x => String(x).toLowerCase()),
+      items: items.map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price })),
+      total: sub + ship, ship, entrega: ship || st.shEntrega === "envio" ? "envio" : "tienda", pago: st.shPago,
+      name: st.shCName.trim().slice(0, 60), phone: ph.slice(-10), note: st.shCNote.trim().slice(0, 140), status: "nuevo", at: Date.now()
+    };
+    this.setState({ shLast: o, shBag: {}, shErr: "", shView: "done" });
+    if (this._db && st.user && st.storeCloud) {
+      const { doc, setDoc } = this._fb.fs;
+      setDoc(doc(this._db, "storeOrders", o.id), o).catch(() => this.flash("El pedido no llegó a la nube; mándalo por WhatsApp."));
+    } else {
+      try { const L = JSON.parse(localStorage.getItem("percha:storeOrders") || "[]"); localStorage.setItem("percha:storeOrders", JSON.stringify([o].concat(L).slice(0, 100))); } catch (e) { }
+    }
+    const el = this._shScroll; if (el) el.scrollTop = 0;
+    this.track("pedido_tienda", { total: o.total });
+  }
+
+  shWa(num, text) {
+    let d = String(num || "").replace(/\D/g, "");
+    if (d.length === 10) d = "52" + d;
+    if (!d) d = WHATSAPP;
+    return "https://wa.me/" + d + "?text=" + encodeURIComponent(text);
+  }
+
+  shHorario(s) {
+    const N = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"], order = [1, 2, 3, 4, 5, 6, 0];
+    const dias = s.dias || [];
+    const all = order.every(i => dias[i]);
+    if (all && s.abre === "00:00" && (s.cierra === "23:59" || s.cierra === "24:00")) return "Abierto las 24 horas, todos los días";
+    if (!order.some(i => dias[i])) return "Horario por confirmar";
+    const runs = []; let cur = [];
+    order.forEach(i => { if (dias[i]) cur.push(i); else if (cur.length) { runs.push(cur); cur = []; } });
+    if (cur.length) runs.push(cur);
+    const txt = all ? "Todos los días" : runs.map(r => r.length > 2 ? N[r[0]] + " a " + N[r[r.length - 1]] : r.map(i => N[i]).join(" y ")).join(", ");
+    return txt.charAt(0).toUpperCase() + txt.slice(1) + " de " + s.abre + " a " + s.cierra;
+  }
+
+  shOpenInfo(s) {
+    const now = new Date(), d = now.getDay(), m = now.getHours() * 60 + now.getMinutes();
+    const toM = t => { const p = String(t || "0:0").split(":"); return (+p[0]) * 60 + (+p[1] || 0); };
+    const a = toM(s.abre), c = toM(s.cierra) + (s.cierra === "23:59" ? 1 : 0);
+    const dias = s.dias || [];
+    if (dias.every(Boolean) && a === 0 && c >= 1440) return { open: true, label: "Abierto 24 horas" };
+    if (dias[d] && m >= a && m < c) return { open: true, label: "Abierto · cierra " + s.cierra };
+    const N = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+    for (let k = 0; k < 8; k++) { const dd = (d + k) % 7; if (dias[dd] && (k > 0 || m < a)) return { open: false, label: "Cerrado · abre " + (k === 0 ? "hoy" : k === 1 ? "mañana" : N[dd]) + " " + s.abre }; }
+    return { open: false, label: "Cerrado" };
+  }
+
+  shClabeOk(c) {
+    if (!/^\d{18}$/.test(c)) return false;
+    const w = [3, 7, 1]; let t = 0;
+    for (let i = 0; i < 17; i++) t += ((+c[i]) * w[i % 3]) % 10;
+    return (10 - t % 10) % 10 === +c[17];
+  }
+
+  shNorm(x) { return String(x || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
+
+  shFill(a) {
+    const s = this.state.store;
+    return String(a || "")
+      .replace(/\{horario\}/g, this.shHorario(s).replace(/^Abierto las/, "las").replace(/^./, c => c.toLowerCase()))
+      .replace(/\{direccion\}/g, s.address || "la tienda")
+      .replace(/\{tienda\}/g, s.name)
+      .replace(/\{envio\}/g, s.envio
+        ? "Hacemos envíos a " + (s.envioZona || "colonias cercanas") + " por " + this.mx(s.envioCosto) + ". También puedes pasar a recoger sin costo."
+        : "Entregamos en tienda: " + (s.address || "la tienda") + ". Aparta aquí y pasa a recoger cuando quieras; te lo guardamos 72 horas.");
+  }
+
+  shAnswer(text) {
+    const s = this.state.store, t = this.shNorm(text);
+    if (/^(hola|buen[oa]s?|que tal|hey|ola)\b/.test(t) && t.length < 26) return { text: "¡Hola! Soy el asistente de " + s.name + ". Pregúntame precios, horario, dónde entregamos, formas de pago o por algún producto." };
+    if (/gracias/.test(t) && t.length < 30) return { text: "¡Con gusto! Aquí estoy si necesitas algo más." };
+    const stop = ["tienen", "tienes", "venden", "vendes", "precio", "precios", "cuanto", "cuesta", "hola", "quiero", "para", "sirve", "informacion", "donde", "tienda", "como"];
+    const words = t.split(/[^a-z0-9ñ]+/).filter(w => w.length >= 4 && stop.indexOf(w) < 0);
+    const hits = (s.products || []).filter(p => { const n = this.shNorm(p.name + " " + (p.cat || "")); return words.some(w => n.indexOf(w) >= 0 || n.indexOf(w.replace(/s$/, "")) >= 0); }).slice(0, 3);
+    let best = null, score = 0;
+    (s.faqs || []).forEach(q => { const ks = this.shNorm(q.keys).split(",").map(x => x.trim()).filter(Boolean); const sc = ks.filter(k => t.indexOf(k) >= 0).length; if (sc > score) { score = sc; best = q; } });
+    const health = /dosis|tomar|toma|sirve|embaraz|medicament|enfermedad|diabet|presion/.test(t);
+    if (hits.length && !health) {
+      return { text: hits.map(p => p.name + (p.pres ? " (" + p.pres + ")" : "") + " — " + this.mx(p.price) + (p.stock === false ? " · agotado por ahora" : "")).join("\n") + "\nPuedes apartarlo aquí y pasar por él.", prods: hits.map(p => p.id) };
+    }
+    if (best) return { text: this.shFill(best.a), wa: health ? this.shWa(s.wa, "Hola, tengo una duda: " + text) : null };
+    return { text: "Esa mejor te la contesta " + (s.owner || "la tienda") + " directamente.", wa: this.shWa(s.wa, "Hola, tengo una pregunta: " + text) };
+  }
+
+  shSend(text) {
+    const q = String(text || "").trim();
+    if (!q) return;
+    const a = this.shAnswer(q);
+    this.setState(s => ({ shChat: (s.shChat || []).concat([{ me: true, text: q }, Object.assign({ bot: true }, a)]), shChatIn: "" }),
+      () => { const el = this._shScroll; if (el) el.scrollTop = el.scrollHeight; });
+    this.track("asistente_tienda");
+  }
+
+  shCopy(text, key) {
+    const done = () => { this.setState({ shCopied: key }); clearTimeout(this._shc); this._shc = setTimeout(() => this.setState({ shCopied: "" }), 1600); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(() => this.flash(text));
+    else this.flash(text);
+  }
+
+  shOrderMsg(o) {
+    const s = this.state.store;
+    return "Hola " + (s.owner || s.name) + ", aparté un pedido en Percha (" + o.id + "):\n" +
+      o.items.map(i => "• " + i.qty + " × " + i.name + " — " + this.mx(i.qty * i.price)).join("\n") +
+      (o.ship ? "\nEnvío: " + this.mx(o.ship) : "") + "\nTotal: " + this.mx(o.total) +
+      "\nEntrega: " + (o.entrega === "envio" ? "envío a domicilio" : "recoger en tienda") +
+      "\nPago: " + (o.pago === "transfer" ? "transferencia (te mando el comprobante)" : "efectivo al recoger") +
+      "\nNombre: " + o.name + " · " + o.phone + (o.note ? "\nNota: " + o.note : "");
+  }
+
+  shNotifyMsg(o) {
+    const s = this.state.store;
+    if (o.status === "listo") return "Hola " + o.name + ", tu pedido " + o.id + " ya está listo para recoger en " + s.address + ". " + this.shHorario(s) + ". Te lo guardamos 72 horas. — " + s.name;
+    if (o.status === "pagado") return "Hola " + o.name + ", recibimos tu pago del pedido " + o.id + ". Te avisamos en cuanto esté listo. — " + s.name;
+    if (o.status === "entregado") return "¡Gracias por tu compra, " + o.name + "! Aquí estamos para lo que necesites. — " + s.name;
+    return "Hola " + o.name + ", recibimos tu pedido " + o.id + " por " + this.mx(o.total) + ". Te avisamos cuando esté listo. — " + s.name;
+  }
+
+  shAgo(ts) {
+    const m = Math.round((Date.now() - ts) / 60000);
+    if (m < 1) return "ahora";
+    if (m < 60) return "hace " + m + " min";
+    if (m < 1440) return "hace " + Math.round(m / 60) + " h";
+    return new Date(ts).toLocaleDateString("es-MX", { day: "numeric", month: "short" });
+  }
+
+  storeVals() {
+    const st = this.state, s = st.store;
+    if (!s) return { shCardOn: false, shOpen: false, shPOpen: false, shEOpen: false };
+    const info = this.shOpenInfo(s), admin = this.isStoreAdmin(), mode = admin ? (st.shMode || "shop") : "shop", v = st.shView || "shop";
+    const bag = this.shBagList(), bagN = bag.reduce((a, i) => a + i.qty, 0), sub = bag.reduce((a, i) => a + i.qty * i.price, 0);
+    const ship = st.shEntrega === "envio" && s.envio ? (+s.envioCosto || 0) : 0;
+    const pic = p => ({ hasPhoto: !!p.photo, noPhoto: !p.photo, bg: p.photo ? 'url("' + p.photo + '")' : "none", initial: String(p.name || "?").trim().charAt(0).toUpperCase() });
+    const q = this.shNorm(st.shQ);
+    const all = s.products || [];
+    const cat = st.shCat || "Todo";
+    const prods = all.filter(p => (cat === "Todo" || p.cat === cat) && (!q || this.shNorm(p.name + " " + p.cat + " " + (p.desc || "")).indexOf(q) >= 0));
+    const clabe = String(s.clabe || "").replace(/\D/g, "");
+    const bank = s.banco || BANKS[clabe.slice(0, 3)] || "";
+    const lo = st.shLast;
+    const tabsShop = [["shop", "Productos"], ["chat", "Asistente"], ["bag", "Bolsa" + (bagN ? " · " + bagN : "")]];
+    const tabsAdmin = [["pedidos", "Pedidos"], ["productos", "Productos"], ["datos", "Datos"], ["bot", "Asistente"]];
+    const cur = mode === "admin" ? (st.shATab || "pedidos") : (v === "done" ? "bag" : v);
+    const tab = (k, l) => ({ label: l, ink: cur === k ? "var(--color-text)" : "var(--color-neutral-600)", line: cur === k ? "inset 0 -2px 0 var(--color-text)" : "none",
+      pick: () => { if (mode === "admin") { this.setState({ shATab: k }); if (k === "pedidos") this.shLoadOrders(); } else this.setState({ shView: k }); const el = this._shScroll; if (el) el.scrollTop = 0; } });
+    const setF = k => e => { const val = e && e.target ? e.target.value : e; this.setState(x => ({ store: Object.assign({}, x.store, { [k]: val }) })); };
+    const statusL = { nuevo: "Nuevo", pagado: "Pagado", listo: "Listo", entregado: "Entregado" };
+    const flt = st.shOF || "activos";
+    const orders = (st.shOrders || []).filter(o => flt === "todos" ? true : flt === "activos" ? o.status !== "entregado" : o.status === flt);
+    const e = st.shEdit;
+    const pAt = st.shPAt ? all.find(x => x.id === st.shPAt) : null;
+    const pay = st.shPago === "cash" && st.shEntrega === "envio" ? "transfer" : st.shPago;
+    return {
+      shCardOn: st.bazarTab === "parati",
+      shName: s.name, shOwner: s.owner || "la tienda", shAddress: s.address, shHorario: this.shHorario(s),
+      shHood: (s.address || "").replace(/^Col\.\s*/, "").split(",")[0],
+      shOpenLabel: info.label, shOpenCls: info.open ? "tag-accent-2" : "tag-neutral",
+      shHeaderSub: mode === "admin" ? "Panel de la tienda" : info.label + " · Recoge en tienda",
+      shWaLink: this.shWa(s.wa, "Hola, vi tu tienda en Percha."),
+      shOpenStore: () => { this.setState({ shOpen: true, shView: st.shView === "done" ? "shop" : (st.shView || "shop") }); this.loadStore(); this.track("tienda_vista", { id: STORE_ID }); },
+      shClose: () => this.setState({ shOpen: false, shMode: "shop" }),
+      shOpen: !!st.shOpen, shCanAdmin: admin, shModeLabel: mode === "admin" ? "Ver tienda" : "Administrar",
+      shToggleMode: () => { const toAdmin = mode !== "admin"; this.setState({ shMode: toAdmin ? "admin" : "shop" }); if (toAdmin && (st.shATab || "pedidos") === "pedidos") this.shLoadOrders(); },
+      shTabs: (mode === "admin" ? tabsAdmin : tabsShop).map(([k, l]) => tab(k, l)),
+      shScrollRef: n => { this._shScroll = n; },
+      shvShop: mode === "shop" && v === "shop", shvChat: mode === "shop" && v === "chat",
+      shvBag: mode === "shop" && v === "bag" && bag.length > 0, shvBagEmpty: mode === "shop" && v === "bag" && !bag.length,
+      shvDone: mode === "shop" && v === "done" && !!lo,
+      shvPedidos: mode === "admin" && cur === "pedidos", shvAProds: mode === "admin" && cur === "productos",
+      shvDatos: mode === "admin" && cur === "datos", shvBot: mode === "admin" && cur === "bot",
+      shQ: st.shQ, shSetQ: ev => this.setState({ shQ: ev.target.value }),
+      shCats: ["Todo"].concat(STORE_CATS.filter(c => all.some(p => p.cat === c))).map(c => ({ label: c, cls: cat === c ? "tag-accent" : "tag-neutral", pick: () => this.setState({ shCat: c }) })),
+      shProds: prods.map(p => Object.assign(pic(p), {
+        name: p.name, pres: p.pres, priceTxt: this.mx(p.price), out: p.stock === false,
+        canAdd: p.stock !== false && !st.shBag[p.id], inBag: !!st.shBag[p.id], qtyTxt: (st.shBag[p.id] || 0) + " en bolsa",
+        open: () => this.setState({ shPAt: p.id }), add: () => this.shAdd(p.id, 1)
+      })),
+      shNoProds: !prods.length,
+      shAskAbout: () => { const t = st.shQ; this.setState({ shView: "chat" }); if (t) this.shSend("¿Tienen " + t + "?"); },
+      shChat: (st.shChat.length ? st.shChat : [{ bot: true, text: "¡Hola! Pregúntame precios, horario, dónde entregamos o por algún producto." }]).map(m => Object.assign({}, m, {
+        hasProds: !!(m.prods && m.prods.length), hasWa: !!m.wa,
+        prods: (m.prods || []).map(id => { const p = all.find(x => x.id === id); return p ? { name: p.name, open: () => this.setState({ shPAt: id }) } : null; }).filter(Boolean)
+      })),
+      shSuggest: ["¿Precios?", "¿Horario?", "¿Dónde entregan?", "¿Cómo pago?", "¿Tienen moringa?"].map(l => ({ label: l, pick: () => this.shSend(l) })),
+      shChatIn: st.shChatIn, shSetChat: ev => this.setState({ shChatIn: ev.target.value }),
+      shSubmit: ev => { ev.preventDefault(); this.shSend(st.shChatIn); },
+      shGoShop: () => this.setState({ shView: "shop" }), shGoBag: () => this.setState({ shView: "bag" }),
+      shBagBarOn: mode === "shop" && v === "shop" && bagN > 0, shBagN: String(bagN),
+      shBag: bag.map(i => Object.assign(pic(i), { name: i.name, qty: String(i.qty), priceTxt: this.mx(i.price), inc: () => this.shAdd(i.id, 1), dec: () => this.shAdd(i.id, -1) })),
+      shEntregas: [["tienda", "Recoger en tienda", s.address, "Gratis"]].concat(s.envio ? [["envio", "Envío a domicilio", s.envioZona || "", this.mx(s.envioCosto)]] : []).map(([k, l, sub2, cost]) => {
+        const on = (st.shEntrega === k) || (k === "tienda" && !s.envio);
+        return { label: l, sub: sub2, cost, ring: on ? "var(--color-text)" : "transparent", dot: on ? "var(--color-text)" : "transparent", pick: () => this.setState({ shEntrega: k }) };
+      }),
+      shPagos: [["transfer", "Transferencia", "Te damos la CLABE al apartar; mandas tu comprobante por WhatsApp"]].concat(st.shEntrega === "envio" && s.envio ? [] : [["cash", "Efectivo al recoger", "Pagas en la tienda cuando pasas por tu pedido"]]).map(([k, l, d]) => ({
+        label: l, sub: d, ring: pay === k ? "var(--color-text)" : "transparent", dot: pay === k ? "var(--color-text)" : "transparent", pick: () => this.setState({ shPago: k })
+      })),
+      shCName: st.shCName, shSetCName: ev => this.setState({ shCName: ev.target.value, shErr: "" }),
+      shCPhone: st.shCPhone, shSetCPhone: ev => this.setState({ shCPhone: ev.target.value, shErr: "" }),
+      shCNote: st.shCNote, shSetCNote: ev => this.setState({ shCNote: ev.target.value }),
+      shSubTxt: this.mx(sub), shShipOn: ship > 0, shShipTxt: this.mx(ship), shTotalTxt: this.mx(sub + ship),
+      shErr: st.shErr, shErrOn: !!st.shErr, shPlace: () => this.shPlace(),
+      shLo: lo ? {
+        id: lo.id, first: lo.name.split(" ")[0], totalTxt: this.mx(lo.total), entregaTxt: lo.entrega === "envio" ? "envío a domicilio" : "recoger en tienda",
+        isTransfer: lo.pago === "transfer", stepWa: lo.pago === "transfer" ? "2. Mándale tu pedido y comprobante" : "Mándale tu pedido a la tienda",
+        waHint: lo.pago === "transfer" ? "Se abre WhatsApp con tu pedido escrito; adjunta la captura de tu transferencia." : "Se abre WhatsApp con tu pedido escrito para que lo confirmen.",
+        wa: this.shWa(s.wa, this.shOrderMsg(lo))
+      } : {},
+      shClabeFmt: clabe ? clabe.replace(/(\d{3})(\d{3})(\d{11})(\d)/, "$1 $2 $3 $4") : "Por confirmar",
+      shBank: bank || "Por confirmar", shHolder: s.titular || "Por confirmar", shNoClabe: !clabe,
+      shCopyClabe: () => this.shCopy(clabe, "clabe"), shCopyClabeLbl: st.shCopied === "clabe" ? "Copiada" : "Copiar",
+      shCopyRef: () => lo && this.shCopy(lo.id, "ref"), shCopyRefLbl: st.shCopied === "ref" ? "Copiado" : "Copiar",
+      shNewOrder: () => this.setState({ shView: "shop", shLast: null }),
+      shActivateOn: !!(this._db && st.user && !st.storeCloud), shActivate: () => this.shActivate(),
+      shOFilters: [["activos", "Por atender"], ["nuevo", "Nuevos"], ["pagado", "Pagados"], ["listo", "Listos"], ["entregado", "Entregados"], ["todos", "Todos"]].map(([k, l]) => ({
+        label: l + (k === "activos" ? " · " + (st.shOrders || []).filter(o => o.status !== "entregado").length : ""), cls: flt === k ? "tag-accent" : "tag-neutral", pick: () => this.setState({ shOF: k })
+      })),
+      shNoOrders: !orders.length,
+      shOrders: orders.map(o => ({
+        id: o.id, name: o.name, ago: this.shAgo(o.at), totalTxt: this.mx(o.total), note: o.note, noteOn: !!o.note,
+        lines: o.items.map(i => i.qty + " × " + i.name).join("\n"),
+        statusTxt: statusL[o.status] || o.status, statusCls: o.status === "entregado" ? "tag-neutral" : o.status === "nuevo" ? "tag-accent" : "tag-accent-2",
+        entregaTxt: o.entrega === "envio" ? "Envío" : "Recoge", pagoTxt: o.pago === "transfer" ? "Transferencia" : "Efectivo",
+        steps: [["pagado", "Pagado"], ["listo", "Listo"], ["entregado", "Entregado"]].map(([k, l]) => ({ label: l, cls: o.status === k ? "btn-primary" : "btn-secondary", pick: () => this.shSetStatus(o.id, k) })),
+        wa: this.shWa(o.phone, this.shNotifyMsg(o)), waLabel: o.status === "listo" ? "Avisar que está listo" : o.status === "pagado" ? "Confirmar pago por WhatsApp" : "Escribirle por WhatsApp"
+      })),
+      shNewProduct: () => this.setState({ shEdit: { id: "", name: "", pres: "", price: "", cat: STORE_CATS[0], desc: "", photo: null, stock: true } }),
+      shAProds: all.map(p => Object.assign(pic(p), {
+        name: p.name + (p.demo ? " · ejemplo" : ""), pres: p.pres || "—", priceTxt: this.mx(p.price),
+        stockLbl: p.stock === false ? "Agotado" : "Disponible", stockCls: p.stock === false ? "tag-neutral" : "tag-accent-2",
+        toggle: () => this.shStock(p), edit: () => this.setState({ shEdit: Object.assign({}, p, { price: String(p.price) }) })
+      })),
+      shHasDemo: all.some(p => p.demo),
+      shD: { name: s.name, owner: s.owner, address: s.address, wa: s.wa, abre: s.abre, cierra: s.cierra, clabe: s.clabe, banco: s.banco, titular: s.titular, envioCosto: String(s.envioCosto || ""), envioZona: s.envioZona },
+      shOn: { name: setF("name"), owner: setF("owner"), address: setF("address"), wa: setF("wa"), abre: setF("abre"), cierra: setF("cierra"), clabe: setF("clabe"), banco: setF("banco"), titular: setF("titular"), envioCosto: setF("envioCosto"), envioZona: setF("envioZona") },
+      shDias: ["L", "M", "M", "J", "V", "S", "D"].map((l, i) => { const di = (i + 1) % 7; const on = !!(s.dias || [])[di]; return { label: l, cls: on ? "tag-accent" : "tag-neutral", toggle: () => { const d = (s.dias || []).slice(); d[di] = !on; this.setState({ store: Object.assign({}, s, { dias: d }) }); } }; }),
+      shClabeMsgOn: clabe.length > 0,
+      shClabeMsg: clabe.length !== 18 ? "Van " + clabe.length + " de 18 dígitos" : this.shClabeOk(clabe) ? "CLABE válida" + (BANKS[clabe.slice(0, 3)] ? " · " + BANKS[clabe.slice(0, 3)] : "") : "Esta CLABE no pasa la verificación; revisa los dígitos",
+      shClabeMsgInk: clabe.length === 18 && this.shClabeOk(clabe) ? "var(--color-accent-2-900)" : "var(--color-accent-800)",
+      shBankPh: BANKS[clabe.slice(0, 3)] ? "Banco (" + BANKS[clabe.slice(0, 3)] + ")" : "Banco",
+      shEnvioOn: !!s.envio, shEnvioLbl: s.envio ? "Sí hago envíos" : "Solo recoger en tienda",
+      shEnvioTrack: s.envio ? "var(--color-text)" : "var(--color-neutral-400)", shEnvioKnob: s.envio ? "21px" : "3px",
+      shToggleEnvio: () => this.setState({ store: Object.assign({}, s, { envio: !s.envio }) }),
+      shAdminsTxt: st.shAdminsDraft != null ? st.shAdminsDraft : (s.admins || []).join(", "),
+      shSetAdmins: ev => this.setState({ shAdminsDraft: ev.target.value }),
+      shSaveInfo: () => {
+        const c = String(s.clabe || "").replace(/\D/g, "");
+        if (c && !this.shClabeOk(c)) { this.flash("Revisa la CLABE: debe tener 18 dígitos válidos."); return; }
+        const patch = { clabe: c, envioCosto: parseInt(String(s.envioCosto).replace(/\D/g, ""), 10) || 0, wa: String(s.wa || "").replace(/\D/g, "") };
+        if (st.shAdminsDraft != null) {
+          const list = st.shAdminsDraft.split(/[\s,;]+/).map(x => x.trim().toLowerCase()).filter(x => /@/.test(x));
+          const me = st.user ? String(st.user.email || "").toLowerCase() : "";
+          if (me && list.indexOf(me) < 0) list.unshift(me);
+          patch.admins = list;
+        }
+        this.setState({ shAdminsDraft: null });
+        this.shSave(patch, "Datos guardados.");
+      },
+      shFaqs: (s.faqs || []).map((f2, i) => {
+        const set = k => ev => { const fs = (this.state.store.faqs || []).slice(); fs[i] = Object.assign({}, fs[i], { [k]: ev.target.value }); this.setState(x => ({ store: Object.assign({}, x.store, { faqs: fs }) })); };
+        return { q: f2.q, keys: f2.keys, a: f2.a, setQ: set("q"), setKeys: set("keys"), setA: set("a"),
+          del: () => this.setState(x => ({ store: Object.assign({}, x.store, { faqs: (x.store.faqs || []).filter((_, j) => j !== i) }) })) };
+      }),
+      shAddFaq: () => this.setState(x => ({ store: Object.assign({}, x.store, { faqs: (x.store.faqs || []).concat([{ q: "", keys: "", a: "" }]) }) })),
+      shSaveFaqs: () => this.shSave({ faqs: (s.faqs || []).filter(x => String(x.a || "").trim()) }, "Respuestas guardadas."),
+      shQuick: [{ q: "hola", a: "¡Hola! Gracias por escribir a {tienda}. ¿En qué te ayudo? También puedes ver precios y apartar tu pedido en Percha." }]
+        .concat(s.faqs || []).filter(x => String(x.a || "").trim()).map((x, i) => {
+          const slug = "/" + (this.shNorm(x.q).replace(/[^a-z0-9]+/g, "").slice(0, 12) || "resp" + i);
+          const text = this.shFill(x.a);
+          return { short: slug, text, lbl: st.shCopied === "q" + i ? "Copiada" : "Copiar", copy: () => this.shCopy(text, "q" + i) };
+        }),
+      shPOpen: !!pAt, shPClose: () => this.setState({ shPAt: null }),
+      shP: pAt ? Object.assign(pic(pAt), {
+        name: pAt.name, pres: pAt.pres || "", cat: pAt.cat, priceTxt: this.mx(pAt.price), desc: pAt.desc, descOn: !!pAt.desc,
+        stockTxt: pAt.stock === false ? "Agotado" : "Disponible", canAdd: pAt.stock !== false,
+        addLbl: st.shBag[pAt.id] ? "Agregar otro (" + st.shBag[pAt.id] + " en bolsa)" : "Agregar a la bolsa",
+        add: () => { this.shAdd(pAt.id, 1); this.setState({ shPAt: null }); this.flash("Agregado a tu bolsa."); },
+        wa: this.shWa(s.wa, "Hola, me interesa " + pAt.name + (pAt.pres ? " (" + pAt.pres + ")" : "") + " que vi en Percha.")
+      }) : {},
+      shEOpen: !!e, shEClose: () => this.setState({ shEdit: null }),
+      shETitle: e && e.id ? "Editar producto" : "Nuevo producto",
+      shE: e ? Object.assign(pic(e), { name: e.name, price: e.price, pres: e.pres, desc: e.desc }) : {},
+      shEPhotoLbl: e && e.photo ? "Cambiar foto" : "Agregar foto",
+      shEOn: ["name", "price", "pres", "desc"].reduce((o, k) => { o[k] = ev => { const val = ev.target.value; this.setState(x => ({ shEdit: Object.assign({}, x.shEdit, { [k]: val }) })); }; return o; }, {}),
+      shECats: STORE_CATS.map(c => ({ label: c, cls: e && e.cat === c ? "tag-accent" : "tag-neutral", pick: () => this.setState(x => ({ shEdit: Object.assign({}, x.shEdit, { cat: c }) })) })),
+      shESave: () => this.shSaveProduct(), shECanDel: !!(e && e.id), shEDel: () => e && this.shDelProduct(e.id)
+    };
+  }
+
   renderVals() {
     const st = this.state;
     const showScore = this.props.showScore ?? true;
@@ -3379,6 +4277,7 @@ class Component extends DCLogic {
         if (!m) return null;
         return m;
       })(),
+      ...this.storeVals(),
       lookOpen: !!st.lookAt,
       lookName: (() => { const m = (st.market || []).find(x => x.id === st.lookAt); return m ? m.name : ""; })(),
       lookPrice: (() => { const m = (st.market || []).find(x => x.id === st.lookAt); return m ? "$" + m.price : ""; })(),
