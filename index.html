@@ -3808,11 +3808,21 @@ class Component extends DCLogic {
     const s = Object.assign({}, st.store, { admins });
     const info = Object.assign({}, s);
     delete info.products;
-    const b = writeBatch(this._db);
-    b.set(doc(this._db, "stores", STORE_ID), info);
-    (s.products || []).forEach(p => b.set(doc(this._db, "stores", STORE_ID, "products", p.id), p));
-    b.commit().then(() => { this.setState({ store: s, storeCloud: true }); this.flash("Tienda activada."); })
-      .catch(e => this.flash("No pude activarla (" + (e.code || "error") + "). Revisa las reglas de Firestore."));
+    const { setDoc } = this._fb.fs;
+    this.flash("Activando tienda…");
+    setDoc(doc(this._db, "stores", STORE_ID), info)
+      .then(() => {
+        const b = writeBatch(this._db);
+        (s.products || []).forEach(p => b.set(doc(this._db, "stores", STORE_ID, "products", p.id), p));
+        return b.commit();
+      })
+      .then(() => { this.setState({ store: s, storeCloud: true }); this.flash("Tienda activada."); })
+      .catch(e => {
+        const c = (e && e.code) || "error";
+        this.flash(c === "permission-denied"
+          ? "Firebase no dio permiso. Pega el firestore.rules nuevo en la consola y toca Publicar."
+          : "No pude activarla (" + c + "). Intenta de nuevo.");
+      });
   }
 
   shSaveProduct() {
